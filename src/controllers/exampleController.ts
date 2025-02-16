@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { Todo } from "../models/exampleModel";
 import { Error as MongooseError } from "mongoose";
+
+import { Todo } from "../models/exampleModel";
 const { ValidationError } = MongooseError;
 
 export const getHelloWorld = (req: Request, res: Response) => {
@@ -22,7 +23,7 @@ export const getTodos = async (req: Request, res: Response) => {
 
 export const addTodo = async (req: Request, res: Response) => {
   try {
-    const { task } = req.body;
+    const { task } = req.body as Record<string, string>;
     const todo = await Todo.create({ task });
     res.status(201).json(todo);
   } catch (error: unknown) {
@@ -39,10 +40,10 @@ export const addTodo = async (req: Request, res: Response) => {
 export const updateTodo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { task, done } = req.body;
+    const { done, task } = req.body as Record<string, string>;
     const todo = await Todo.findByIdAndUpdate(
       id,
-      { task, done },
+      { done, task },
       { new: true }
     );
     res.status(200).json(todo);
