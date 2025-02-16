@@ -8,6 +8,7 @@
     "dev": "npx tsx watch ./src/server.ts",
     "build": "pkgroll --clean-dist --minify",
     "start": "node dist/server.mjs",
+    "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
