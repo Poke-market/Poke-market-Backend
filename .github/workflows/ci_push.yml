@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - master
       - development
+      - experiment/___-test-github-workflows
 
 jobs:
   quality-checks-push:
