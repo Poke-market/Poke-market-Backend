@@ -44,7 +44,7 @@ export const updateTodo = async (req: Request, res: Response) => {
     const todo = await Todo.findByIdAndUpdate(
       id,
       { done, task },
-      { new: true }
+      { new: true },
     );
     res.status(200).json(todo);
   } catch (error: unknown) {
