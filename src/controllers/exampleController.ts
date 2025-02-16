@@ -23,7 +23,7 @@ export const getTodos = async (req: Request, res: Response) => {
 
 export const addTodo = async (req: Request, res: Response) => {
   try {
-    const { task } = req.body as Record<string, string>;
+    const { task } = req.body;
     const todo = await Todo.create({ task });
     res.status(201).json(todo);
   } catch (error: unknown) {
@@ -44,7 +44,7 @@ export const updateTodo = async (req: Request, res: Response) => {
     const todo = await Todo.findByIdAndUpdate(
       id,
       { done, task },
-      { new: true },
+      { new: true }
     );
     res.status(200).json(todo);
   } catch (error: unknown) {
