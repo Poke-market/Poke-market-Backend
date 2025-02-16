@@ -23,7 +23,7 @@ export const getTodos = async (req: Request, res: Response) => {
 
 export const addTodo = async (req: Request, res: Response) => {
   try {
-    const { task } = req.body;
+    const { task } = req.body as { task: string };
     const todo = await Todo.create({ task });
     res.status(201).json(todo);
   } catch (error: unknown) {
