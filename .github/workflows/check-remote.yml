@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - ___-setup # Trigger on updates to setup branch
+      - development # Trigger on updates to develop branch
+      - main # Trigger on updates to main branch
+      - devops/ ___-setup
+      - experiment/___-test-github-workflow-feature
+      - experiment/___-test-github-workflow-feat
+      - experiment/___-test-github-workflows
+      - feature/___-use-create-nodepress
+
+name: Discord Notification on Update
+
+jobs:
+  discordNotification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Send Discord Notification
+        run: |
+          DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/1340895215338393743/D4ihOhzdWlZD03ovNYy2-YWXNn0y9GC1hgdIXz29ugkCpKG9eK90Hy6NmsK1qhPnbS_d"
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "embeds": [{
+              "title": "Repository Updated!!",
+              "description": "The repository **${{ github.repository }}** has been updated on branch **${{ github.ref_name }}** by **${{ github.actor }}**! 🚀",
+              "color": 5814783,
+              "fields": [
+                {
+                  "name": "Commit Message",
+                  "value": "'"$COMMIT_MESSAGE"'"
+                },
+                {
+                  "name": "Check out the changes here",
+                  "value": "'"$COMMIT_URL"'"
+                }
+              ]
+            }]
+          }' $DISCORD_WEBHOOK_URL
