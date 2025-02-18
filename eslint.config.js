@@ -9,6 +9,7 @@ export default tseslint.config(
   {
     ignores: ["**/*.{js,mjs}"],
   },
+  eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   {
@@ -20,7 +21,7 @@ export default tseslint.config(
     },
   },
   perfectionist.configs["recommended-natural"],
-  eslintConfigPrettier, // keep last
+  eslintConfigPrettier // keep last
 );
 
 // run the below command to check for rules that are unnecessary or conflict with Prettier
