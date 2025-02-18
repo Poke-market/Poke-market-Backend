@@ -1,12 +1,12 @@
 // Imports
+import mongoose from "mongoose";
 import "dotenv/config";
+import { notFound } from "./controllers/notFoundController";
 import cors from "cors";
 import express from "express";
-import mongoose from "mongoose";
 
-import { notFound } from "./controllers/notFoundController";
-import { helloMiddleware } from "./middleware/exampleMiddleware";
 import testRoutes from "./routes/exampleRoutes";
+import { helloMiddleware } from "./middleware/exampleMiddleware";
 
 // Variables
 const app = express();
