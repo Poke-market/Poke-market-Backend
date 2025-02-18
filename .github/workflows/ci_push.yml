@@ -3,13 +3,13 @@ name: CI Push
 on:
   push:
     branches-ignore:
-      - master
+      - main
       - development
       - experiment/___-test-github-workflows
 
 jobs:
   quality-checks-push:
-    name: Quality checks push
+    name: Quality checks (push)
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +26,10 @@ jobs:
         run: npm ci
 
       - name: Run Typescript type checking
-        run: npm run type-check
+        run: npm run type-check &
 
       - name: Run ESLint (no fix)
-        run: npm run lint
+        run: npm run lint &
 
       - name: Run Prettier formatting check
-        run: npm run format:check
+        run: npm run format:check &

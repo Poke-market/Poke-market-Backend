@@ -9,7 +9,7 @@ on:
 
 jobs:
   quality-checks-merge:
-    name: Quality checks merge
+    name: Quality checks (merge)
     runs-on: ubuntu-latest
 
     steps:

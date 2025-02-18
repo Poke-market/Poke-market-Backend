@@ -9,6 +9,7 @@ export default tseslint.config(
   {
     ignores: ["**/*.{js,mjs}"],
   },
+  eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   {
