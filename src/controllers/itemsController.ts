@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Items } from "../models/itemsModel";
+import { Items } from "../models/itemModel";
 import { Error as MongooseError } from "mongoose";
 const { ValidationError } = MongooseError;
 

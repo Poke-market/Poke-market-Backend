@@ -5,7 +5,7 @@ const itemsSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     price: { type: Number, required: true, trim: true },
     description: { type: String, required: true, trim: true },
-    photo: { type: String, required: true, trim: true },
+    photoUrl: { type: String, required: true, trim: true },
     category: {
       type: String,
       required: true,
@@ -20,6 +20,12 @@ const itemsSchema = new mongoose.Schema(
         "tm/hm",
         "mega stones",
       ],
+    },
+    tags: {
+      type: [mongoose.Types.ObjectId],
+      ref: "Tag",
+      required: true,
+      default: [],
     },
   },
   {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const usersSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     firstname: { type: String, required: true, trim: true },
     lastname: { type: String, required: true, trim: true },
@@ -8,10 +8,19 @@ const usersSchema = new mongoose.Schema(
     street: { type: String, required: true, trim: true },
     housenumber: { type: String, required: true, trim: true },
     zipcode: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true },
+    password: { type: String, required: true, trim: true },
+    telephone: { type: String, required: true, trim: true },
+    wishList: {
+      type: [mongoose.Types.ObjectId],
+      ref: "Item",
+      required: true,
+      default: [],
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const Users = mongoose.model("Items", usersSchema);
+export const User = mongoose.model("User", userSchema);
