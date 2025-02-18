@@ -25,10 +25,10 @@ jobs:
         run: npm ci
 
       - name: Run Typescript type checking
-        run: npm run type-check
+        run: npm run type-check &
 
       - name: Run ESLint (no fix)
-        run: npm run lint
+        run: npm run lint &
 
       - name: Run Prettier formatting check
-        run: npm run format:check
+        run: npm run format:check &
