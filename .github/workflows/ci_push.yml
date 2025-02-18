@@ -26,10 +26,16 @@ jobs:
         run: npm ci
 
       - name: Run Typescript type checking
+        if: success()
         run: npm run type-check &
 
       - name: Run ESLint (no fix)
+        if: success()
         run: npm run lint &
 
       - name: Run Prettier formatting check
+        if: success()
         run: npm run format:check &
+
+      - name: Wait for parallel tasks
+        run: wait
