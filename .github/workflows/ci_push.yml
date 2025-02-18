@@ -8,7 +8,7 @@ on:
 
 jobs:
   quality-checks-push:
-    name: Quality checks
+    name: Quality checks (push)
     runs-on: ubuntu-latest
 
     steps:
