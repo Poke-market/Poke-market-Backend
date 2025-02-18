@@ -3,7 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { notFound } from "./controllers/notFoundController";
-import testRoutes from "./routes/exampleRoutes";
+import itemsRoutes from "./routes/itemsRoutes";
 import { helloMiddleware } from "./middleware/exampleMiddleware";
 import mongoose from "mongoose";
 
@@ -16,10 +16,14 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api", helloMiddleware, testRoutes);
+app.use("/api/items", helloMiddleware, itemsRoutes);
 app.all("*", notFound);
 
 // Database connection
+if (!process.env.MONGO_URI) {
+  throw new Error("Missing MONGO_URI environment variable in .env file");
+}
+await mongoose.connect(process.env.MONGO_URI);
 try {
   await mongoose.connect(process.env.MONGO_URI!);
   console.log("Database connection OK");
