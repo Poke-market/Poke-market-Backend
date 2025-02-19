@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const itemsSchema = new mongoose.Schema(
+const itemSchema = new mongoose.Schema(
   {
     category: {
       enum: [
@@ -33,4 +33,4 @@ const itemsSchema = new mongoose.Schema(
   },
 );
 
-export const Items = mongoose.model("Items", itemsSchema);
+export const Item = mongoose.model("Item", itemSchema);
