@@ -2,14 +2,15 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
-import { notFound } from "./controllers/notFoundController";
-import testRoutes from "./routes/exampleRoutes";
-import { helloMiddleware } from "./middleware/exampleMiddleware";
 import mongoose from "mongoose";
+
+import { notFound } from "./controllers/notFoundController";
+import { helloMiddleware } from "./middleware/exampleMiddleware";
+import testRoutes from "./routes/exampleRoutes";
 
 // Variables
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 // Middleware
 app.use(cors());

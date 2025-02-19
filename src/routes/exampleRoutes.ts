@@ -1,8 +1,9 @@
 import express from "express";
+
 import {
+  addTodo,
   getHelloWorld,
   getTodos,
-  addTodo,
   updateTodo,
 } from "../controllers/exampleController";
 
