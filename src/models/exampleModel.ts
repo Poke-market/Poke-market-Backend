@@ -2,19 +2,19 @@ import mongoose from "mongoose";
 
 const todoSchema = new mongoose.Schema(
   {
+    done: {
+      default: false,
+      type: Boolean,
+    },
     task: {
-      type: String,
       required: true,
       trim: true,
-    },
-    done: {
-      type: Boolean,
-      default: false,
+      type: String,
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Todo = mongoose.model("Todo", todoSchema);
