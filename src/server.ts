@@ -5,9 +5,9 @@ import express from "express";
 import mongoose from "mongoose";
 
 import { notFound } from "./controllers/notFoundController";
-import itemsRoutes from "./routes/itemsRoutes";
 import { helloMiddleware } from "./middleware/exampleMiddleware";
 import testRoutes from "./routes/exampleRoutes";
+import itemsRoutes from "./routes/itemsRoutes";
 
 // Variables
 const app = express();
@@ -27,7 +27,7 @@ if (!process.env.MONGO_URI) {
 }
 await mongoose.connect(process.env.MONGO_URI);
 try {
-  await mongoose.connect(process.env.MONGO_URI!);
+  await mongoose.connect(process.env.MONGO_URI);
   console.log("Database connection OK");
 } catch (err) {
   console.error(err);

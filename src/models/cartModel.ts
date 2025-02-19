@@ -4,15 +4,15 @@ import mongoose from "mongoose";
 const cartSchema = new mongoose.Schema(
   {
     cartItem: {
-      type: [mongoose.Types.ObjectId],
+      default: [],
       ref: "CartItem",
       required: true,
-      default: [],
+      type: [mongoose.Types.ObjectId],
     },
     user: {
-      type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+      type: mongoose.Types.ObjectId,
     },
   },
   {

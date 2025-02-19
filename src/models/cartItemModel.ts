@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const cartItemSchema = new mongoose.Schema(
   {
     item: {
-      type: [mongoose.Types.ObjectId],
+      default: [],
       ref: "Item",
       required: true,
-      default: [],
+      type: [mongoose.Types.ObjectId],
     },
-    quantity: { type: Number, required: true },
+    quantity: { required: true, type: Number },
   },
   {
     timestamps: true,
