@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 
 import { notFound } from "./controllers/notFoundController";
 import { helloMiddleware } from "./middleware/exampleMiddleware";
-import testRoutes from "./routes/exampleRoutes";
 import itemsRoutes from "./routes/itemsRoutes";
 
 // Variables
