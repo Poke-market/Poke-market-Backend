@@ -1,9 +1,5 @@
-import { Request, Response } from "express";
+import { NotFoundError } from "../errors";
 
-export const notFound = (req: Request, res: Response) => {
-  res.status(404).json({
-    endpoint: req.originalUrl,
-    message: `The requested endpoint doesn't exist.`,
-    method: req.method,
-  });
+export const notFound = () => {
+  throw new NotFoundError("The requested endpoint doesn't exist");
 };
