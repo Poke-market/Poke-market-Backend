@@ -21,18 +21,18 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = req.user;
-    if (!user) {
-      res.status(402).json({ message: "Unauthorized" });
-      return;
-    }
-    if (user._id !== id) {
-      res.status(403).json({ message: "Forbidden" });
-      return;
-    }
+    // const user = req.user;
+    // if (!user) {
+    //   res.status(401).json({ message: "Unauthorized" });
+    //   return;
+    // }
+    // if (user._id.toString() !== id) {
+    //   res.status(403).json({ message: "Forbidden" });
+    //   return;
+    // }
     const userdetails = await User.findById(id)
       .select("-password")
-      .populate("wishlist");
+      .populate("wishList");
 
     res.status(200).json({ data: userdetails, message: "success" });
   } catch (error: unknown) {
@@ -50,9 +50,10 @@ export const addToWishlist = async (req: Request, res: Response) => {
     const { itemId } = req.body as { itemId: Types.ObjectId };
     const user = await User.findById(id);
     if (!user) {
-      res.status(404).json({ message: "forbidden" });
+      res.status(404).json({ message: "user not found" });
       return;
     }
+    // TODO to be changed to logged-in user
     if (id !== user.id) {
       res.status(403).json({ message: "Forbidden" });
       return;
@@ -66,7 +67,7 @@ export const addToWishlist = async (req: Request, res: Response) => {
       { new: true },
     )
       .select("-password")
-      .populate("wishlist");
+      .populate("wishList");
     res.status(200).json({ data: updatedUser, message: "success" });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -99,7 +100,7 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
       { new: true },
     )
       .select("-password")
-      .populate("wishlist");
+      .populate("wishList");
     res.status(200).json({ data: updatedUser, message: "success" });
   } catch (error: unknown) {
     if (error instanceof Error) {
