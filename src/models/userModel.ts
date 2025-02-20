@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema(
       type: [mongoose.Types.ObjectId],
     },
     zipcode: { required: true, trim: true, type: String },
-    avatar:{type:String,required:true}
+    avatar:{type:String,required:false,
+      default:
+        "https://greekherald.com.au/wp-content/uploads/2020/07/default-avatar.png",
+    }
   },
   {
     timestamps: true,
