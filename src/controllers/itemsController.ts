@@ -1,0 +1,56 @@
+// import { Request, Response } from "express";
+// import { Error as MongooseError } from "mongoose";
+
+// import { Items } from "../models/itemModel";
+
+// const { ValidationError } = MongooseError;
+
+// export const getTodos = async (req: Request, res: Response) => {
+//   try {
+//     const todos = await Todo.find();
+//     res.status(200).json(todos);
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       res.status(500).json({ message: error.message });
+//     } else {
+//       res.status(500).json({ message: "Something went wrong" });
+//     }
+//   }
+// };
+
+// export const addTodo = async (req: Request, res: Response) => {
+//   try {
+//     const { task } = req.body as Record<string, string>;
+//     const todo = await Todo.create({ task });
+//     res.status(201).json(todo);
+//   } catch (error: unknown) {
+//     if (error instanceof ValidationError) {
+//       res.status(400).json({ message: error.message });
+//     } else if (error instanceof Error) {
+//       res.status(500).json({ message: error.message });
+//     } else {
+//       res.status(500).json({ message: "Something went wrong" });
+//     }
+//   }
+// };
+
+// export const updateTodo = async (req: Request, res: Response) => {
+//   try {
+//     const { id } = req.params;
+//     const { done, task } = req.body as Record<string, string>;
+//     const todo = await Todo.findByIdAndUpdate(
+//       id,
+//       { done, task },
+//       { new: true },
+//     );
+//     res.status(200).json(todo);
+//   } catch (error: unknown) {
+//     if (error instanceof ValidationError) {
+//       res.status(400).json({ message: error.message });
+//     } else if (error instanceof Error) {
+//       res.status(500).json({ message: error.message });
+//     } else {
+//       res.status(500).json({ message: "Something went wrong" });
+//     }
+//   }
+// };
