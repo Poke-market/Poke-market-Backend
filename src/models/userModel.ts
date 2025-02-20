@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     city: { required: true, trim: true, type: String },
-    email: { required: true, trim: true, type: String },
+    email: { required: true, trim: true, type: String,unique:true },
     firstname: { required: true, trim: true, type: String },
     housenumber: { required: true, trim: true, type: String },
     lastname: { required: true, trim: true, type: String },
@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
       type: [mongoose.Types.ObjectId],
     },
     zipcode: { required: true, trim: true, type: String },
+    avatar:{type:String,required:true}
   },
   {
     timestamps: true,
