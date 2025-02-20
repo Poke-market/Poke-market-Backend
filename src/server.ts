@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import { notFound } from "./controllers/notFoundController";
 import { helloMiddleware } from "./middleware/exampleMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
-import userRoutes from "./routes/userRoutes"
+import userRoutes from "./routes/userRoutes";
 
 // Variables
 const app = express();
