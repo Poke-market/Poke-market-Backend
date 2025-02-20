@@ -3,17 +3,17 @@ import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema(
   {
     cart: {
-      type: [mongoose.Types.ObjectId],
+      default: [],
       ref: "Cart",
       required: true,
-      default: [],
+      type: [mongoose.Types.ObjectId],
     },
-    status: { type: String, required: true, trim: true },
     enum: ["pending", "completed", "cancelled"],
+    status: { required: true, trim: true, type: String },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const Order = mongoose.model("Order", orderSchema);

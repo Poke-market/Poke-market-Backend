@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "npx tsx watch ./src/server.ts",
     "build": "pkgroll --clean-dist --minify",
-    "start": "node dist/server.mjs"
+    "start": "node dist/server.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -22,13 +27,19 @@
     "mongoose": "^8.9.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.10.7",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-perfectionist": "^4.9.0",
     "pkgroll": "^2.6.1",
+    "prettier": "^3.5.1",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0"
   }
 }

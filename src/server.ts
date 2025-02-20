@@ -2,14 +2,15 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
-import { notFound } from "./controllers/notFoundController";
-import itemsRoutes from "./routes/itemsRoutes";
-import { helloMiddleware } from "./middleware/exampleMiddleware";
 import mongoose from "mongoose";
+
+import { notFound } from "./controllers/notFoundController";
+import { helloMiddleware } from "./middleware/exampleMiddleware";
+import itemsRoutes from "./routes/itemsRoutes";
 
 // Variables
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
 // Middleware
 app.use(cors());
@@ -25,7 +26,7 @@ if (!process.env.MONGO_URI) {
 }
 await mongoose.connect(process.env.MONGO_URI);
 try {
-  await mongoose.connect(process.env.MONGO_URI!);
+  await mongoose.connect(process.env.MONGO_URI);
   console.log("Database connection OK");
 } catch (err) {
   console.error(err);

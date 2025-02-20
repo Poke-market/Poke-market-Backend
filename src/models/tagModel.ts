@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-const tagsSchema = new mongoose.Schema(
+const tagSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
+    name: { required: true, trim: true, type: String },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Tags = mongoose.model("Items", tagsSchema);
+export const Tag = mongoose.model("Tag", tagSchema);

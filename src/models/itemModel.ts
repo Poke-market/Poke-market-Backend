@@ -1,15 +1,8 @@
 import mongoose from "mongoose";
 
-const itemsSchema = new mongoose.Schema(
+const itemSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    price: { type: Number, required: true, trim: true },
-    description: { type: String, required: true, trim: true },
-    photoUrl: { type: String, required: true, trim: true },
     category: {
-      type: String,
-      required: true,
-      trim: true,
       enum: [
         "medicine",
         "berries",
@@ -20,17 +13,24 @@ const itemsSchema = new mongoose.Schema(
         "tm/hm",
         "mega stones",
       ],
+      required: true,
+      trim: true,
+      type: String,
     },
+    description: { required: true, trim: true, type: String },
+    name: { required: true, trim: true, type: String },
+    photoUrl: { required: true, trim: true, type: String },
+    price: { required: true, trim: true, type: Number },
     tags: {
-      type: [mongoose.Types.ObjectId],
+      default: [],
       ref: "Tag",
       required: true,
-      default: [],
+      type: [mongoose.Types.ObjectId],
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Items = mongoose.model("Items", itemsSchema);
+export const Item = mongoose.model("Item", itemSchema);
