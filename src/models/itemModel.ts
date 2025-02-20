@@ -18,7 +18,7 @@ const itemSchema = new mongoose.Schema(
       type: String,
     },
     description: { required: true, trim: true, type: String },
-    name: { required: true, trim: true, type: String },
+    name: { required: true, trim: true, type: String, unique: true },
     photoUrl: { required: true, trim: true, type: String },
     price: { required: true, trim: true, type: Number },
     tags: {
