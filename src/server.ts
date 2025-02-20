@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/items", helloMiddleware, itemsRoutes);
-app.all("*", notFound);
+app.all("*splat", notFound);
 
 // Database connection
 if (!process.env.MONGO_URI) {
