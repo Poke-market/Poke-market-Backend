@@ -15,7 +15,7 @@ export abstract class CustomError extends Error {
   }
 
   protected abstract readonly _logging: boolean;
-  protected abstract readonly _status: "error" | "fail" | "success";
+  protected abstract readonly _status: "error" | "fail";
   protected abstract readonly _statusCode: number;
 
   constructor(
