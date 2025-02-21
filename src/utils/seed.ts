@@ -10,7 +10,7 @@ const seedItems = async () => {
     await mongoose.connect(MONGO_URI!);
     await Item.deleteMany();
     await Item.insertMany(pokéitems);
-    console.log("Seeding vehicles completed successfully! 🌱");
+    console.log("Seeding items completed successfully! 🌱");
   } catch (error) {
     console.error("Seeding error:", error);
   } finally {
