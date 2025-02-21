@@ -22,11 +22,14 @@ const itemSchema = new mongoose.Schema(
     photoUrl: { required: true, trim: true, type: String },
     price: { required: true, trim: true, type: Number },
     tags: {
-      default: [],
-      ref: "Tag",
-      required: true,
-      type: [mongoose.Types.ObjectId],
+      type: [String],
     },
+    // {
+    //   default: [],
+    //   ref: "Tag",
+    //   required: true,
+    //   type: [mongoose.Types.ObjectId],
+    // },
   },
   {
     timestamps: true,
