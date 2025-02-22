@@ -55,7 +55,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
     price: 300,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "medicine",
@@ -64,7 +64,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png",
     price: 700,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "medicine",
@@ -73,7 +73,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/hyper-potion.png",
     price: 1500,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "medicine",
@@ -82,7 +82,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
     price: 2500,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "medicine",
@@ -92,7 +92,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/full-restore.png",
     price: 5000,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "berries",
@@ -102,7 +102,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oran-berry.png",
     price: 80,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "berries",
@@ -112,7 +112,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cheri-berry.png",
     price: 120,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "berries",
@@ -122,7 +122,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pecha-berry.png",
     price: 120,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "berries",
@@ -132,7 +132,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/chesto-berry.png",
     price: 120,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "berries",
@@ -142,7 +142,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/aspear-berry.png",
     price: 120,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "food",
@@ -152,7 +152,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/moomoo-milk.png",
     price: 500,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "food",
@@ -162,7 +162,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/soda-pop.png",
     price: 300,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "food",
@@ -172,7 +172,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lemonade.png",
     price: 350,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "food",
@@ -182,7 +182,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/berry-juice.png",
     price: 1500,
-    tags: ["healing", "in-battle", "medicine", "open-world", "holdable"],
+    tags: ["healing", "in-battle", "open-world", "holdable"],
   },
   {
     category: "food",
@@ -192,7 +192,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lava-cookie.png",
     price: 350,
-    tags: ["healing", "in-battle", "medicine", "open-world"],
+    tags: ["healing", "in-battle", "open-world"],
   },
   {
     category: "evolution",
@@ -357,7 +357,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/charizardite-y.png",
     price: 20000,
-    tags: ["in-battle,holdable", "evolution"],
+    tags: ["in-battle,holdable"],
   },
   {
     category: "mega stones",
@@ -367,7 +367,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/gardevoirite.png",
     price: 20000,
-    tags: ["in-battle,holdable", "evolution"],
+    tags: ["in-battle,holdable"],
   },
   {
     category: "mega stones",
@@ -377,7 +377,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ampharosite.png",
     price: 20000,
-    tags: ["in-battle,holdable", "evolution"],
+    tags: ["in-battle,holdable"],
   },
   {
     category: "mega stones",
@@ -387,7 +387,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/metagrossite.png",
     price: 20000,
-    tags: ["in-battle,holdable", "evolution"],
+    tags: ["in-battle,holdable"],
   },
   {
     category: "mega stones",
@@ -397,6 +397,6 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/gengarite.png",
     price: 20000,
-    tags: ["in-battle,holdable", "evolution"],
+    tags: ["in-battle,holdable"],
   },
 ];
