@@ -1,18 +1,20 @@
 import mongoose from "mongoose";
 
+export const categories = [
+  "medicine",
+  "berries",
+  "food",
+  "pokéballs",
+  "evolution",
+  "vitamins",
+  "tm/hm",
+  "mega stones",
+];
+
 const itemSchema = new mongoose.Schema(
   {
     category: {
-      enum: [
-        "medicine",
-        "berries",
-        "food",
-        "pokéballs",
-        "evolution",
-        "vitamins",
-        "tm/hm",
-        "mega stones",
-      ],
+      enum: categories,
       required: true,
       trim: true,
       type: String,
