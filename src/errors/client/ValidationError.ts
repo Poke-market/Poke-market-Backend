@@ -1,5 +1,5 @@
+import { type ErrorOptions } from "../ApiError";
 import { BadRequestError } from "./BadRequestError";
-import { type ErrorOptions } from "./CustomError";
 
 export class ValidationError extends BadRequestError {
   protected readonly _statusCode = 422;
@@ -10,7 +10,8 @@ export class ValidationError extends BadRequestError {
     options?: ErrorOptions,
   ) {
     super(message, options);
+
     // Only because we are extending a built in class
-    Object.setPrototypeOf(this, ValidationError?.prototype);
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }

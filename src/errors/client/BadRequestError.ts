@@ -1,6 +1,6 @@
-import { CustomError, type ErrorOptions } from "./CustomError";
+import { ApiError, type ErrorOptions } from "../ApiError";
 
-export class BadRequestError extends CustomError {
+export class BadRequestError extends ApiError {
   protected readonly _logging = false;
   protected readonly _status = "fail";
   protected readonly _statusCode: number = 400;

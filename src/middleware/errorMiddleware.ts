@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
-import { CustomError } from "../errors/CustomError";
-import { ValidationError } from "../errors/ValidationError";
+import { ApiError, ValidationError } from "../errors";
 
 // error responses are kept as uniform as possible while still following JSend
 export const errorHandler = (
@@ -19,7 +18,7 @@ export const errorHandler = (
   } as Record<string, unknown>;
 
   // Handle Known errors
-  if (err instanceof CustomError) {
+  if (err instanceof ApiError) {
     const { logging, message, stack, status, statusCode } = err;
     data.errors = [message];
 
