@@ -5,7 +5,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 import { notFound } from "./controllers/notFoundController";
-import { helloMiddleware } from "./middleware/exampleMiddleware";
+import { errorHandler } from "./middleware/errorMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -19,10 +19,13 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/items", helloMiddleware, itemsRoutes);
-app.use("/api/users", helloMiddleware, userRoutes);
-app.use("/api/tags", helloMiddleware, tagRoutes);
+app.use("/api/items", itemsRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/tags", tagRoutes);
 app.all("*splat", notFound);
+
+// handle errors (this must be last)
+app.use(errorHandler);
 
 // Database connection
 if (!process.env.MONGO_URI) {
