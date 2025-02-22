@@ -3,7 +3,7 @@ import { CustomError, type ErrorOptions } from "./CustomError";
 export class BadRequestError extends CustomError {
   protected readonly _logging = false;
   protected readonly _status = "fail";
-  protected readonly _statusCode = 400;
+  protected readonly _statusCode: number = 400;
 
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);

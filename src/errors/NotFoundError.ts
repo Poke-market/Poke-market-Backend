@@ -1,8 +1,7 @@
-import { CustomError, type ErrorOptions } from "./CustomError";
+import { BadRequestError } from "./BadRequestError";
+import { type ErrorOptions } from "./CustomError";
 
-export class NotFoundError extends CustomError {
-  protected readonly _logging = false;
-  protected readonly _status = "fail";
+export class NotFoundError extends BadRequestError {
   protected readonly _statusCode = 404;
 
   constructor(message: string, options?: ErrorOptions) {
