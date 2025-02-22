@@ -24,7 +24,7 @@ export const errorHandler = (
 
     // add key to error if available
     if (err instanceof ValidationError) {
-      data.errors = [err.key, message];
+      data.errors = [[err.key, message]];
     }
 
     // log to console if enabled
