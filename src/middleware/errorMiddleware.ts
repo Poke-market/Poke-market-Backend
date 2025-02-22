@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
 import { CustomError } from "../errors/CustomError";
+import { ValidationError } from "../errors/ValidationError";
 
 // error responses are kept as uniform as possible while still following JSend
 export const errorHandler = (
@@ -21,6 +22,11 @@ export const errorHandler = (
   if (err instanceof CustomError) {
     const { logging, message, stack, status, statusCode } = err;
     data.errors = [message];
+
+    // add key to error if available
+    if (err instanceof ValidationError) {
+      data.errors = [err.key, message];
+    }
 
     // log to console if enabled
     if (logging) {
@@ -45,10 +51,11 @@ export const errorHandler = (
 
   // Handle Zod Errors
   else if (err instanceof ZodError) {
-    res.status(400).json({
+    console.log(err);
+    res.status(422).json({
       data: {
         ...data,
-        errors: err.issues.map(({ message }) => message),
+        errors: err.issues.map(({ message, path }) => [path[0], message]),
       },
       status: "fail",
     });
