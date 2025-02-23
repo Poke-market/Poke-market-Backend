@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import { z } from "zod";
 // import { Error as MongooseError } from "mongoose";
 
-import { BadRequestError, NotFoundError } from "../errors";
+import { BadRequestError, NotFoundError, ValidationError } from "../errors";
 import { categories, Item } from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 
@@ -28,7 +29,11 @@ export const getItems = async (req: Request, res: Response) => {
 export const getItemById = async (req: Request, res: Response) => {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id))
-    throw new BadRequestError("Item id is not valid id by Mongoose standards");
+    throw new ValidationError(
+      "id",
+      "Item id is not valid id by Mongoose standards",
+    );
+
   const item = await Item.findById(id);
   res.status(201).json({
     data: { item: item },
@@ -37,26 +42,21 @@ export const getItemById = async (req: Request, res: Response) => {
 };
 
 export const addItem = async (req: Request, res: Response) => {
-  const {
-    category,
-    description,
-    name,
-    photoUrl,
-    price,
-    tags, // an array of tag names
-  } = req.body as {
-    category: string;
-    description: string;
-    name: string;
-    photoUrl: string;
-    price: number;
-    tags: string[];
-  };
+  const { category, description, name, photoUrl, price, tags } = z
+    .object({
+      category: z.string(),
+      description: z.string(),
+      name: z.string(),
+      photoUrl: z.string(),
+      price: z.number(),
+      tags: z.string().array(),
+    })
+    .parse(req.body);
 
   // Check if category matches the allowed categories
   if (!categories.includes(category)) {
     throw new BadRequestError(
-      "Category is not valid please choose between: medicine, berries, food, pokéballs, evolution, vitamins, tm/hm and mega stones",
+      `Category is not valid please choose between: ${categories.join(", ")}`,
       { statusCode: 422 },
     );
   }
