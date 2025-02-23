@@ -4,13 +4,18 @@ import mongoose from "mongoose";
 
 import { BadRequestError, NotFoundError } from "../errors";
 import { categories, Item } from "../models/itemModel";
+import { Tag } from "../models/tagModel";
 
 // const { ValidationError } = MongooseError;
 
 export const getItems = async (req: Request, res: Response) => {
   try {
-    const items = await Item.find();
-    res.status(200).json(items);
+    // Populate the "tags" field to include the "name" property from the Tag model
+    const items = await Item.find().populate("tags", "name _id");
+    res.status(201).json({
+      data: { items: items },
+      status: "success",
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message });
@@ -22,6 +27,8 @@ export const getItems = async (req: Request, res: Response) => {
 
 export const getItemById = async (req: Request, res: Response) => {
   const { id } = req.params;
+  if (!mongoose.isValidObjectId(id))
+    throw new BadRequestError("Item id is not valid id by Mongoose standards");
   const item = await Item.findById(id);
   res.status(201).json({
     data: { item: item },
@@ -30,10 +37,23 @@ export const getItemById = async (req: Request, res: Response) => {
 };
 
 export const addItem = async (req: Request, res: Response) => {
-  const { category, description, name, photoUrl, price, tags } =
-    req.body as Record<string, string>;
+  const {
+    category,
+    description,
+    name,
+    photoUrl,
+    price,
+    tags, // an array of tag names
+  } = req.body as {
+    category: string;
+    description: string;
+    name: string;
+    photoUrl: string;
+    price: number;
+    tags: string[];
+  };
 
-  //check if category matches categories enum
+  // Check if category matches the allowed categories
   if (!categories.includes(category)) {
     throw new BadRequestError(
       "Category is not valid please choose between: medicine, berries, food, pokéballs, evolution, vitamins, tm/hm and mega stones",
@@ -41,17 +61,28 @@ export const addItem = async (req: Request, res: Response) => {
     );
   }
 
+  // Convert tag names into their corresponding ObjectIds:
+  const tagsObjectIds = await Promise.all(
+    tags.map(async (tagName: string) => {
+      let tagDoc = await Tag.findOne({ name: tagName });
+      if (!tagDoc) {
+        tagDoc = await Tag.create({ name: tagName });
+      }
+      return tagDoc._id;
+    }),
+  );
+
   const item = await Item.create({
     category,
     description,
     name,
     photoUrl,
     price,
-    tags,
+    tags: tagsObjectIds,
   });
 
   res.status(201).json({
-    data: { item: item },
+    data: { item },
     status: "success",
   });
 };
@@ -59,6 +90,7 @@ export const addItem = async (req: Request, res: Response) => {
 export const updateItem = async (req: Request, res: Response) => {
   // Item needs to be updated by the new data even though not everything was changed or given as data so more like a patch
   const { id } = req.params;
+
   const { category, description, name, photoUrl, price, tags } =
     req.body as Record<string, string>;
   const item = await Item.findByIdAndUpdate(
@@ -72,7 +104,7 @@ export const updateItem = async (req: Request, res: Response) => {
       tags,
     },
     { new: true },
-  );
+  ).populate("tags", "name _id");
   res.status(201).json({
     data: { item: item },
     status: "success",

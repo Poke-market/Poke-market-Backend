@@ -347,7 +347,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/charizardite-x.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
   {
     category: "mega stones",
@@ -357,7 +357,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/charizardite-y.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
   {
     category: "mega stones",
@@ -367,7 +367,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/gardevoirite.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
   {
     category: "mega stones",
@@ -377,7 +377,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ampharosite.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
   {
     category: "mega stones",
@@ -387,7 +387,7 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/metagrossite.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
   {
     category: "mega stones",
@@ -397,6 +397,6 @@ export const pokéitems = [
     photoUrl:
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/gengarite.png",
     price: 20000,
-    tags: ["in-battle,holdable"],
+    tags: ["in-battle", "holdable"],
   },
 ];

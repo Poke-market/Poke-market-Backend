@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
 import { Error as MongooseError, Types } from "mongoose";
+import mongoose from "mongoose";
 
+import { BadRequestError } from "../errors";
 import { User } from "../models/userModel";
 
 const { ValidationError } = MongooseError;
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find()
+      .select("-password")
+      //only show name, id from wishlist
+      .populate("wishList", "name _id");
     res.status(200).json({ data: users, message: "success" });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -19,36 +24,36 @@ export const getAllUsers = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    // const user = req.user;
-    // if (!user) {
-    //   res.status(401).json({ message: "Unauthorized" });
-    //   return;
-    // }
-    // if (user._id.toString() !== id) {
-    //   res.status(403).json({ message: "Forbidden" });
-    //   return;
-    // }
-    const userdetails = await User.findById(id)
-      .select("-password")
-      .populate("wishList");
+  const { id } = req.params;
+  //TODO to be changed to logged-in user
+  // const user = req.user;
 
-    res.status(200).json({ data: userdetails, message: "success" });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "Something went wrong" });
-    }
-  }
+  if (!mongoose.isValidObjectId(id))
+    throw new BadRequestError("Item id is not valid id by Mongoose standards");
+  //TODO to be changed to logged-in user
+  // if (!user) {
+  //   throw new NotFoundError("User not found");
+  // }
+  // if (user._id.toString() !== id) {
+  //   throw new BadRequestError("Unauthorized acess");
+  // }
+  const userdetails = await User.findById(id)
+    .select("-password")
+    .populate("wishList", "name _id");
+
+  res.status(200).json({ data: userdetails, message: "success" });
 };
 
 export const addToWishlist = async (req: Request, res: Response) => {
+  //in json body zet je "itemId"
   try {
     const { id } = req.params;
+    if (!mongoose.isValidObjectId(id))
+      throw new BadRequestError(
+        "Item id is not valid id by Mongoose standards",
+      );
     const { itemId } = req.body as { itemId: Types.ObjectId };
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate("wishList", "name _id");
     if (!user) {
       res.status(404).json({ message: "user not found" });
       return;
@@ -79,36 +84,29 @@ export const addToWishlist = async (req: Request, res: Response) => {
 };
 
 export const removeFromWishlist = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { itemId } = req.body as Record<string, string>;
-    const user = await User.findById(id);
-    if (!user) {
-      res.status(404).json({ message: "forbidden" });
-      return;
-    }
-    if (id !== user.id) {
-      res.status(403).json({ message: "Forbidden" });
-      return;
-    }
-    user.wishList.pull(itemId);
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      {
-        $pull: { wishList: itemId },
-      },
-      { new: true },
-    )
-      .select("-password")
-      .populate("wishList");
-    res.status(200).json({ data: updatedUser, message: "success" });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "Something went wrong" });
-    }
+  //in json body zet je "itemId"
+  const { id } = req.params;
+  const { itemId } = req.body as Record<string, string>;
+  const user = await User.findById(id);
+  if (!user) {
+    res.status(404).json({ message: "forbidden" });
+    return;
   }
+  if (id !== user.id) {
+    res.status(403).json({ message: "Forbidden" });
+    return;
+  }
+  user.wishList.pull(itemId);
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    {
+      $pull: { wishList: itemId },
+    },
+    { new: true },
+  )
+    .select("-password")
+    .populate("wishList");
+  res.status(200).json({ data: updatedUser, message: "success" });
 };
 
 export const addUser = async (req: Request, res: Response) => {

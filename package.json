@@ -15,7 +15,8 @@
     "format:check": "prettier --check .",
     "fix": "npm run lint:fix && npm run format",
     "seed": "tsx ./src/utils/seed.ts",
-    "seed:tags": "tsx ./src/utils/seedTags.ts"
+    "seed:tags": "tsx ./src/utils/seedTags.ts",
+    "seed:users": "tsx ./src/utils/seedUsers.ts"
   },
   "keywords": [],
   "author": "",
