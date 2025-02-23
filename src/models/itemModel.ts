@@ -9,7 +9,7 @@ export const categories = [
   "vitamins",
   "tm/hm",
   "mega stones",
-];
+] as const;
 
 const itemSchema = new mongoose.Schema(
   {

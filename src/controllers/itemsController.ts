@@ -49,17 +49,19 @@ export const addItem = async (req: Request, res: Response) => {
       name: z.string(),
       photoUrl: z.string(),
       price: z.number(),
-      tags: z.string().array(),
+      tags: z.enum(categories, {
+        message: `Tag is not valid please choose between: ${categories.join(", ")}`,
+      }),
     })
     .parse(req.body);
 
   // Check if category matches the allowed categories
-  if (!categories.includes(category)) {
-    throw new BadRequestError(
-      `Category is not valid please choose between: ${categories.join(", ")}`,
-      { statusCode: 422 },
-    );
-  }
+  // if (!categories.includes(category)) {
+  //   throw new ValidationError(
+  //     "id",
+  //     `Category is not valid please choose between: ${categories.join(", ")}`,
+  //   );
+  // }
 
   // Convert tag names into their corresponding ObjectIds:
   const tagsObjectIds = await Promise.all(
