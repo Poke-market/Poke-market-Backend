@@ -3,7 +3,7 @@ export interface ErrorOptions {
   statusCode?: number;
 }
 
-export abstract class CustomError extends Error {
+export abstract class ApiError extends Error {
   get logging() {
     return this._options?.logging ?? this._logging;
   }
@@ -25,6 +25,6 @@ export abstract class CustomError extends Error {
     super(message);
 
     // Only because we are extending a built in class
-    Object.setPrototypeOf(this, CustomError.prototype);
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
 }
