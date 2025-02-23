@@ -64,9 +64,9 @@ export const addItem = async (req: Request, res: Response) => {
   // Convert tag names into their corresponding ObjectIds:
   const tagsObjectIds = await Promise.all(
     tags.map(async (tagName: string) => {
-      let tagDoc = await Tag.findOne({ name: tagName });
+      const tagDoc = await Tag.findOne({ name: tagName });
       if (!tagDoc) {
-        tagDoc = await Tag.create({ name: tagName });
+        throw new ValidationError("tag", " does not exist in the database.");
       }
       return tagDoc._id;
     }),

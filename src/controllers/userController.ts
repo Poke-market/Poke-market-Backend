@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
-import { Error as MongooseError, Types } from "mongoose";
+import { Error, Types } from "mongoose";
 import mongoose from "mongoose";
 
-import { BadRequestError } from "../errors";
+import {
+  // BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "../errors";
 import { User } from "../models/userModel";
 
-const { ValidationError } = MongooseError;
+// const { ValidationError } = MongooseError;
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -29,7 +34,10 @@ export const getUser = async (req: Request, res: Response) => {
   // const user = req.user;
 
   if (!mongoose.isValidObjectId(id))
-    throw new BadRequestError("Item id is not valid id by Mongoose standards");
+    throw new ValidationError(
+      "id",
+      "Item id is not valid id by Mongoose standards",
+    );
   //TODO to be changed to logged-in user
   // if (!user) {
   //   throw new NotFoundError("User not found");
@@ -49,7 +57,8 @@ export const addToWishlist = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id))
-      throw new BadRequestError(
+      throw new ValidationError(
+        "id",
         "Item id is not valid id by Mongoose standards",
       );
     const { itemId } = req.body as { itemId: Types.ObjectId };
@@ -89,12 +98,10 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
   const { itemId } = req.body as Record<string, string>;
   const user = await User.findById(id);
   if (!user) {
-    res.status(404).json({ message: "forbidden" });
-    return;
+    throw new NotFoundError("User not found");
   }
   if (id !== user.id) {
-    res.status(403).json({ message: "Forbidden" });
-    return;
+    throw new UnauthorizedError("Forbidden");
   }
   user.wishList.pull(itemId);
   const updatedUser = await User.findByIdAndUpdate(
