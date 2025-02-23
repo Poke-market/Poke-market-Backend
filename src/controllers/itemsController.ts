@@ -8,7 +8,6 @@ import { categories, Item } from "../models/itemModel";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import { Tag } from "../models/tagModel";
 
-
 // const { ValidationError } = MongooseError;
 
 export const getItems = async (req: Request, res: Response) => {
