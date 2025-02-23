@@ -23,15 +23,15 @@ const itemSchema = new mongoose.Schema(
     name: { required: true, trim: true, type: String, unique: true },
     photoUrl: { required: true, trim: true, type: String },
     price: { required: true, trim: true, type: Number },
-    tags: {
-      type: [String],
-    },
-    // {
-    //   default: [],
-    //   ref: "Tag",
-    //   required: true,
-    //   type: [mongoose.Types.ObjectId],
-    // },
+    tags:
+      //   type: [String],
+      // },
+      {
+        default: [],
+        ref: "Tag",
+        required: true,
+        type: [mongoose.Types.ObjectId],
+      },
   },
   {
     timestamps: true,

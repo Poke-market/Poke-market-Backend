@@ -14,8 +14,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "fix": "npm run lint:fix && npm run format",
-    "seed": "tsx ./src/utils/seed.ts",
-    "seed:tags": "tsx ./src/utils/seedTags.ts"
+    "seed:items": "tsx ./src/utils/seed.ts",
+    "seed:tags": "tsx ./src/utils/seedTags.ts",
+    "seed:users": "tsx ./src/utils/seedUsers.ts",
+    "seed": "run-s seed:tags seed:items seed:users"
   },
   "keywords": [],
   "author": "",
@@ -40,6 +42,7 @@
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-perfectionist": "^4.9.0",
+    "npm-run-all": "^4.1.5",
     "pkgroll": "^2.6.1",
     "prettier": "^3.5.1",
     "tsx": "^4.19.2",
