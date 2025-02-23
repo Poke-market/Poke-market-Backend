@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import { z } from "zod";
 // import { Error as MongooseError } from "mongoose";
 
-import { BadRequestError, NotFoundError } from "../errors";
+import { BadRequestError, NotFoundError, ValidationError } from "../errors";
 import { categories, Item } from "../models/itemModel";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
+import { Tag } from "../models/tagModel";
+
 
 // const { ValidationError } = MongooseError;
 
@@ -38,6 +41,12 @@ export const getItems = async (req: Request, res: Response) => {
 
 export const getItemById = async (req: Request, res: Response) => {
   const { id } = req.params;
+  if (!mongoose.isValidObjectId(id))
+    throw new ValidationError(
+      "id",
+      "Item id is not valid id by Mongoose standards",
+    );
+
   const item = await Item.findById(id);
   res.status(201).json({
     data: { item: item },
@@ -46,16 +55,35 @@ export const getItemById = async (req: Request, res: Response) => {
 };
 
 export const addItem = async (req: Request, res: Response) => {
-  const { category, description, name, photoUrl, price, tags } =
-    req.body as Record<string, string>;
+  const { category, description, name, photoUrl, price, tags } = z
+    .object({
+      category: z.string(),
+      description: z.string(),
+      name: z.string(),
+      photoUrl: z.string().url(),
+      price: z.number(),
+      tags: z.string().array(),
+    })
+    .parse(req.body);
 
-  //check if category matches categories enum
+  // Check if category matches the allowed categories
   if (!categories.includes(category)) {
-    throw new BadRequestError(
-      "Category is not valid please choose between: medicine, berries, food, pokéballs, evolution, vitamins, tm/hm and mega stones",
-      { statusCode: 422 },
+    throw new ValidationError(
+      "id",
+      `Category is not valid please choose between: ${categories.join(", ")}`,
     );
   }
+
+  // Convert tag names into their corresponding ObjectIds:
+  const tagsObjectIds = await Promise.all(
+    tags.map(async (tagName: string) => {
+      const tagDoc = await Tag.findOne({ name: tagName });
+      if (!tagDoc) {
+        throw new ValidationError("tag", " does not exist in the database.");
+      }
+      return tagDoc._id;
+    }),
+  );
 
   const item = await Item.create({
     category,
@@ -63,11 +91,11 @@ export const addItem = async (req: Request, res: Response) => {
     name,
     photoUrl,
     price,
-    tags,
+    tags: tagsObjectIds,
   });
 
   res.status(201).json({
-    data: { item: item },
+    data: { item },
     status: "success",
   });
 };
@@ -75,6 +103,7 @@ export const addItem = async (req: Request, res: Response) => {
 export const updateItem = async (req: Request, res: Response) => {
   // Item needs to be updated by the new data even though not everything was changed or given as data so more like a patch
   const { id } = req.params;
+
   const { category, description, name, photoUrl, price, tags } =
     req.body as Record<string, string>;
   const item = await Item.findByIdAndUpdate(
@@ -88,7 +117,7 @@ export const updateItem = async (req: Request, res: Response) => {
       tags,
     },
     { new: true },
-  );
+  ).populate("tags", "name _id");
   res.status(201).json({
     data: { item: item },
     status: "success",
