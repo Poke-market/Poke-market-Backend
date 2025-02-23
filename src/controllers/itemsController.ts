@@ -5,25 +5,37 @@ import { z } from "zod";
 
 import { BadRequestError, NotFoundError, ValidationError } from "../errors";
 import { categories, Item } from "../models/itemModel";
+import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import { Tag } from "../models/tagModel";
 
 // const { ValidationError } = MongooseError;
 
 export const getItems = async (req: Request, res: Response) => {
-  try {
-    // Populate the "tags" field to include the "name" property from the Tag model
-    const items = await Item.find().populate("tags", "name _id");
-    res.status(201).json({
-      data: { items: items },
-      status: "success",
-    });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "Something went wrong" });
-    }
-  }
+  const { limit = 16, page = 1 } = req.query as Record<string, string>;
+  const skip = (+page - 1) * +limit;
+  const itemCount = await Item.countDocuments();
+
+  if (+page < 1 || (+page > 1 && skip >= itemCount))
+    throw new NotFoundError("Page not found");
+
+  const items = await Item.find().limit(+limit).skip(skip);
+  const totalPages = Math.ceil(itemCount / +limit);
+  const getPageLink = makePageLinkBuilder(req);
+  res.status(200).json({
+    status: "success",
+    data: {
+      info: {
+        count: itemCount,
+        page: +page,
+        pages: totalPages,
+        prev: +page > 1 ? getPageLink(+page - 1) : null,
+        next: +page < totalPages ? getPageLink(+page + 1) : null,
+        first: +page > 1 ? getPageLink(1) : null,
+        last: +page < totalPages ? getPageLink(totalPages) : null,
+      },
+      items: items,
+    },
+  });
 };
 
 export const getItemById = async (req: Request, res: Response) => {
