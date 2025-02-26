@@ -1,0 +1,72 @@
+name: Discord Notification on Update
+
+on:
+  push:
+    branches:
+      - development
+      - main
+
+  pull_request:
+    branches:
+      - main
+      - development
+
+jobs:
+  discordNotification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Send Discord Notification
+        run: |
+          DISCORD_WEBHOOK_URL="${{ secrets.DISCORD_WEBHOOK_URL }}"
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+                  COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+                  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+                  if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    COLOR=16711680
+                    EVENT_ICON="🔄"
+                    EVENT_TYPE="Pull Request"
+                    PR_INFO="**PR Title:** ${{ github.event.pull_request.title }}\n**Status:** ${{ github.event.pull_request.state }}\n**From:** \`${{ github.event.pull_request.head.ref }}\` ➡️ **To:** \`${{ github.event.pull_request.base.ref }}\`"
+                    PR_URL="${{ github.event.pull_request.html_url }}"
+                    DESCRIPTION="**Repository:** ${{ github.repository }}\n**Author:** ${{ github.actor }}\n\n${PR_INFO}\n\n> ${COMMIT_MESSAGE}"
+                    EXTRA_FIELD=",{
+                      \"name\": \"📊 Pull Request Details\",
+                      \"value\": \"• Changes: +${{ github.event.pull_request.additions || 0 }} -${{ github.event.pull_request.deletions || 0 }}\n• Comments: ${{ github.event.pull_request.comments || 0 }}\n• [View Pull Request](${PR_URL})\",
+                      \"inline\": true
+                    }"
+                  else
+                    COLOR=9055202
+                    EVENT_ICON="⬆️"
+                    EVENT_TYPE="Push"
+                    DESCRIPTION="**Repository:** ${{ github.repository }}\n**Branch:** \`${{ github.ref_name }}\`\n**Author:** ${{ github.actor }}\n\n> ${COMMIT_MESSAGE}"
+                    EXTRA_FIELD=""
+                  fi
+
+                  curl -H "Content-Type: application/json" -X POST -d '{
+                    "embeds": [{
+                      "title": "'"$EVENT_ICON"' New '"$EVENT_TYPE"' Event 🚀",
+                      "description": "'"$DESCRIPTION"'",
+                      "color": '"$COLOR"',
+                      "fields": [
+                        {
+                          "name": "📝 Details",
+                          "value": "• Event Type: '"$EVENT_TYPE"'\n• Workflow: ${{ github.workflow }}\n• Action: ${{ github.action }}",
+                          "inline": true
+                        },
+                        {
+                          "name": "🔗 Links",
+                          "value": "[View Commit]('"$COMMIT_URL"')\n[View Repository](${{ github.server_url }}/${{ github.repository }})",
+                          "inline": true
+                        }'"$EXTRA_FIELD"'
+                      ],
+                      "footer": {
+                        "text": "GitHub Actions • ${{ github.event_name }}",
+                        "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                      },
+                      "timestamp": "'"$TIMESTAMP"'"
+                    }]
+                  }' $DISCORD_WEBHOOK_URL

@@ -1,32 +1,52 @@
 {
-  "name": "backend_nodejs",
+  "name": "poke-market-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "exports": "./dist/server.mjs",
+  "type": "module",
   "scripts": {
-    "start": "node dist/server.js",
-    "build": "tsc",
-    "dev": "nodemon src/server.ts",
-    "serve": "npm run build && npm start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx tsx watch ./src/server.ts",
+    "build": "pkgroll --clean-dist --minify",
+    "start": "node dist/server.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fix": "npm run lint:fix && npm run format",
+    "seed:items": "tsx ./src/utils/seed.ts",
+    "seed:tags": "tsx ./src/utils/seedTags.ts",
+    "seed:users": "tsx ./src/utils/seedUsers.ts",
+    "seed": "run-s seed:tags seed:items seed:users"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "license": "MIT",
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "express": "^5.0.1",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.0"
+    "mongoose": "^8.9.5",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.13.4",
-    "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "@types/jsonwebtoken": "^9.0.8",
+    "@types/node": "^22.10.7",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-perfectionist": "^4.9.0",
+    "npm-run-all": "^4.1.5",
+    "pkgroll": "^2.6.1",
+    "prettier": "^3.5.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0"
   }
 }
