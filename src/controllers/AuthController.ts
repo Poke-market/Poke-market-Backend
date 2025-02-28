@@ -148,34 +148,34 @@ export const login = async (
 };
 
 // werkt niet overload error nog te checkken
-// export const logout = (req: Request, res: Response) => {
-//   res.cookie("token", "", {
-//     maxAge: 1,
-//     httpOnly: true,
-//     secure: NODE_ENV === "production" ? true : false,
-//     sameSite: "lax",
-//   });
-//   return res
-//     .status(200)
-//     .json({ status: "success", message: "logged out successfully" });
-// };
-
 export const logout = (req: Request, res: Response) => {
-  try {
-    res.cookie("token", "", {
-      maxAge: 1,
-      httpOnly: true,
-      secure: NODE_ENV === "development" ? true : false,
-      sameSite: "lax",
-    });
-    res
-      .status(200)
-      .json({ status: "success", message: "Logged out successfully!" });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "Something went wrong" });
-    }
-  }
+  res.cookie("token", "", {
+    maxAge: 1,
+    httpOnly: true,
+    secure: NODE_ENV === "production" ? true : false,
+    sameSite: "lax",
+  });
+  res
+    .status(200)
+    .json({ status: "success", message: "logged out successfully" });
 };
+
+// export const logout = (req: Request, res: Response) => {
+//   try {
+//     res.cookie("token", "", {
+//       maxAge: 1,
+//       httpOnly: true,
+//       secure: NODE_ENV === "development" ? true : false,
+//       sameSite: "lax",
+//     });
+//     res
+//       .status(200)
+//       .json({ status: "success", message: "Logged out successfully!" });
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       res.status(500).json({ message: error.message });
+//     } else {
+//       res.status(500).json({ message: "Something went wrong" });
+//     }
+//   }
+// };
