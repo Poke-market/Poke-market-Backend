@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/errorMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
 
 // Variables
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/items", itemsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
+app.use("/api/auth", authRoutes);
 app.all("*splat", notFound);
 
 // handle errors (this must be last)
