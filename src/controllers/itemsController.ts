@@ -211,44 +211,44 @@ export const deleteItem = async (req: Request, res: Response) => {
 
 export const getItemByName = async (req: Request, res: Response) => {
   const { name } = req.body as Record<string, string>;
-  const item = await Item.findOne({ name });
+  const item = await Item.findOne({ name }).populate("tags");
   if (!item) throw new NotFoundError("Item not found");
   res.status(200).json({
-    data: { item: item },
+    data: { item: flattenItemTags(item.toObject()) },
     status: "success",
   });
 };
 
 export const getItemsByNameQuerry = async (req: Request, res: Response) => {
   const { name } = req.params as Record<string, string>;
-  const item = await Item.findOne({ name });
+  const item = await Item.findOne({ name }).populate("tags");
   if (!item) throw new NotFoundError("Item not found");
   res.status(200).json({
-    data: { item: item },
+    data: { item: flattenItemTags(item.toObject()) },
     status: "success",
   });
 };
 
 export const getItemsByCategory = async (req: Request, res: Response) => {
   const { category } = req.body as Record<string, string>;
-  const item = await Item.find({ category });
-  if (!item) throw new NotFoundError("Item not found");
+  const items = await Item.find({ category }).populate("tags");
+  if (items.length === 0) throw new NotFoundError("Items not found");
   res.status(200).json({
-    data: { item: item },
+    data: { items: items.map((item) => flattenItemTags(item.toObject())) },
     status: "success",
   });
 };
 export const getItemsByCategoryQuerry = async (req: Request, res: Response) => {
   const { category } = req.params as Record<string, string>;
-  const item = await Item.find({ category });
+  const items = await Item.find({ category }).populate("tags");
   //if the array length is 0 return a nout found error
-  if (item.length === 0)
+  if (items.length === 0)
     throw new NotFoundError(
       "Category is not found please choose between: medicine, berries, food, pokéballs, evolution, vitamins, tm/hm and mega stones",
       { statusCode: 404 },
     );
   res.status(200).json({
-    data: { item: item },
+    data: { item: items.map((item) => flattenItemTags(item.toObject())) },
     status: "success",
   });
 };
