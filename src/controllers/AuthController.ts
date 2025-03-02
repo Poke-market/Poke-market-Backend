@@ -4,7 +4,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IS_DEVELOPMENT, IS_PRODUCTION, JWT_SECRET } from "../config/env";
 import validator from "validator";
-import { NotFoundError, ValidationError, UnauthorizedError } from "../errors";
+import {
+  NotFoundError,
+  ValidationError,
+  UnauthorizedError,
+  ConflictError,
+} from "../errors";
 
 //gemaakt zodat lint niet klaagt over type any voor de functies
 interface UserData {
@@ -37,10 +42,8 @@ export const register = async (
   } = req.body;
 
   const user = await User.findOne({ email });
-  if (user) {
-    res.status(409).json({ message: "User already exists" });
-    return;
-  }
+  if (user) throw new ConflictError("User already exists");
+
   const isStrongPassword = validator.isStrongPassword(password, {
     minLength: 8,
     minLowercase: 1,
@@ -114,10 +117,6 @@ export const login = async (
     throw new UnauthorizedError(
       "nope try again but with the correct credentials will ya?!",
     );
-  }
-  if (!JWT_SECRET) {
-    res.status(500).json({ message: "JWT_SECRET is not defined" });
-    return;
   }
 
   const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
