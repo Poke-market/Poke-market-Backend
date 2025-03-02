@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET, NODE_ENV } from "../config/env";
+import { IS_DEVELOPMENT, IS_PRODUCTION, JWT_SECRET } from "../config/env";
 import validator from "validator";
 import { NotFoundError, ValidationError, UnauthorizedError } from "../errors";
 
@@ -74,11 +74,6 @@ export const register = async (
     password: hashedPassword,
   });
 
-  if (!JWT_SECRET) {
-    res.status(500).json({ message: "JWT_SECRET is not defined" });
-    return;
-  }
-
   const token = jwt.sign(
     { id: newUser._id, email: newUser.email },
     JWT_SECRET,
@@ -88,7 +83,7 @@ export const register = async (
   );
   res.cookie("token", token, {
     httpOnly: true,
-    secure: NODE_ENV === "development",
+    secure: IS_DEVELOPMENT,
     sameSite: "lax",
   });
   const userObj = {
@@ -130,7 +125,7 @@ export const login = async (
   });
   res.cookie("token", token, {
     httpOnly: true,
-    secure: NODE_ENV === "development",
+    secure: IS_DEVELOPMENT,
     sameSite: "lax",
   });
   const userObj = {
@@ -152,7 +147,7 @@ export const logout = (req: Request, res: Response) => {
   res.cookie("token", "", {
     maxAge: 1,
     httpOnly: true,
-    secure: NODE_ENV === "production" ? true : false,
+    secure: IS_PRODUCTION,
     sameSite: "lax",
   });
   res
