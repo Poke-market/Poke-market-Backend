@@ -8,7 +8,7 @@ import { pokéitems } from "./data";
 
 const seedItems = async () => {
   try {
-    await mongoose.connect(MONGO_URI!);
+    await mongoose.connect(MONGO_URI);
     await Item.deleteMany();
     const itemsToInsert = await Promise.all(
       pokéitems.map(async (item) => {

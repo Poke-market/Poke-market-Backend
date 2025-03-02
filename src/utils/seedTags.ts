@@ -7,7 +7,7 @@ import { pokéTags } from "./dataTags";
 
 const seedTags = async () => {
   try {
-    await mongoose.connect(MONGO_URI!);
+    await mongoose.connect(MONGO_URI);
     await Tag.deleteMany();
     await Tag.insertMany(pokéTags);
     console.log("Seeding tags completed successfully! 🌱");
