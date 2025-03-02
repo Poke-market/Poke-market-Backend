@@ -50,7 +50,6 @@ export const errorHandler = (
 
   // Handle Zod Errors
   else if (err instanceof ZodError) {
-    console.log(err);
     res.status(422).json({
       data: {
         ...data,
