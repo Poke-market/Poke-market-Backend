@@ -7,7 +7,7 @@ import { trainers } from "./dataTrainers"; // This should export an array of use
 
 const seedUsers = async () => {
   try {
-    await mongoose.connect(MONGO_URI!);
+    await mongoose.connect(MONGO_URI);
     await User.deleteMany(); // Remove existing users
     await User.insertMany(trainers);
     console.log("Seeding trainers completed successfully! 🌱");

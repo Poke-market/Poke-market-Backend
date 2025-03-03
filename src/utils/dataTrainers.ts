@@ -33,3 +33,17 @@ export const trainers = [
     zipcode: "153",
   },
 ];
+
+/* 
+{
+    "email": "Gary@eevee.com",
+    "password": "Evee123@",
+    "firstname": "Gary",
+    "lastname":"Oak",
+    "city":"Pallet Town",
+    "street":"Palletstreet",
+    "housenumber":"23",
+    "zipcode": "23",
+    "telephone": "0123456789"
+}
+*/
