@@ -18,12 +18,64 @@ import { Tag } from "../models/tagModel";
 export const getItems = async (req: Request, res: Response) => {
   const { limit = 16, page = 1 } = req.query as Record<string, string>;
   const skip = (+page - 1) * +limit;
-  const itemCount = await Item.countDocuments();
+
+  // Build query based on search parameters
+  let query = {};
+
+  // search parameters can be a string or an array of strings
+  const searchParam = req.query.search;
+
+  if (searchParam) {
+    // convert parameter into an array of search terms
+    const searchTerms = Array.isArray(searchParam)
+      ? searchParam
+      : [searchParam];
+
+    if (searchTerms.length > 0) {
+      // Create an array of conditions that must ALL be satisfied (AND logic)
+      const searchConditions = [];
+
+      for (const term of searchTerms) {
+        //lint was being an ass ai fixed it for me like this
+        if (term && typeof term === "string" && term.trim()) {
+          const searchRegex = new RegExp(term.trim(), "i");
+
+          // Find the tags that match the search data
+          const matchingTags = await Tag.find({ name: searchRegex }).select(
+            "_id",
+          );
+          const tagIds = matchingTags.map((tag) => tag._id);
+
+          // Add a condition for this search term (item name OR tag OR category matches)
+          searchConditions.push({
+            $or: [
+              { name: searchRegex }, // Match by item name
+              { tags: { $in: tagIds } }, // Match by tag
+              { category: searchRegex }, // Match by category
+            ],
+          });
+        }
+      }
+
+      // Apply all search conditions (AND logic between different search terms)
+      if (searchConditions.length > 0) {
+        query = { $and: searchConditions };
+      }
+    }
+  }
+
+  // Get total count of items matching the query
+  const itemCount = await Item.countDocuments(query);
+  if (itemCount === 0) throw new NotFoundError("No items found");
 
   if (+page < 1 || (+page > 1 && skip >= itemCount))
     throw new NotFoundError("Page not found");
 
-  const items = await Item.find().limit(+limit).skip(skip).populate("tags");
+  // Find items with the query and apply pagination
+  const items = await Item.find(query)
+    .limit(+limit)
+    .skip(skip)
+    .populate("tags");
 
   const totalPages = Math.ceil(itemCount / +limit);
   const getPageLink = makePageLinkBuilder(req);
