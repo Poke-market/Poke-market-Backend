@@ -38,12 +38,6 @@ export const authMiddleware = async (
     throw new UnauthorizedError(`Invalid token: ${issue.message}`);
   }
 
-  // Make sure we have an ID before proceeding
-  const userId = parsedJwt.data._id;
-  if (!userId) {
-    throw new UnauthorizedError("Invalid token: No user ID found");
-  }
-
   const user = parsedJwt.data;
 
   const userDetails = await User.findById(user._id).select("-password");
