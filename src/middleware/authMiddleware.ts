@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/env";
 import { User } from "../models/userModel";
-import { UnauthorizedError } from "../errors";
+import { ForbiddenError, UnauthorizedError } from "../errors";
+import { z } from "zod";
 
 // Define a custom interface for our JWT payload
-interface CustomJwtPayload extends JwtPayload {
-  _id?: string;
-  email: string;
-  isAdmin?: boolean;
-}
+const JwtPayloadSchema = z.object({
+  _id: z.string({ message: "No User ID found" }),
+  email: z
+    .string({ message: "No Email found" })
+    .email({ message: "Invalid Email" }),
+  isAdmin: z.boolean({ message: "admin has to be a boolean" }).default(false),
+});
 
 // Middleware for web routes with redirection to login page
 export const authMiddleware = async (
@@ -24,26 +27,24 @@ export const authMiddleware = async (
     : (req.cookies?.token as string | undefined);
 
   if (!token) {
-    throw new UnauthorizedError("No token provided");
+    throw new ForbiddenError("No token provided");
   }
 
-  const decoded = jwt.verify(token, JWT_SECRET) as CustomJwtPayload;
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const parsedJwt = JwtPayloadSchema.safeParse(decoded);
+
+  if (!parsedJwt.success) {
+    const issue = parsedJwt.error.issues[0];
+    throw new UnauthorizedError(`Invalid token: ${issue.message}`);
+  }
 
   // Make sure we have an ID before proceeding
-  const userId = decoded._id;
+  const userId = parsedJwt.data._id;
   if (!userId) {
-    res.status(401).json({
-      status: "fail",
-      message: "Invalid token: No user ID found",
-    });
-    return;
+    throw new UnauthorizedError("Invalid token: No user ID found");
   }
 
-  const user = {
-    _id: userId,
-    email: decoded.email,
-    isAdmin: decoded.isAdmin ?? false,
-  };
+  const user = parsedJwt.data;
 
   const userDetails = await User.findById(user._id).select("-password");
   if (!userDetails) {

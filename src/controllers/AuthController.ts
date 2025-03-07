@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { IS_DEVELOPMENT, JWT_SECRET } from "../config/env";
+import { IS_PRODUCTION, JWT_SECRET } from "../config/env";
 import { UnauthorizedError, ConflictError } from "../errors";
 import { z } from "zod";
 
@@ -25,7 +25,7 @@ function loginUser(userDocument: InstanceType<typeof User>, res: Response) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: IS_DEVELOPMENT, // Set to false for HTTP development testing
+    secure: IS_PRODUCTION, // Set to false for HTTP development testing
     sameSite: "lax", // Set to none to allow cross-site requests
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   });
@@ -109,7 +109,7 @@ export const logout = (req: Request, res: Response) => {
   res.cookie("token", "", {
     maxAge: 1,
     httpOnly: true,
-    secure: IS_DEVELOPMENT,
+    secure: IS_PRODUCTION,
     sameSite: "lax",
   });
   res.status(200).json({ status: "success", data: null });
