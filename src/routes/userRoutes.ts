@@ -1,4 +1,6 @@
 import express from "express";
+import { localAuthMiddleware } from "../middleware/authMiddleware";
+import { isAdmin } from "../middleware/authMiddleware";
 
 import {
   addToWishlist,
@@ -13,12 +15,12 @@ import {
 const router = express.Router();
 
 router
-  .get("/", getAllUsers)
+  .get("/", localAuthMiddleware, isAdmin, getAllUsers)
   .post("/", addUser)
-  .get("/:id", getUser)
-  .delete("/:id", deleteUser)
-  .patch("/:id", updateUser)
-  .post("/:id/wishlist", addToWishlist)
-  .delete("/:id/wishlist", removeFromWishlist);
+  .get("/:id", localAuthMiddleware, isAdmin, getUser)
+  .delete("/:id", localAuthMiddleware, isAdmin, deleteUser)
+  .patch("/:id", localAuthMiddleware, isAdmin, updateUser)
+  .post("/:id/wishlist", localAuthMiddleware, addToWishlist)
+  .delete("/:id/wishlist", localAuthMiddleware, removeFromWishlist);
 
 export default router;

@@ -5,6 +5,7 @@ export {};
 export interface UserType {
   _id: string | Types.ObjectId;
   email: string;
+  isAdmin: boolean;
 }
 
 declare global {

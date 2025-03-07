@@ -1,4 +1,5 @@
 import express from "express";
+import { localAuthMiddleware, isAdmin } from "../middleware/authMiddleware";
 
 import {
   addItem,
@@ -15,11 +16,11 @@ import {
 const router = express.Router();
 
 router
-  .post("/", addItem)
-  .delete("/:id", deleteItem)
+  .post("/", localAuthMiddleware, isAdmin, addItem)
+  .delete("/:id", localAuthMiddleware, isAdmin, deleteItem)
   .get("/", getItems)
   .get("/name", getItemByName)
-  .patch("/:id", updateItem)
+  .patch("/:id", localAuthMiddleware, isAdmin, updateItem)
   .get("/:id", getItemById)
   .post("/category", getItemsByCategory) //.get werkt niet
   .get("/category/:category", getItemsByCategoryQuerry)
