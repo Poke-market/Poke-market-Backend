@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { IS_DEVELOPMENT, IS_PRODUCTION, JWT_SECRET } from "../config/env";
+import { IS_DEVELOPMENT, JWT_SECRET } from "../config/env";
 import { UnauthorizedError, ConflictError } from "../errors";
 import { z } from "zod";
 
@@ -25,7 +25,7 @@ function loginUser(userDocument: InstanceType<typeof User>, res: Response) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: IS_DEVELOPMENT ? false : true, // Set to false for HTTP development testing
+    secure: IS_DEVELOPMENT, // Set to false for HTTP development testing
     sameSite: "lax", // Set to none to allow cross-site requests
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   });
@@ -62,7 +62,7 @@ export const register = async (req: Request, res: Response) => {
         housenumber: z.string(),
         zipcode: z.string(),
         telephone: z.string(),
-        isAdmin: z.boolean().optional().default(false),
+        isAdmin: z.boolean().default(false),
       },
       { message: "A Json body with user data is required" },
     )
@@ -109,7 +109,7 @@ export const logout = (req: Request, res: Response) => {
   res.cookie("token", "", {
     maxAge: 1,
     httpOnly: true,
-    secure: IS_PRODUCTION,
+    secure: IS_DEVELOPMENT,
     sameSite: "lax",
   });
   res.status(200).json({ status: "success", data: null });
