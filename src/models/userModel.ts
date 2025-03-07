@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
       type: [mongoose.Types.ObjectId],
     },
     zipcode: { required: true, trim: true, type: String },
+    isAdmin: { default: false, type: Boolean },
   },
   {
     timestamps: true,

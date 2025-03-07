@@ -217,6 +217,14 @@ export const addItem = async (req: Request, res: Response) => {
       return tagDoc._id;
     }),
   );
+  // Check if name is unique
+  const existingItem = await Item.findOne({ name });
+  if (existingItem) {
+    throw new ValidationError(
+      "name",
+      `Item with name '${name}' already exists`,
+    );
+  }
 
   const item = await Item.create({
     category,
@@ -312,7 +320,7 @@ export const deleteItem = async (req: Request, res: Response) => {
 
   const item = await Item.findByIdAndDelete(id);
   if (!item) throw new NotFoundError("Item not found");
-
+  //want to add a message that item is succesfully deleted
   res.status(200).json(item);
 };
 

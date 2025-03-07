@@ -1,4 +1,6 @@
 import express from "express";
+import { authMiddleware } from "../middleware/authMiddleware";
+import { isAdmin } from "../middleware/isAdmin";
 
 import {
   addItem,
@@ -15,11 +17,11 @@ import {
 const router = express.Router();
 
 router
-  .post("/", addItem)
-  .delete("/:id", deleteItem)
+  .post("/", authMiddleware, isAdmin, addItem)
+  .delete("/:id", authMiddleware, isAdmin, deleteItem)
   .get("/", getItems)
   .get("/name", getItemByName)
-  .patch("/:id", updateItem)
+  .patch("/:id", authMiddleware, isAdmin, updateItem)
   .get("/:id", getItemById)
   .post("/category", getItemsByCategory) //.get werkt niet
   .get("/category/:category", getItemsByCategoryQuerry)
