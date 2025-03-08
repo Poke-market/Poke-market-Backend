@@ -19,9 +19,17 @@ export const FilterParamsSchema = z.object({
   tag: z.string().trim().optional(),
 });
 
+export const SortParamsSchema = z.object({
+  sort: z.enum(["name", "price"]).optional(),
+  order: z
+    .enum(["asc", "desc", "ascending", "descending", "1", "-1"])
+    .optional(),
+});
+
 // Infer types from schemas (after Zod parsing)
 export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 export type FilterParams = z.infer<typeof FilterParamsSchema>;
+export type SortParams = z.infer<typeof SortParamsSchema>;
 
 const stringToRegexArray = (splitFunc: SplitFunc) =>
   pipe(
@@ -80,11 +88,42 @@ export async function buildItemsFilter(
   return andConditions.length > 0 ? { $and: andConditions } : {};
 }
 
+export function buildItemsSorter(params: SortParams): {
+  mongoSorter: Record<string, 1 | -1>;
+  memorySorter?: <T extends InstanceType<typeof Item>>(items: T[]) => void;
+} {
+  const { sort, order } = SortParamsSchema.transform(({ sort, order }) => ({
+    sort,
+    order:
+      order && ["desc", "descending", "-1"].includes(order)
+        ? (-1 as const)
+        : (1 as const),
+  })).parse(params);
+
+  if (!sort) return { mongoSorter: {} };
+  const sorter = { mongoSorter: { [sort]: order } };
+  return sort === "price"
+    ? {
+        ...sorter,
+        memorySorter: (items) => {
+          items.sort((a, b) => {
+            // @ts-expect-error discountedPrice is a virtual property
+            const aValue = a.discount.discountedPrice as number;
+            // @ts-expect-error discountedPrice is a virtual property
+            const bValue = b.discount.discountedPrice as number;
+            return (aValue - bValue) * order;
+          });
+        },
+      }
+    : sorter;
+}
+
 export async function getItems(
-  params: RawQuery<PaginationParams & FilterParams>,
+  params: RawQuery<PaginationParams & FilterParams & SortParams>,
   getPageLink: (page: number) => string,
 ) {
   const filter = await buildItemsFilter(params);
+  const { mongoSorter, memorySorter } = buildItemsSorter(params);
   const { limit, page } = PaginationParamsSchema.parse(params);
   const itemCount = await Item.countDocuments(filter);
   const totalPages = Math.ceil(itemCount / limit);
@@ -94,8 +133,17 @@ export async function getItems(
 
   const items =
     itemCount > 0
-      ? await Item.find(filter).limit(limit).skip(skip).populate("tags")
+      ? await Item.find(filter)
+          .collation({ locale: "en", numericOrdering: true })
+          .limit(limit)
+          .skip(skip)
+          .sort(mongoSorter)
+          .populate("tags")
       : [];
+
+  if (memorySorter) {
+    memorySorter(items);
+  }
 
   return {
     info: {
