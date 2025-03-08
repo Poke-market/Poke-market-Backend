@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { IS_DEVELOPMENT, IS_PRODUCTION, JWT_SECRET } from "../config/env";
+import { IS_PRODUCTION, JWT_SECRET } from "../config/env";
 import { UnauthorizedError, ConflictError } from "../errors";
 import { z } from "zod";
 
@@ -11,14 +11,23 @@ function loginUser(userDocument: InstanceType<typeof User>, res: Response) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...user } = userDocument.toObject();
 
-  const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-    expiresIn: "1d",
-  });
+  const token = jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      isAdmin: user.isAdmin || false,
+    },
+    JWT_SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: IS_DEVELOPMENT,
-    sameSite: "lax",
+    secure: IS_PRODUCTION, // Set to false for HTTP development testing
+    sameSite: "lax", // Set to none to allow cross-site requests
+    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   });
 
   return user;
@@ -53,6 +62,7 @@ export const register = async (req: Request, res: Response) => {
         housenumber: z.string(),
         zipcode: z.string(),
         telephone: z.string(),
+        isAdmin: z.boolean().default(false),
       },
       { message: "A Json body with user data is required" },
     )
