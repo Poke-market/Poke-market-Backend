@@ -12,142 +12,17 @@ import {
 } from "../models/itemModel";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import { Tag } from "../models/tagModel";
+import { getItems as getItemsService } from "../services/itemService";
 
 // const { ValidationError } = MongooseError;
 
 export const getItems = async (req: Request, res: Response) => {
-  // Define the query schema with Zod
-  const querySchema = z.object({
-    limit: z.coerce.number().positive().default(16),
-    page: z.coerce.number().positive().default(1),
-    search: z.union([z.string(), z.array(z.string())]).optional(),
-    cat: z.string().optional(),
-    tag: z.string().optional(),
-  });
-
-  // Parse and validate query parameters
-  const parsedQuery = querySchema.parse(req.query);
-  const { limit, page, search, cat, tag } = parsedQuery;
-  const skip = (page - 1) * limit;
-
-  // Build query based on search parameters
-  let query: mongoose.FilterQuery<typeof Item> = {};
-  const andConditions: mongoose.FilterQuery<typeof Item>[] = [];
-
-  // Handle category filtering with ?cat=item1,item2
-  if (cat) {
-    const categoryTerms = cat.split(",").filter(Boolean);
-    if (categoryTerms.length > 0) {
-      const categoryConditions = categoryTerms.map((term) => {
-        const categoryRegex = new RegExp(term.trim(), "i");
-        return { category: categoryRegex };
-      });
-
-      // If multiple categories, any of them can match (OR logic)
-      if (categoryConditions.length > 1) {
-        andConditions.push({ $or: categoryConditions });
-      } else {
-        andConditions.push(categoryConditions[0]);
-      }
-    }
-  }
-
-  // Handle tag filtering with ?tag=tag1,tag2
-  if (tag) {
-    const tagTerms = tag.split(",").filter(Boolean);
-    if (tagTerms.length > 0) {
-      // Find all tag IDs that match any of the tag terms
-      const tagIds = [];
-      for (const term of tagTerms) {
-        const tagRegex = new RegExp(term.trim(), "i");
-        const matchingTags = await Tag.find({ name: tagRegex }).select("_id");
-        tagIds.push(...matchingTags.map((tag) => tag._id));
-      }
-
-      // If tag terms were provided but no matching tags were found, throw NotFoundError
-      if (tagIds.length === 0) {
-        throw new NotFoundError(
-          `No items found with the specified tag(s): ${tag}`,
-        );
-      }
-
-      andConditions.push({ tags: { $in: tagIds } });
-    }
-  }
-
-  // Handle search parameter (can be a string or an array of strings)
-  if (search) {
-    // Convert to array if it's a single string
-    const searchTerms = Array.isArray(search) ? search : [search];
-
-    if (searchTerms.length > 0) {
-      // Create an array of conditions that must ALL be satisfied (AND logic)
-      const searchConditions = [];
-
-      for (const term of searchTerms) {
-        //lint was being an ass ai fixed it for me like this
-        if (term && typeof term === "string" && term.trim()) {
-          const searchRegex = new RegExp(term.trim(), "i");
-
-          // Find the tags that match the search data
-          const matchingTags = await Tag.find({ name: searchRegex }).select(
-            "_id",
-          );
-          const tagIds = matchingTags.map((tag) => tag._id);
-
-          // Add a condition for this search term (item name OR tag OR category matches)
-          searchConditions.push({
-            $or: [
-              { name: searchRegex }, // Match by item name
-              { tags: { $in: tagIds } }, // Match by tag
-              { category: searchRegex }, // Match by category
-              { description: searchRegex }, // Match by description
-            ],
-          });
-        }
-      }
-
-      // Apply all search conditions (AND logic between different search terms)
-      if (searchConditions.length > 0) {
-        andConditions.push(...searchConditions);
-      }
-    }
-  }
-
-  // Combine all conditions with AND logic
-  if (andConditions.length > 0) {
-    query = { $and: andConditions };
-  }
-
-  // Get total count of items matching the query
-  const itemCount = await Item.countDocuments(query);
-  if (itemCount === 0) throw new NotFoundError("No items found");
-
-  if (+page < 1 || (+page > 1 && skip >= itemCount))
-    throw new NotFoundError("Page not found");
-
-  // Find items with the query and apply pagination
-  const items = await Item.find(query)
-    .limit(+limit)
-    .skip(skip)
-    .populate("tags");
-
-  const totalPages = Math.ceil(itemCount / +limit);
   const getPageLink = makePageLinkBuilder(req);
+  const result = await getItemsService(req.query, getPageLink);
+
   res.status(200).json({
     status: "success",
-    data: {
-      info: {
-        count: itemCount,
-        page: +page,
-        pages: totalPages,
-        prev: +page > 1 ? getPageLink(+page - 1) : null,
-        next: +page < totalPages ? getPageLink(+page + 1) : null,
-        first: +page > 1 ? getPageLink(1) : null,
-        last: +page < totalPages ? getPageLink(totalPages) : null,
-      },
-      items: items.map((item) => flattenItemTags(item.toObject())),
-    },
+    data: result,
   });
 };
 

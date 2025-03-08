@@ -1,0 +1,14 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/error.css" />
+{{/section}}
+
+<div class="error-container">
+  <h1>Oops! Something went wrong</h1>
+  <p>{{message}}</p>
+  {{#if details}}
+    <div class="error-details">
+      <pre>{{details}}</pre>
+    </div>
+  {{/if}}
+  <a href="/" class="back-home">Back to Home</a>
+</div>
