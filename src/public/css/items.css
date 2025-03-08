@@ -53,7 +53,8 @@
       margin-right: 1rem;
 
       &:hover {
-        background-color: var(--light-blue);
+        color: var(--basic-blue);
+        background-color: color-mix(in srgb, var(--basic-blue) 20%, white);
       }
     }
   }
@@ -95,10 +96,16 @@
     grid-template-columns: 12rem 1fr 12rem 12rem;
     gap: 2rem;
     padding: 1.5rem;
-    background-color: var(--details-container-bg);
+    background-color: var(--blue-grey);
     border-radius: 8px 8px 0 0;
     font-weight: 500;
+    font-size: 1.5rem;
     color: var(--text-color-2);
+
+    & .col-image,
+    & .col-actions {
+      text-align: center;
+    }
   }
 
   & .item-row {
@@ -148,7 +155,7 @@
 
     & .item-name {
       color: var(--item-name-color);
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 500;
       margin: 0;
     }
@@ -162,7 +169,7 @@
         align-items: center;
         padding: 0.3rem 0.8rem;
         border-radius: 2rem;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 500;
         line-height: 1;
         white-space: nowrap;
@@ -182,7 +189,7 @@
 
   & .item-description {
     color: var(--item-description-color);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-bottom: 1rem;
     display: -webkit-box;
     line-clamp: 2;
@@ -199,7 +206,7 @@
 
     & .item-category {
       color: var(--basic-blue);
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 500;
     }
 
@@ -209,11 +216,11 @@
       gap: 0.5rem;
 
       & .tag {
-        background-color: var(--details-container-bg);
+        background-color: var(--blue-grey);
         color: var(--text-color-2);
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
       }
     }
   }
@@ -227,53 +234,55 @@
 
   & .price {
     color: var(--current-price-color);
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 600;
   }
 
   & .original-price {
     color: var(--original-price-color);
     text-decoration: line-through;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   & .discounted-price {
     color: var(--discount-color);
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 600;
   }
 }
 
 .col-actions {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 
   & .edit-btn,
   & .delete-btn {
-    padding: 0.5rem 1rem;
+    --btn-color: var(--basic-blue);
+    background-color: var(--btn-color);
+    padding: 0.5rem 0.75rem;
+    width: 8rem;
+    text-align: center;
     border: none;
     border-radius: 4px;
     color: white;
     cursor: pointer;
     font-weight: 500;
     font-size: 1.2rem;
+    &:hover {
+      color: var(--btn-color);
+      background-color: color-mix(in srgb, var(--btn-color) 20%, white);
+    }
   }
 
   & .edit-btn {
-    background-color: var(--basic-blue);
-
-    &:hover {
-      background-color: var(--light-blue);
-    }
+    --btn-color: var(--basic-blue);
   }
 
   & .delete-btn {
-    background-color: var(--red);
-
-    &:hover {
-      opacity: 0.9;
-    }
+    --btn-color: var(--red);
   }
 }
 
@@ -329,7 +338,16 @@
       }
 
       & .col-actions {
-        justify-content: flex-start;
+        justify-content: center;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+
+        & .edit-btn,
+        & .delete-btn {
+          width: auto;
+          min-width: 6rem;
+        }
       }
     }
   }
