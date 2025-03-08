@@ -1,17 +1,8 @@
 import express from "express";
-import { getItems } from "../services/itemService";
-import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
+import { renderItemsView } from "../controllers/webControllers";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const { items, info } = await getItems(req.query, makePageLinkBuilder(req));
-
-  res.render("items", {
-    items,
-    info,
-    title: "Poke-Mart Shop",
-  });
-});
+router.get("/items", renderItemsView);
 
 export default router;
