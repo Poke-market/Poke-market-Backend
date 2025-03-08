@@ -8,12 +8,12 @@
     <div class="items-controls">
       <div class="filter-sort">
         <button class="filter-btn">Filter</button>
-        <select class="sort-select">
-          <option value="default">Default</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name: A to Z</option>
-          <option value="name-desc">Name: Z to A</option>
+        <select class="sort-select" id="sort-select">
+          <option value="default" {{#unless sort}}selected{{/unless}}>Default</option>
+          <option value="price-asc" {{#if (and (eq sort "price") (eq order "asc"))}}selected{{/if}}>Price: Low to High</option>
+          <option value="price-desc" {{#if (and (eq sort "price") (eq order "desc"))}}selected{{/if}}>Price: High to Low</option>
+          <option value="name-asc" {{#if (and (eq sort "name") (eq order "asc"))}}selected{{/if}}>Name: A to Z</option>
+          <option value="name-desc" {{#if (and (eq sort "name") (eq order "desc"))}}selected{{/if}}>Name: Z to A</option>
         </select>
       </div>
       <div class="view-options">
@@ -98,3 +98,34 @@
     </div>
   {{/if}}
 </div>
+
+{{#section "scripts"}}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortSelect = document.getElementById('sort-select');
+    
+    sortSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      const currentUrl = new URL(window.location.href);
+      
+      // Remove existing sort and order params
+      currentUrl.searchParams.delete('sort');
+      currentUrl.searchParams.delete('order');
+      
+      // Add new params based on selection
+      if (selectedValue !== 'default') {
+        const [sort, order] = selectedValue.split('-');
+        currentUrl.searchParams.set('sort', sort);
+        currentUrl.searchParams.set('order', order);
+      }
+      
+      // Navigate to the new URL (or reload if URL hasn't changed)
+      if (currentUrl.href === window.location.href) {
+        window.location.reload();
+      } else {
+        window.location.href = currentUrl.href;
+      }
+    });
+  });
+</script>
+{{/section}}
