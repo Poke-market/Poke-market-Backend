@@ -46,9 +46,7 @@
                 <span class="badge new">New</span>
               {{/if}}
               {{#if this.discount.hasDiscount}}
-                <span class="badge discount">-{{this.discount.amount}}{{#if
-                    (eq this.discount.type "percentage")
-                  }}%{{/if}}</span>
+                <span class="badge discount">-{{this.discount.amount}}{{#if (eq this.discount.type "percentage")}}%{{/if}}</span>
               {{/if}}
             </div>
           </div>
@@ -65,9 +63,7 @@
         <div class="col-price">
           {{#if this.discount.hasDiscount}}
             <span class="original-price">{{price this.price}}</span>
-            <span class="discounted-price">{{price
-                this.discount.discountedPrice
-              }}</span>
+            <span class="discounted-price">{{price this.discount.discountedPrice}}</span>
           {{else}}
             <span class="price">{{price this.price}}</span>
           {{/if}}
