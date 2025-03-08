@@ -12,7 +12,7 @@ import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
-import webRoutes from "./routes/webRoutes";
+import viewRoutes from "./routes/viewRoutes";
 
 // Variables
 const app = express();
@@ -36,7 +36,7 @@ app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
 
 // Web Routes
-app.use("/", webRoutes);
+app.use("/", viewRoutes);
 
 app.all("*splat", notFound);
 

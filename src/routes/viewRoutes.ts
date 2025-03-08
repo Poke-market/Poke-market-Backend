@@ -1,5 +1,5 @@
 import express from "express";
-import { renderItemsView } from "../controllers/webControllers";
+import { renderItemsView } from "../controllers/viewControllers";
 
 const router = express.Router();
 
