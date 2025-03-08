@@ -2,6 +2,33 @@
   <link rel="stylesheet" href="/css/items.css" />
 {{/section}}
 
+{{#section "scripts"}}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortSelect = document.getElementById('sort-select');
+    
+    sortSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      const currentUrl = new URL(window.location.href);
+      
+      // Remove existing sort and order params and reset page
+      currentUrl.searchParams.delete('sort');
+      currentUrl.searchParams.delete('order');
+      currentUrl.searchParams.delete('page');
+      
+      // Add new params based on selection
+      if (selectedValue !== 'default') {
+        const [sort, order] = selectedValue.split('-');
+        currentUrl.searchParams.set('sort', sort);
+        currentUrl.searchParams.set('order', order);
+      }
+      
+      window.location.href = currentUrl.href;
+    });
+  });
+</script>
+{{/section}}
+
 <div class="items-container">
   <div class="items-header">
     <h1>Item Management</h1>
@@ -94,34 +121,3 @@
     </div>
   {{/if}}
 </div>
-
-{{#section "scripts"}}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sortSelect = document.getElementById('sort-select');
-    
-    sortSelect.addEventListener('change', function() {
-      const selectedValue = this.value;
-      const currentUrl = new URL(window.location.href);
-      
-      // Remove existing sort and order params
-      currentUrl.searchParams.delete('sort');
-      currentUrl.searchParams.delete('order');
-      
-      // Add new params based on selection
-      if (selectedValue !== 'default') {
-        const [sort, order] = selectedValue.split('-');
-        currentUrl.searchParams.set('sort', sort);
-        currentUrl.searchParams.set('order', order);
-      }
-      
-      // Navigate to the new URL (or reload if URL hasn't changed)
-      if (currentUrl.href === window.location.href) {
-        window.location.reload();
-      } else {
-        window.location.href = currentUrl.href;
-      }
-    });
-  });
-</script>
-{{/section}}
