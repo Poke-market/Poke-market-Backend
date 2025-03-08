@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
+import { type FilterQuery } from "mongoose";
 import { z } from "zod";
 import { NotFoundError } from "../errors";
 import { Item, flattenItemTags } from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 import { RawQuery } from "../types/query";
+import { SplitFunc, splitOnComma, splitOnSpace } from "../utils/split";
+import { pipe } from "../utils/pipe";
 
 // Define the input schemas
 export const PaginationParamsSchema = z.object({
@@ -12,88 +14,67 @@ export const PaginationParamsSchema = z.object({
 });
 
 export const FilterParamsSchema = z.object({
-  search: z.union([z.string(), z.array(z.string())]).optional(),
-  cat: z.string().optional(),
-  tag: z.string().optional(),
+  search: z.string().trim().optional(),
+  cat: z.string().trim().optional(),
+  tag: z.string().trim().optional(),
 });
 
 // Infer types from schemas (after Zod parsing)
 export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 export type FilterParams = z.infer<typeof FilterParamsSchema>;
 
+const stringToRegexArray = (splitFunc: SplitFunc) =>
+  pipe(
+    splitFunc,
+    (x) => x.filter(Boolean),
+    (x) => x.map((s) => new RegExp(s, "i")),
+    (x) => (x.length > 0 ? x : undefined),
+  );
+
 export async function buildItemsFilter(
   params: FilterParams,
-): Promise<mongoose.FilterQuery<typeof Item>> {
+): Promise<FilterQuery<typeof Item>> {
   const { search, cat, tag } = FilterParamsSchema.parse(params);
-  const andConditions: mongoose.FilterQuery<typeof Item>[] = [];
+  const andConditions: FilterQuery<typeof Item>[] = [];
 
   // Handle category filtering
   if (cat) {
-    const categoryTerms = cat.split(",").filter(Boolean);
-    if (categoryTerms.length > 0) {
-      const categoryConditions = categoryTerms.map((term) => ({
-        category: new RegExp(term.trim(), "i"),
-      }));
-
-      if (categoryConditions.length > 1) {
-        andConditions.push({ $or: categoryConditions });
-      } else {
-        andConditions.push(categoryConditions[0]);
-      }
-    }
+    const catFilter = stringToRegexArray(splitOnComma)(cat)?.map((c) => ({
+      category: c,
+    }));
+    if (catFilter) andConditions.push({ $or: catFilter });
   }
 
   // Handle tag filtering
   if (tag) {
-    const tagTerms = tag.split(",").filter(Boolean);
-    if (tagTerms.length > 0) {
-      const tagIds = [];
-      for (const term of tagTerms) {
-        const tagRegex = new RegExp(term.trim(), "i");
-        const matchingTags = await Tag.find({ name: tagRegex }).select("_id");
-        tagIds.push(...matchingTags.map((tag) => tag._id));
-      }
-
-      if (tagIds.length === 0) {
-        throw new NotFoundError(
-          `No items found with the specified tag(s): ${tag}`,
-        );
-      }
-
-      andConditions.push({ tags: { $in: tagIds } });
+    const tagRegexes = stringToRegexArray(splitOnComma)(tag) ?? [];
+    const tagIds = [];
+    for (const tagRegex of tagRegexes) {
+      const matchingTags = await Tag.find({ name: tagRegex }).select("_id");
+      tagIds.push(...matchingTags.map((tag) => tag._id));
     }
+
+    if (tagIds.length > 0) andConditions.push({ tags: { $in: tagIds } });
   }
 
   // Handle search parameter
   if (search) {
-    const searchTerms = Array.isArray(search) ? search : [search];
+    const searchRegexes = stringToRegexArray(splitOnSpace)(search) ?? [];
+    const searchConditions = [];
+    for (const searchRegex of searchRegexes) {
+      const matchingTags = await Tag.find({ name: searchRegex }).select("_id");
+      const tagIds = matchingTags.map((tag) => tag._id);
 
-    if (searchTerms.length > 0) {
-      const searchConditions = [];
-
-      for (const term of searchTerms) {
-        if (term && typeof term === "string" && term.trim()) {
-          const searchRegex = new RegExp(term.trim(), "i");
-          const matchingTags = await Tag.find({ name: searchRegex }).select(
-            "_id",
-          );
-          const tagIds = matchingTags.map((tag) => tag._id);
-
-          searchConditions.push({
-            $or: [
-              { name: searchRegex },
-              { tags: { $in: tagIds } },
-              { category: searchRegex },
-              { description: searchRegex },
-            ],
-          });
-        }
-      }
-
-      if (searchConditions.length > 0) {
-        andConditions.push(...searchConditions);
-      }
+      searchConditions.push({
+        $or: [
+          { name: searchRegex },
+          { tags: { $in: tagIds } },
+          { category: searchRegex },
+          { description: searchRegex },
+        ],
+      });
     }
+    if (searchConditions.length > 0) andConditions.push(...searchConditions);
   }
 
   return andConditions.length > 0 ? { $and: andConditions } : {};
