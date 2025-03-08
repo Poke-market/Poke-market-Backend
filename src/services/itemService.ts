@@ -1,11 +1,14 @@
-import { type FilterQuery } from "mongoose";
+import { type FilterQuery, type SortOrder } from "mongoose";
 import { z } from "zod";
 import { NotFoundError } from "../errors";
 import { Item, flattenItemTags } from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 import { RawQuery } from "../types/query";
-import { SplitFunc, splitOnComma, splitOnSpace } from "../utils/split";
-import { pipe } from "../utils/pipe";
+import { splitOnComma, splitOnSpace } from "../utils/split";
+import {
+  buildNestedPropSorter,
+  NestedPropSorter,
+} from "../utils/nestedPropsSorter";
 
 // Define the input schemas
 export const PaginationParamsSchema = z.object({
@@ -22,22 +25,18 @@ export const FilterParamsSchema = z.object({
 export const SortParamsSchema = z.object({
   sort: z.enum(["name", "price"]).optional(),
   order: z
-    .enum(["asc", "desc", "ascending", "descending", "1", "-1"])
-    .optional(),
+    .union([
+      z.enum(["asc", "desc", "ascending", "descending"]),
+      z.literal(1),
+      z.literal(-1),
+    ])
+    .default("asc"),
 });
 
 // Infer types from schemas (after Zod parsing)
 export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 export type FilterParams = z.infer<typeof FilterParamsSchema>;
 export type SortParams = z.infer<typeof SortParamsSchema>;
-
-const stringToRegexArray = (splitFunc: SplitFunc) =>
-  pipe(
-    splitFunc,
-    (x) => x.filter(Boolean),
-    (x) => x.map((s) => new RegExp(s, "i")),
-    (x) => (x.length > 0 ? x : undefined),
-  );
 
 export async function buildItemsFilter(
   params: FilterParams,
@@ -47,15 +46,15 @@ export async function buildItemsFilter(
 
   // Handle category filtering
   if (cat) {
-    const catFilter = stringToRegexArray(splitOnComma)(cat)?.map((c) => ({
-      category: c,
+    const catFilter = splitOnComma(cat).map((c) => ({
+      category: new RegExp(c, "i"),
     }));
-    if (catFilter) andConditions.push({ $or: catFilter });
+    if (catFilter.length > 0) andConditions.push({ $or: catFilter });
   }
 
   // Handle tag filtering
   if (tag) {
-    const tagRegexes = stringToRegexArray(splitOnComma)(tag) ?? [];
+    const tagRegexes = splitOnComma(tag).map((t) => new RegExp(t, "i"));
     const tagIds = [];
     for (const tagRegex of tagRegexes) {
       const matchingTags = await Tag.find({ name: tagRegex }).select("_id");
@@ -67,7 +66,7 @@ export async function buildItemsFilter(
 
   // Handle search parameter
   if (search) {
-    const searchRegexes = stringToRegexArray(splitOnSpace)(search) ?? [];
+    const searchRegexes = splitOnSpace(search).map((s) => new RegExp(s, "i"));
     const searchConditions = [];
     for (const searchRegex of searchRegexes) {
       const matchingTags = await Tag.find({ name: searchRegex }).select("_id");
@@ -88,34 +87,27 @@ export async function buildItemsFilter(
   return andConditions.length > 0 ? { $and: andConditions } : {};
 }
 
-export function buildItemsSorter(params: SortParams): {
-  mongoSorter: Record<string, 1 | -1>;
-  memorySorter?: <T extends InstanceType<typeof Item>>(items: T[]) => void;
+export function buildItemsSorter(params: RawQuery<SortParams>): {
+  mongoSorter: Record<string, SortOrder>; // sort in mongo query
+  memorySorter?: NestedPropSorter<InstanceType<typeof Item>>; // sort in js (used for virtual properties)
 } {
-  const { sort, order } = SortParamsSchema.transform(({ sort, order }) => ({
-    sort,
-    order:
-      order && ["desc", "descending", "-1"].includes(order)
-        ? (-1 as const)
-        : (1 as const),
-  })).parse(params);
+  const { sort, order } = SortParamsSchema.parse(params);
 
-  if (!sort) return { mongoSorter: {} };
-  const sorter = { mongoSorter: { [sort]: order } };
-  return sort === "price"
-    ? {
-        ...sorter,
-        memorySorter: (items) => {
-          items.sort((a, b) => {
-            // @ts-expect-error discountedPrice is a virtual property
-            const aValue = a.discount.discountedPrice as number;
-            // @ts-expect-error discountedPrice is a virtual property
-            const bValue = b.discount.discountedPrice as number;
-            return (aValue - bValue) * order;
-          });
-        },
-      }
-    : sorter;
+  switch (sort) {
+    case "name":
+      return { mongoSorter: { name: order } };
+    case "price":
+      return {
+        mongoSorter: { price: order },
+        memorySorter: buildNestedPropSorter(
+          // @ts-expect-error discountedPrice is a virtual property
+          (item) => item.discount.discountedPrice as number,
+          order,
+        ),
+      };
+    default:
+      return { mongoSorter: {} };
+  }
 }
 
 export async function getItems(
