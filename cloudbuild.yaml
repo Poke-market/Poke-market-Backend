@@ -1,5 +1,5 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/strong-ward-453503-f1/poke-market', '.']
+    args: ['build', '-t', 'gcr.io/poke-mart-007919/poke-mart', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/strong-ward-453503-f1/poke-market']
+    args: ['push', 'gcr.io/poke-mart-007919/poke-mart']
