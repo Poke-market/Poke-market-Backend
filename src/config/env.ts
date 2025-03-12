@@ -9,7 +9,7 @@ const env = (name: string, defaultValue?: string): string => {
   return value;
 };
 
-export const PORT = env("PORT", "5001");
+export const PORT = env("PORT", "3000");
 export const MONGO_URI = env("MONGO_URI");
 export const JWT_SECRET = env("JWT_SECRET");
 
