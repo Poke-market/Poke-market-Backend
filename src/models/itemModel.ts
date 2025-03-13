@@ -98,13 +98,13 @@ const itemSchema = new mongoose.Schema(
 );
 
 // Create slug from the name before saving
-itemSchema.pre("save", function(next) {
+itemSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
 // Update slug when name is updated
-itemSchema.pre("findOneAndUpdate", function(next) {
+itemSchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate() as { name?: string; slug?: string };
   if (update?.name) {
     update.slug = slugify(update.name, { lower: true });
