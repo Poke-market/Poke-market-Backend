@@ -13,6 +13,7 @@ import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import viewRoutes from "./routes/viewRoutes";
+import slugRoutes from "./routes/slugRoutes";
 
 // Variables
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/items", itemsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/slug", slugRoutes);
 
 // Web Routes
 app.use("/", viewRoutes);
