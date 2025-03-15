@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 export const categories = [
   "medicine",
@@ -87,11 +88,30 @@ const itemSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    slug: {
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,
   },
 );
+
+// Create slug from the name before saving
+itemSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Update slug when name is updated
+itemSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate() as { name?: string; slug?: string };
+  if (update?.name) {
+    update.slug = slugify(update.name, { lower: true });
+  }
+  next();
+});
 
 export const flattenItemTags = (item: object) => ({
   ...item,
