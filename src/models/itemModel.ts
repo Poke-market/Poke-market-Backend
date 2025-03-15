@@ -9,7 +9,7 @@ export const categories = [
   "vitamins",
   "tm/hm",
   "mega stones",
-];
+] as const;
 
 export const discountTypes = ["percentage", "absolute"] as const;
 
