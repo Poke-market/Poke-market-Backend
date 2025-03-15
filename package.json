@@ -19,6 +19,9 @@
     "seed:users": "tsx ./src/utils/seedUsers.ts",
     "seed": "run-s seed:tags seed:items seed:users"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
