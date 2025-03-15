@@ -11,6 +11,7 @@ export const categories = [
   "mega stones",
 ] as const;
 
+export type Category = (typeof categories)[number];
 export const discountTypes = ["percentage", "absolute"] as const;
 
 const discountSchema = new mongoose.Schema(
