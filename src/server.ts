@@ -7,6 +7,7 @@ import hbs from "./config/handlebars";
 
 import { notFound } from "./controllers/notFoundController";
 import { errorHandler } from "./middleware/errorMiddleware";
+import arcjetMiddleware from "./middleware/arcjetMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -23,6 +24,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(arcjetMiddleware);
 
 // Configure Handlebars view engine
 app.engine("handlebars", hbs.engine);
