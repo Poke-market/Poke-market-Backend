@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { slugifyLowercase } from "../utils/slugify";
 
 export const categories = [
   "medicine",
@@ -9,8 +10,9 @@ export const categories = [
   "vitamins",
   "tm/hm",
   "mega stones",
-];
+] as const;
 
+export type Category = (typeof categories)[number];
 export const discountTypes = ["percentage", "absolute"] as const;
 
 const discountSchema = new mongoose.Schema(
@@ -86,11 +88,30 @@ const itemSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    slug: {
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,
   },
 );
+
+// Create slug from the name before saving
+itemSchema.pre("save", function (next) {
+  this.slug = slugifyLowercase(this.name);
+  next();
+});
+
+// Update slug when name is updated
+itemSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate() as { name?: string; slug?: string };
+  if (update?.name) {
+    update.slug = slugifyLowercase(update.name);
+  }
+  next();
+});
 
 export const flattenItemTags = (item: object) => ({
   ...item,

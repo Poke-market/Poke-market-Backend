@@ -7,12 +7,14 @@ import hbs from "./config/handlebars";
 
 import { notFound } from "./controllers/notFoundController";
 import { errorHandler } from "./middleware/errorMiddleware";
+import arcjetMiddleware from "./middleware/arcjetMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import viewRoutes from "./routes/viewRoutes";
+import slugRoutes from "./routes/slugRoutes";
 
 // Variables
 const app = express();
@@ -22,6 +24,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(arcjetMiddleware);
 
 // Configure Handlebars view engine
 app.engine("handlebars", hbs.engine);
@@ -34,6 +37,7 @@ app.use("/api/items", itemsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/slug", slugRoutes);
 
 // Web Routes
 app.use("/", viewRoutes);
