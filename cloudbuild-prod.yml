@@ -14,3 +14,7 @@ steps:
       - "us-central1"
       - "--platform"
       - "managed"
+
+options:
+  logging: GCS_ONLY
+  logs_bucket: "gs://poke-mart-007919_cloudbuild"
