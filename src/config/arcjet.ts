@@ -1,15 +1,11 @@
 import arcjet, { detectBot, shield, tokenBucket } from "@arcjet/node";
-import { NotFoundError } from "../errors";
-
-if (!process.env.ARCJET_KEY) {
-  throw new NotFoundError("ARCJET_KEY is not defined");
-}
+import { ARCJET_KEY } from "../config/env";
 
 const aj = arcjet({
   // Get your site key from https://app.arcjet.com and set it as an environment
   // variable rather than hard coding.
 
-  key: process.env.ARCJET_KEY,
+  key: ARCJET_KEY,
   characteristics: ["ip.src"], // Track requests by IP
   rules: [
     // Shield protects your app from common attacks e.g. SQL injection
