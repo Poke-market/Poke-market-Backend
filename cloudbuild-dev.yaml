@@ -1,8 +1,10 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
     args: ["build", "-t", "gcr.io/strong-ward-453503-f1/poke-market:dev", "."]
+
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/strong-ward-453503-f1/poke-market:dev"]
+
   - name: "gcr.io/cloud-builders/gcloud"
     args:
       - "run"
@@ -16,5 +18,4 @@ steps:
       - "managed"
 
 options:
-  logging: GCS_ONLY
-  logs_bucket: "gs://poke-mart-007919_cloudbuild"
+  logging: "CLOUD_LOGGING_ONLY"
