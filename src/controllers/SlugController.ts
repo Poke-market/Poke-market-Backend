@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import slugify from "slugify";
+import { slugifyLowercase } from "../utils/slugify";
 import { NotFoundError } from "../errors";
 import { Item, flattenItemTags } from "../models/itemModel";
 
@@ -31,7 +31,7 @@ export const getItemBySlug = async (req: Request, res: Response) => {
     // look for an item that matches any of slug variations
     const matchedItem = allItems.find((i) => {
       // Convert item name to a standardized slug format (lowercase, hyphenated)
-      const itemSlug = slugify(i.name, { lower: true });
+      const itemSlug = slugifyLowercase(i.name);
 
       // check if any lower case matchs
       return slugVariations.some(
@@ -50,7 +50,9 @@ export const getItemBySlug = async (req: Request, res: Response) => {
 
   if (!item) {
     console.log("Item not found with the given slug");
-    throw new NotFoundError(`Item with slug '${slug}' not found`);
+    throw new NotFoundError(`Item with slug '${slug}' not found`, {
+      logging: true,
+    });
   }
 
   res.status(200).json({
