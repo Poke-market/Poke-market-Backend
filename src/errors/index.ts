@@ -9,5 +9,6 @@ export * from "./ApiError";
 /* 404 */ export * from "./client/NotFoundError";
 /* 409 */ export * from "./client/ConflictError";
 /* 422 */ export * from "./client/ValidationError";
+/* 429 */ export * from "./client/TooManyRequestError";
 
 /* 500 */ export * from "./server/ServerError";

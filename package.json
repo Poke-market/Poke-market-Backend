@@ -27,6 +27,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "@arcjet/node": "^1.0.0-beta.4",
     "@types/cookie-parser": "^1.4.8",
     "@types/validator": "^13.12.2",
     "bcrypt": "^5.1.1",
