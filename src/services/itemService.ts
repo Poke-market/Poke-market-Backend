@@ -1,7 +1,12 @@
 import { type FilterQuery, type SortOrder } from "mongoose";
 import { z } from "zod";
 import { NotFoundError } from "../errors";
-import { Item, flattenItemTags } from "../models/itemModel";
+import {
+  Item,
+  flattenItemTags,
+  categories,
+  Category,
+} from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 import { RawQuery } from "../types/query";
 import { splitOnComma, splitOnSpace } from "../utils/split";
@@ -38,18 +43,18 @@ export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 export type FilterParams = z.infer<typeof FilterParamsSchema>;
 export type SortParams = z.infer<typeof SortParamsSchema>;
 
-export async function buildItemsFilter(
-  params: FilterParams,
-): Promise<FilterQuery<typeof Item>> {
+export async function buildItemsFilter(params: FilterParams) {
   const { search, cat, tag } = FilterParamsSchema.parse(params);
-  const andConditions: FilterQuery<typeof Item>[] = [];
+  const catFilter: FilterQuery<typeof Item>[] = [];
+  const tagFilter: FilterQuery<typeof Item>[] = [];
+  const searchFilter: FilterQuery<typeof Item>[] = [];
 
   // Handle category filtering
   if (cat) {
-    const catFilter = splitOnComma(cat).map((c) => ({
+    const catMatchers = splitOnComma(cat).map((c) => ({
       category: new RegExp(c, "i"),
     }));
-    if (catFilter.length > 0) andConditions.push({ $or: catFilter });
+    if (catMatchers.length > 0) catFilter.push({ $or: catMatchers });
   }
 
   // Handle tag filtering
@@ -61,7 +66,7 @@ export async function buildItemsFilter(
       tagIds.push(...matchingTags.map((tag) => tag._id));
     }
 
-    if (tagIds.length > 0) andConditions.push({ tags: { $in: tagIds } });
+    if (tagIds.length > 0) tagFilter.push({ tags: { $in: tagIds } });
   }
 
   // Handle search parameter
@@ -81,10 +86,17 @@ export async function buildItemsFilter(
         ],
       });
     }
-    if (searchConditions.length > 0) andConditions.push(...searchConditions);
+    if (searchConditions.length > 0) searchFilter.push(...searchConditions);
   }
 
-  return andConditions.length > 0 ? { $and: andConditions } : {};
+  const combinedFilter = [...catFilter, ...tagFilter, ...searchFilter];
+  const filterWithoutCats = [...tagFilter, ...searchFilter];
+
+  return {
+    filter: combinedFilter.length > 0 ? { $and: combinedFilter } : {},
+    filterWithoutCats:
+      filterWithoutCats.length > 0 ? { $and: filterWithoutCats } : {},
+  };
 }
 
 export function buildItemsSorter(params: RawQuery<SortParams>): {
@@ -110,11 +122,33 @@ export function buildItemsSorter(params: RawQuery<SortParams>): {
   }
 }
 
+async function countCategories(filter: FilterQuery<typeof Item>) {
+  // Initialize all categories with zero count
+  const categorieCount = Object.fromEntries(
+    categories.map((cat) => [cat, 0]),
+  ) as Record<Category, number>;
+
+  const categoryAggregation: {
+    _id: Category;
+    count: number;
+  }[] = await Item.aggregate([
+    { $match: filter },
+    { $group: { _id: "$category", count: { $sum: 1 } } },
+  ]);
+
+  // Update counts for categories that have items
+  for (const { _id, count } of categoryAggregation) {
+    categorieCount[_id] = count;
+  }
+
+  return categorieCount;
+}
+
 export async function getItems(
   params: RawQuery<PaginationParams & FilterParams & SortParams>,
   getPageLink: (page: number) => string,
 ) {
-  const filter = await buildItemsFilter(params);
+  const { filter, filterWithoutCats } = await buildItemsFilter(params);
   const { mongoSorter, memorySorter } = buildItemsSorter(params);
   const { limit, page } = PaginationParamsSchema.parse(params);
   const itemCount = await Item.countDocuments(filter);
@@ -140,6 +174,7 @@ export async function getItems(
   return {
     info: {
       count: itemCount,
+      categorieCount: await countCategories(filterWithoutCats),
       page: page,
       pages: totalPages,
       prev: page > 1 ? getPageLink(page - 1) : null,

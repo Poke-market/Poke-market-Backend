@@ -12,6 +12,7 @@ const env = (name: string, defaultValue?: string): string => {
 export const PORT = env("PORT", "3000");
 export const MONGO_URI = env("MONGO_URI");
 export const JWT_SECRET = env("JWT_SECRET");
+export const ARCJET_KEY = env("ARCJET_KEY");
 
 const NODE_ENV = env("NODE_ENV", "development");
 export const IS_PRODUCTION = NODE_ENV === "production";
