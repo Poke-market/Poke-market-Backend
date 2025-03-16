@@ -19,7 +19,7 @@ export const errorHandler = (
 
   // Handle Known errors
   if (err instanceof ApiError) {
-    const { logging, message, stack, status, statusCode } = err;
+    const { logging, message, stack, status, statusCode, logMessage } = err;
     data.errors = [message];
 
     // add key to error if available
@@ -30,12 +30,12 @@ export const errorHandler = (
     // log to console if enabled
     if (logging) {
       const errObj = {
+        logMessage,
         ...data,
-        stack,
         status,
         statusCode,
       };
-      console.error(JSON.stringify(errObj, null, 2));
+      console.error(errObj, stack);
     }
 
     // different body structures to comply with JSend
@@ -50,7 +50,6 @@ export const errorHandler = (
 
   // Handle Zod Errors
   else if (err instanceof ZodError) {
-    console.log(err);
     res.status(422).json({
       data: {
         ...data,

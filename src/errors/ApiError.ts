@@ -1,11 +1,22 @@
-export interface ErrorOptions {
+export interface ErrorOptionsBase {
   logging?: boolean;
   statusCode?: number;
 }
 
+export interface ErrorOptionsWithLogMessage extends ErrorOptionsBase {
+  logging: true;
+  logMessage: string;
+}
+
+export type ErrorOptions = ErrorOptionsBase | ErrorOptionsWithLogMessage;
+
 export abstract class ApiError extends Error {
   get logging() {
     return this._options?.logging ?? this._logging;
+  }
+  get logMessage() {
+    const options = this._options as ErrorOptionsWithLogMessage | undefined;
+    return options?.logMessage;
   }
   get status() {
     return this._status;

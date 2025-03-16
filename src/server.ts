@@ -1,39 +1,55 @@
 // Imports
-import "dotenv/config";
+import { PORT, MONGO_URI } from "./config/env";
 import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
+import hbs from "./config/handlebars";
 
 import { notFound } from "./controllers/notFoundController";
 import { errorHandler } from "./middleware/errorMiddleware";
+import arcjetMiddleware from "./middleware/arcjetMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
 import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
+import cookieParser from "cookie-parser";
+import viewRoutes from "./routes/viewRoutes";
+import slugRoutes from "./routes/slugRoutes";
 
 // Variables
 const app = express();
-const PORT = process.env.PORT ?? 3000;
 
 // Middleware
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(arcjetMiddleware);
 
-// Routes
+// Configure Handlebars view engine
+app.engine("handlebars", hbs.engine);
+app.set("view engine", "handlebars");
+app.set("views", "src/views");
+app.use(express.static("src/public"));
+
+// API Routes
 app.use("/api/items", itemsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/slug", slugRoutes);
+
+// Web Routes
+app.use("/", viewRoutes);
+
 app.all("*splat", notFound);
 
 // handle errors (this must be last)
 app.use(errorHandler);
 
 // Database connection
-if (!process.env.MONGO_URI) {
-  throw new Error("Missing MONGO_URI environment variable in .env file");
-}
-await mongoose.connect(process.env.MONGO_URI);
 try {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(MONGO_URI);
   console.log("Database connection OK");
 } catch (err) {
   console.error(err);

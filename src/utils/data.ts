@@ -7,6 +7,9 @@ export const pokéitems = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
     price: 200,
     tags: ["throwable", "in-battle", "catching"],
+    discount: {
+      amount: 20,
+    },
   },
   {
     category: "pokéballs",
@@ -17,6 +20,7 @@ export const pokéitems = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
     price: 600,
     tags: ["throwable", "in-battle", "catching"],
+    isNewItem: true,
   },
   {
     category: "pokéballs",
@@ -27,6 +31,9 @@ export const pokéitems = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
     price: 1200,
     tags: ["throwable", "in-battle", "catching"],
+    discount: {
+      amount: 30,
+    },
   },
   {
     category: "pokéballs",
@@ -37,6 +44,10 @@ export const pokéitems = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png",
     price: 999999,
     tags: ["throwable", "in-battle", "catching"],
+    discount: {
+      amount: 99,
+    },
+    isNewItem: true,
   },
   {
     category: "pokéballs",

@@ -1,0 +1,123 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/items.css" />
+{{/section}}
+
+{{#section "scripts"}}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortSelect = document.getElementById('sort-select');
+    
+    sortSelect.addEventListener('change', function() {
+      const selectedValue = this.value;
+      const currentUrl = new URL(window.location.href);
+      
+      // Remove existing sort and order params and reset page
+      currentUrl.searchParams.delete('sort');
+      currentUrl.searchParams.delete('order');
+      currentUrl.searchParams.delete('page');
+      
+      // Add new params based on selection
+      if (selectedValue !== 'default') {
+        const [sort, order] = selectedValue.split('-');
+        currentUrl.searchParams.set('sort', sort);
+        currentUrl.searchParams.set('order', order);
+      }
+      
+      window.location.href = currentUrl.href;
+    });
+  });
+</script>
+{{/section}}
+
+<div class="items-container">
+  <div class="items-header">
+    <h1>Item Management</h1>
+    <div class="items-controls">
+      <div class="filter-sort">
+        <button class="filter-btn">Filter</button>
+        <select class="sort-select" id="sort-select">
+          <option value="default" {{#unless sort}}selected{{/unless}}>Default</option>
+          <option value="price-asc" {{#if (and (eq sort "price") (eq order "asc"))}}selected{{/if}}>Price: Low to High</option>
+          <option value="price-desc" {{#if (and (eq sort "price") (eq order "desc"))}}selected{{/if}}>Price: High to Low</option>
+          <option value="name-asc" {{#if (and (eq sort "name") (eq order "asc"))}}selected{{/if}}>Name: A to Z</option>
+          <option value="name-desc" {{#if (and (eq sort "name") (eq order "desc"))}}selected{{/if}}>Name: Z to A</option>
+        </select>
+      </div>
+      <div class="view-options">
+        <button class="add-item-btn">Add New Item</button>
+        <span>Showing {{info.count}} items</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="items-list">
+    <div class="list-header">
+      <div class="col-image">Image</div>
+      <div class="col-info">Item Info</div>
+      <div class="col-price">Price</div>
+      <div class="col-actions">Actions</div>
+    </div>
+
+    {{#each items}}
+      <div class="item-row">
+        <div class="col-image">
+          <div class="item-image">
+            <img src="{{this.photoUrl}}" alt="{{this.name}}" />
+          </div>
+        </div>
+        <div class="col-info">
+          <div class="item-header">
+            <h3 class="item-name">{{this.name}}</h3>
+            <div class="item-status">
+              {{#if this.isNewItem}}
+                <span class="badge new">New</span>
+              {{/if}}
+              {{#if this.discount.hasDiscount}}
+                <span class="badge discount">-{{this.discount.amount}}{{#if (eq this.discount.type "percentage")}}%{{/if}}</span>
+              {{/if}}
+            </div>
+          </div>
+          <p class="item-description">{{this.description}}</p>
+          <div class="item-meta">
+            <div class="item-category">{{this.category}}</div>
+            <div class="item-tags">
+              {{#each this.tags}}
+                <span class="tag">{{this}}</span>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+        <div class="col-price">
+          {{#if this.discount.hasDiscount}}
+            <span class="original-price">{{price this.price}}</span>
+            <span class="discounted-price">{{price this.discount.discountedPrice}}</span>
+          {{else}}
+            <span class="price">{{price this.price}}</span>
+          {{/if}}
+        </div>
+        <div class="col-actions">
+          <button class="edit-btn" data-id="{{this._id}}">Edit</button>
+          <button class="delete-btn" data-id="{{this._id}}">Delete</button>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if (gt info.pages 1)}}
+    <div class="pagination">
+      {{#if info.first}}
+        <a href="{{info.first}}" class="page-link">First</a>
+      {{/if}}
+      {{#if info.prev}}
+        <a href="{{info.prev}}" class="page-link">Previous</a>
+      {{/if}}
+      <span class="current-page">Page {{info.page}} of {{info.pages}}</span>
+      {{#if info.next}}
+        <a href="{{info.next}}" class="page-link">Next</a>
+      {{/if}}
+      {{#if info.last}}
+        <a href="{{info.last}}" class="page-link">Last</a>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
