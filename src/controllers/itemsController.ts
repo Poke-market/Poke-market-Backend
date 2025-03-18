@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { z } from "zod";
 // import { Error as MongooseError } from "mongoose";
 
-import { BadRequestError, NotFoundError, ValidationError } from "../errors";
+import { NotFoundError, ValidationError } from "../errors";
 import {
   categories,
   flattenItemTags,
@@ -12,7 +12,7 @@ import {
 } from "../models/itemModel";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import { Tag } from "../models/tagModel";
-import { getItems as getItemsService } from "../services/itemService";
+import { getItems as getItemsService, deleteItem as deleteItemService } from "../services/itemService";
 
 // const { ValidationError } = MongooseError;
 
@@ -190,13 +190,14 @@ export const updateItem = async (req: Request, res: Response) => {
 
 export const deleteItem = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (!mongoose.isValidObjectId(id))
-    throw new BadRequestError("Item id is not valid id by Mongoose standards");
+  const result = await deleteItemService(id);
 
-  const item = await Item.findByIdAndDelete(id);
-  if (!item) throw new NotFoundError("Item not found");
-  //want to add a message that item is succesfully deleted
-  res.status(200).json(item);
+  // Return a properly formatted JSON response
+  res.status(200).json({
+    status: "success",
+    message: "Item successfully deleted",
+    data: result.data,
+  });
 };
 
 export const getItemByName = async (req: Request, res: Response) => {
