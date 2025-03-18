@@ -194,12 +194,12 @@ export async function deleteItem(id: string) {
 
   const item = await Item.findByIdAndDelete(id);
   if (!item) throw new NotFoundError("Item not found");
-  
+
   return {
     status: "success",
     message: "Item successfully deleted",
     data: {
-      item: flattenItemTags(item.toObject())
-    }
+      item: flattenItemTags(item.toObject()),
+    },
   };
 }
