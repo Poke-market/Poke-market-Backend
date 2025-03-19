@@ -1,6 +1,7 @@
 import { type FilterQuery, type SortOrder } from "mongoose";
+import mongoose from "mongoose";
 import { z } from "zod";
-import { NotFoundError } from "../errors";
+import { NotFoundError, BadRequestError } from "../errors";
 import {
   Item,
   flattenItemTags,
@@ -183,5 +184,22 @@ export async function getItems(
       last: page < totalPages ? getPageLink(totalPages) : null,
     },
     items: items.map((item) => flattenItemTags(item.toObject())),
+  };
+}
+
+export async function deleteItem(id: string) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new BadRequestError("Item id is not valid id by Mongoose standards");
+  }
+
+  const item = await Item.findByIdAndDelete(id);
+  if (!item) throw new NotFoundError("Item not found");
+
+  return {
+    status: "success",
+    message: "Item successfully deleted",
+    data: {
+      item: flattenItemTags(item.toObject()),
+    },
   };
 }
