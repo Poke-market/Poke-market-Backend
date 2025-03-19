@@ -7,6 +7,19 @@ import { JWT_SECRET } from "../config/env";
 export const renderItemsView = async (req: Request, res: Response) => {
   const { items, info } = await getItems(req.query, makePageLinkBuilder(req));
 
+  //if no token, redirect to login
+  const tokenFromCookie: string | undefined =
+    typeof req.cookies?.token === "string" ? req.cookies.token : undefined;
+  const tokenFromHeader: string | undefined =
+    req.headers.authorization?.startsWith("Bearer")
+      ? req.headers.authorization.split(" ")[1]
+      : undefined;
+  const token: string | undefined = tokenFromCookie ?? tokenFromHeader;
+
+  if (!token) {
+    res.redirect("/login");
+  }
+
   res.render("items", {
     items,
     info,
