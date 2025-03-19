@@ -24,9 +24,9 @@ const aj = arcjet({
     // More aggressive token bucket rate limit for testing
     tokenBucket({
       mode: "LIVE",
-      refillRate: 20, // Only 1 token per interval (super strict for testing) terug naar 10 na development
+      refillRate: 30, // Only 1 token per interval (super strict for testing)
       interval: 5, // Shorter interval of 5 seconds
-      capacity: 20, // Very small burst capacity terug naar 10 na development
+      capacity: 30, // Very small burst capacity
     }),
   ],
 });
