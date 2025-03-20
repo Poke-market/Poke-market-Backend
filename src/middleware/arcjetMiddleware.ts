@@ -43,7 +43,7 @@ const arcjetMiddleware = async (
 
       // For bot detections, allow legitimate browser traffic through
       if (decision.reason.isBot()) {
-        console.log(`Bot detection triggered for IP: ${req.ip}`);
+        console.log(`🤖 Bot detection triggered for IP: ${req.ip} 🤖`);
 
         // Check if request has characteristics of a legitimate browser
         const hasUserAgent = req.headers["user-agent"] !== undefined;

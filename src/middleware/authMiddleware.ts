@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/env";
 import { User } from "../models/userModel";
-import { ForbiddenError, UnauthorizedError } from "../errors";
+import { UnauthorizedError } from "../errors";
 import { z } from "zod";
 
 // Define a custom interface for our JWT payload
@@ -27,7 +27,7 @@ export const authMiddleware = async (
     : (req.cookies?.token as string | undefined);
 
   if (!token) {
-    throw new ForbiddenError("No token provided");
+    throw new UnauthorizedError("No token provided");
   }
 
   const decoded = jwt.verify(token, JWT_SECRET);
