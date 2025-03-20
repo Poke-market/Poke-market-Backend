@@ -15,6 +15,10 @@ const hbs = create({
   layoutsDir: "src/views/layouts",
   partialsDir: "src/views/partials",
   helpers: {
+    printIf: (condition: boolean, str: string) => (condition ? str : ""),
+    selectedIf: (condition: boolean) => (condition ? "selected" : ""),
+    checkedIf: (condition: boolean) => (condition ? "checked" : ""),
+    not: (condition: boolean) => !condition,
     eq: compareOp<unknown>((a, b) => a === b),
     ne: compareOp<unknown>((a, b) => a !== b),
     lt: compareOp<number>((a, b) => a < b),
