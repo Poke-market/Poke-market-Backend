@@ -55,9 +55,14 @@
 
         const data = await response.json();
         
-        // Show success message and reload page
+        // Show success message
         alert('Item successfully deleted');
-        window.location.reload();
+        
+        // Navigate to the first page instead of reloading the current page
+        // This prevents 500 errors when deleting the last item on a page
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
       } catch (error) {
         console.error('Error:', error);
         alert(`An error occurred while deleting the item: ${error.message}`);
