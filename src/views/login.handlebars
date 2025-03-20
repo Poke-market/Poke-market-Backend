@@ -4,6 +4,37 @@
 
 {{#section "scripts"}}
   <script type="module" src="/js/login.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+          credentials: 'include' // Important: allow cookies to be set
+        });
+        
+        if (!response.ok) {
+          alert('Login failed. Please check your credentials.');
+          return;
+        }
+        
+        // No need to set cookies manually, it's handled by the server with httpOnly cookies
+        alert('Login successful!');
+        window.location.href = '/items';
+      } catch (error) {
+        alert('Login error: ' + error);
+      }
+    });
+  });
+</script>
 {{/section}}
 
 <div class="login-container">
@@ -17,6 +48,6 @@
       <label for="password" class="form-label">Password:</label>
       <input type="password" id="password" name="password" required class="password-input" />
     </div>
-    <button type="submit">Login</button>
+    <button type="submit" class="login-button">Login</button>
   </form>
 </div>

@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
     },
     zipcode: { required: true, trim: true, type: String },
     isAdmin: { default: false, type: Boolean },
+    isVerified: { default: false, type: Boolean },
+    verificationToken: { type: String },
+    resetToken: { type: String },
   },
   {
     timestamps: true,
