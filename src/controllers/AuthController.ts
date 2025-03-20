@@ -130,45 +130,62 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ status: "success", data: null });
 };
 
-export const verficationEmail = async (req: Request, res: Response) => {
+export const verificationEmail = async (req: Request, res: Response) => {
   try {
-    // http://localhost:3000/verify/token
-    const { token } = req.params;
+    const { token } = req.query;
 
-    if (!token) {
-      res.status(400).json({ message: "Token is required" });
-      return;
+    if (!token || typeof token !== "string") {
+      return res.render("verification", {
+        title: "Verification Failed",
+        message: "Invalid verification token provided.",
+      });
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Find the user by email
-    const user = await User.findOne({
-      email: (decoded as { email: string }).email,
+      // Find the user by email
+      const user = await User.findOne({
+        email: (decoded as { email: string }).email,
+      });
+
+      if (!user) {
+        return res.render("verification", {
+          title: "Verification Failed",
+          message: "User not found. Please register again.",
+        });
+      }
+
+      if (user.isVerified) {
+        return res.render("verification", {
+          title: "Already Verified",
+          message: "Your account was already verified!",
+        });
+      }
+
+      // Update user verification status
+      user.isVerified = true;
+      user.verificationToken = null;
+      await user.save();
+
+      return res.render("verification", {
+        title: "Verification Successful!",
+        message: "Congratulations! Your account has been verified.!",
+      });
+    } catch {
+      return res.render("verification", {
+        title: "Verification Failed",
+        message:
+          "Invalid or expired verification token. Please request a new verification email.",
+      });
+    }
+  } catch {
+    console.error("Verification error:");
+    return res.render("verification", {
+      title: "Verification Error",
+      message:
+        "An unexpected error occurred during verification. Please try again later.",
     });
-
-    if (user?.isVerified) {
-      res.status(400).json({ message: "Email already verified" });
-      return;
-    }
-
-    // If user is not found, return 404 error
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    user.isVerified = true;
-    user.verificationToken = null;
-    await user.save();
-
-    res.status(200).json({ message: "you are a verified Pokémon trainer" });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message });
-    } else {
-      res.status(500).json({ message: "Something went wrong" });
-    }
   }
 };

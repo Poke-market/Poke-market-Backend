@@ -15,7 +15,7 @@ import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
 import viewRoutes from "./routes/viewRoutes";
 import slugRoutes from "./routes/slugRoutes";
-import { verficationEmail } from "./controllers/AuthController";
+import { verificationEmail } from "./controllers/AuthController";
 
 // Variables
 const app = express();
@@ -39,7 +39,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/slug", slugRoutes);
-app.get("/verify/:token", verficationEmail);
+app.get("/verify/:token", verificationEmail as express.RequestHandler);
 
 // Web Routes
 app.use("/", viewRoutes);

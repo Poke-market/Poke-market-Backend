@@ -80,6 +80,7 @@
         telephone: document.getElementById('telephone').value,
         isAdmin: true
       };
+
       
       try {
         // Show loading message
@@ -95,8 +96,19 @@
         
         const data = await response.json();
         
+        // Check for errors
         if (!response.ok) {
-          displayNotification(`Registration failed: ${data.message || 'Please try again'}`, 'error');
+         // check for already registered users
+          if (response.status === 409) {
+            displayNotification(`Registration failed: ${data.message || 'Email is already registered'}`, 'error');
+          } else if (data.data && data.data.errors) {
+            const errorMessages = Array.isArray(data.data.errors) 
+              ? data.data.errors.map(err => Array.isArray(err) ? `${err[0]}: ${err[1]}` : err).join('<br>')
+              : data.data.errors.join('<br>');
+            displayNotification(`Registration failed:<br>${errorMessages}`, 'error');
+          } else {
+            displayNotification(`Registration failed: ${data.message || 'Please try again'}`, 'error');
+          }
           return;
         }
         
@@ -113,13 +125,13 @@
           <h3>Registration Successful!</h3>
           <p>A verification email has been sent to <strong>${userData.email}</strong>.</p>
           <p>Please check your inbox and follow the verification link to activate your account.</p>
-          <p>You will be redirected to the login page in 10 seconds...</p>
+          <p>You will be redirected to the login page in 5 seconds...</p>
         `, 'success');
         
-        // Redirect after 10 seconds
+        // Redirect after 5 seconds
         setTimeout(() => {
-          window.location.href = '/login';
-        }, 10000);
+          window.location.href = '/items  ';
+        }, 5000);
       } catch (error) {
         displayNotification('Registration error: ' + error, 'error');
       }
