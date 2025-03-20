@@ -24,8 +24,8 @@ const seedItems = async () => {
             return tagDoc._id;
           }) ?? [],
         );
-        const slug = slugifyLowercase(item.name);
-        return { ...item, tags: tagIds, slug };
+
+        return { ...item, tags: tagIds, slug: slugifyLowercase(item.name) };
       }),
     );
 
