@@ -37,23 +37,17 @@
       });
     });
 
-    // a function to delte an item
+    // a function to delete an item
     async function deleteItem(itemId) {
       try {
-        // check for jwt token
-        const token = localStorage.getItem('jwt') || '';
-        
-        // delete request to server needs to be send with a token
         const response = await fetch(`/api/items/${itemId}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
-          credentials: 'include'
+          credentials: 'include' 
         });
 
-        // check if response is not ok
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || `Server responded with status: ${response.status}`);
@@ -61,15 +55,14 @@
 
         const data = await response.json();
         
-        //show success message and reload the page
-        if (data.status === 'success') {
-          alert('Item successfully deleted');
-          window.location.reload();
-        } else {
-          // if not ok show an error message
-          alert('Item deleted successfully!');
-          window.location.reload();
-        }
+        // Show success message
+        alert('Item successfully deleted');
+        
+        // Navigate to the first page instead of reloading the current page
+        // This prevents 500 errors when deleting the last item on a page
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
       } catch (error) {
         console.error('Error:', error);
         alert(`An error occurred while deleting the item: ${error.message}`);
