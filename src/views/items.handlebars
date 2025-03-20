@@ -86,11 +86,11 @@
       <div class="filter-sort">
         <button class="filter-btn">Filter</button>
         <select class="sort-select" id="sort-select">
-          <option value="default" {{#unless sort}}selected{{/unless}}>Default</option>
-          <option value="price-asc" {{#if (and (eq sort "price") (eq order "asc"))}}selected{{/if}}>Price: Low to High</option>
-          <option value="price-desc" {{#if (and (eq sort "price") (eq order "desc"))}}selected{{/if}}>Price: High to Low</option>
-          <option value="name-asc" {{#if (and (eq sort "name") (eq order "asc"))}}selected{{/if}}>Name: A to Z</option>
-          <option value="name-desc" {{#if (and (eq sort "name") (eq order "desc"))}}selected{{/if}}>Name: Z to A</option>
+          <option value="default" {{selectedIf (not sort)}}>Default</option>
+          <option value="price-asc" {{selectedIf (and (eq sort "price") (eq order "asc"))}}>Price: Low to High</option>
+          <option value="price-desc" {{selectedIf (and (eq sort "price") (eq order "desc"))}}>Price: High to Low</option>
+          <option value="name-asc" {{selectedIf (and (eq sort "name") (eq order "asc"))}}>Name: A to Z</option>
+          <option value="name-desc" {{selectedIf (and (eq sort "name") (eq order "desc"))}}>Name: Z to A</option>
         </select>
       </div>
       <div class="view-options">
