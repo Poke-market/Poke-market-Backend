@@ -19,7 +19,7 @@ p {
 }
 .pokemon-icon {
   width: 120px;
-  margin-bottom: 20px;
+  margin: auto;
 }
 .btn {
   display: inline-block;
