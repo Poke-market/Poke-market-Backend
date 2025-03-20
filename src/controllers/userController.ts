@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Request } from "express";
+import { Response } from "../types/res.json";
 import { Types } from "mongoose";
 import mongoose from "mongoose";
 

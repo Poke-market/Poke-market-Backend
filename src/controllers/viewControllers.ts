@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Request } from "express";
+import { Response } from "../types/res.json";
 import { getItems } from "../services/itemService";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import jwt from "jsonwebtoken";
@@ -34,6 +35,7 @@ export const renderItemsView = async (req: Request, res: Response) => {
     }
 
     res.render("items", {
+      user: req.user,
       items,
       info,
       title: "Poke-Mart Shop",
@@ -73,6 +75,7 @@ export const renderLoginView = (req: Request, res: Response) => {
   }
 
   res.render("login", {
+    user: req.user,
     title: "Poke-Mart Login",
   });
 };
@@ -91,6 +94,7 @@ export const renderRegisterView = (req: Request, res: Response) => {
       const decoded = jwt.verify(token, JWT_SECRET) as { isAdmin?: boolean };
       if (decoded.isAdmin) {
         return res.render("register", {
+          user: req.user,
           title: "Poke-Mart Register",
         });
       } else {
@@ -106,4 +110,12 @@ export const renderRegisterView = (req: Request, res: Response) => {
   }
 
   return res.redirect("/login");
+};
+
+export const renderTestView = (req: Request, res: Response) => {
+  res.render("error", {
+    user: req.user,
+    message: "This is a test error",
+    details: "This is a test error details",
+  });
 };

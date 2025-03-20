@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Request } from "express";
+import { Response } from "../types/res.json";
 import { slugifyLowercase } from "../utils/slugify";
 import { NotFoundError } from "../errors";
 import { Item, flattenItemTags } from "../models/itemModel";

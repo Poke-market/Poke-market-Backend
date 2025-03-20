@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Request } from "express";
+import { Response } from "../types/res.json";
 import mongoose from "mongoose";
 import { z } from "zod";
 // import { Error as MongooseError } from "mongoose";
@@ -198,7 +199,6 @@ export const deleteItem = async (req: Request, res: Response) => {
   // Return a properly formatted JSON response
   res.status(200).json({
     status: "success",
-    message: "Item successfully deleted",
     data: result.data,
   });
 };
