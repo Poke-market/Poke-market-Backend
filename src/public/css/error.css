@@ -15,8 +15,6 @@
   }
 
   & .error-details {
-    background-color: var(--details-container-bg);
-    padding: 1rem;
     border-radius: 4px;
     margin-bottom: 2rem;
     text-align: left;

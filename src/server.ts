@@ -6,7 +6,8 @@ import mongoose from "mongoose";
 import hbs from "./config/handlebars";
 
 import { notFound } from "./controllers/notFoundController";
-import { errorHandler } from "./middleware/errorMiddleware";
+import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
+import { errorSendMiddleware } from "./middleware/errorSendMiddleware";
 import arcjetMiddleware from "./middleware/arcjetMiddleware";
 import itemsRoutes from "./routes/itemsRoutes";
 import tagRoutes from "./routes/tagRoutes";
@@ -45,7 +46,8 @@ app.use("/", viewRoutes);
 app.all("*splat", notFound);
 
 // handle errors (this must be last)
-app.use(errorHandler);
+app.use(errorProcessMiddleware);
+app.use(errorSendMiddleware);
 
 // Database connection
 try {

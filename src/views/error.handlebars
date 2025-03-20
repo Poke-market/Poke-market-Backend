@@ -1,14 +1,21 @@
 {{#section "styles"}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
   <link rel="stylesheet" href="/css/error.css" />
 {{/section}}
 
 <div class="error-container">
   <h1>Oops! Something went wrong</h1>
+  {{#if statusCode}}<p class="status-code">Status: {{statusCode}}</p>{{/if}}
   <p>{{message}}</p>
   {{#if details}}
     <div class="error-details">
-      <pre>{{details}}</pre>
+      <pre><code class="language-json">{{details}}</code></pre>
     </div>
   {{/if}}
   <a href="/" class="back-home">Back to Home</a>
 </div>
+
+{{#section "scripts"}}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+{{/section}}
