@@ -14,7 +14,7 @@ function loginUser(userDocument: InstanceType<typeof User>, res: Response) {
 
   const token = jwt.sign(
     {
-      id: user._id,
+      _id: user._id,
       email: user.email,
       isAdmin: user.isAdmin || false,
     },
