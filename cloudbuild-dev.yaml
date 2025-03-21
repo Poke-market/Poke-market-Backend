@@ -17,7 +17,4 @@ steps:
       - "--platform"
       - "managed"
       - "--set-secrets"
-      - "MONGO_URI=projects/PROJECT_ID/secrets/MONGO_URI/versions/latest,JWT_SECRET=projects/PROJECT_ID/secrets/JWT_SECRET/versions/latest,ARCJET_KEY=projects/PROJECT_ID/secrets/ARCJET_KEY/versions/latest"
-
-options:
-  logging: "CLOUD_LOGGING_ONLY"
+      - "MONGO_URI=projects/strong-ward-453503-f1/secrets/MONGO_URI/versions/latest,JWT_SECRET=projects/strong-ward-453503-f1/secrets/JWT_SECRET/versions/latest,ARCJET_KEY=projects/strong-ward-453503-f1/secrets/ARCJET_KEY/versions/latest"
