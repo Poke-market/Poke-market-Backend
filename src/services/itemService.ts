@@ -15,6 +15,7 @@ import {
   buildNestedPropSorter,
   NestedPropSorter,
 } from "../utils/nestedPropsSorter";
+import { generatePaginationInfo } from "../utils/paginationHelper";
 
 // Define the input schemas
 export const PaginationParamsSchema = z.object({
@@ -153,7 +154,6 @@ export async function getItems(
   const { mongoSorter, memorySorter } = buildItemsSorter(params);
   const { limit, page } = PaginationParamsSchema.parse(params);
   const itemCount = await Item.countDocuments(filter);
-  const totalPages = Math.ceil(itemCount / limit);
   const skip = (page - 1) * limit;
 
   if (page > 1 && skip >= itemCount) throw new NotFoundError("Page not found");
@@ -172,16 +172,18 @@ export async function getItems(
     memorySorter(items);
   }
 
+  // Generate base pagination info
+  const paginationInfo = generatePaginationInfo(
+    itemCount,
+    page,
+    limit,
+    getPageLink,
+  );
+
   return {
     info: {
-      count: itemCount,
+      ...paginationInfo,
       categorieCount: await countCategories(filterWithoutCats),
-      page: page,
-      pages: totalPages,
-      prev: page > 1 ? getPageLink(page - 1) : null,
-      next: page < totalPages ? getPageLink(page + 1) : null,
-      first: page > 1 ? getPageLink(1) : null,
-      last: page < totalPages ? getPageLink(totalPages) : null,
     },
     items: items.map((item) => flattenItemTags(item.toObject())),
   };
