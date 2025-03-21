@@ -122,11 +122,9 @@
     grid-template-columns: 12rem 1fr 12rem 12rem;
     gap: 2rem;
     padding: 1.5rem;
-    background-color: var(--blue-grey);
     border-radius: 8px 8px 0 0;
     font-weight: 500;
     font-size: 1.5rem;
-    color: var(--text-color-2);
 
     & .col-image,
     & .col-actions {
@@ -411,7 +409,6 @@
   display: none;
   margin: 1.5rem 0;
   padding: 1.5rem;
-  background-color: var(--blue-grey);
   border-radius: 8px;
 
   &.show {
