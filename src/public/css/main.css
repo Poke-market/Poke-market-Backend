@@ -6,17 +6,22 @@
   --discount-color: #e97171;
   --background-color: #fff;
   --text-color-2: #242424;
-  --grey: #ccc;
+  --grey: #dee2e6;
   --white: #fff;
   --basic-blue: #3a76cf;
   --light-blue: #9dbbe7;
   --blue-grey: #e7eef9;
-  --red: #ff5a50;
   --product-name-color: #3a3a3a;
   --product-description-color: #898989;
   --details-container-bg: #f3f7fc;
   --current-price-color: #3a3a3a;
   --original-price-color: #b0b0b0;
+  --red: #dc3545;
+  --green: #28a745;
+  --blue: #007bff;
+  --yellow: #ffc107;
+  --text-color-2: #495057;
+  --text-color-3: #6c757d;
 }
 
 body {
@@ -91,6 +96,7 @@ header {
 
 /* Main Content */
 main {
+  width: 100%;
   max-width: 120rem;
   margin: 2rem auto;
   padding: 0 1rem;

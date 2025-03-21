@@ -1,0 +1,104 @@
+/* User Edit Page Specific Styles - Keeping these as they're for the edit page */
+.user-edit-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.user-edit-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.user-edit-header h1 {
+  font-size: 2rem;
+  color: var(--text-color-2);
+  margin: 0;
+}
+
+.notification-container {
+  margin-bottom: 2rem;
+  min-height: 2.5rem;
+}
+
+.notification {
+  padding: 1rem 1.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.notification.error {
+  background-color: #f8d7da;
+  border-left: 4px solid var(--danger-color);
+  color: #842029;
+  display: block;
+}
+
+.notification.success {
+  background-color: #d1e7dd;
+  border-left: 4px solid var(--success-color);
+  color: #0f5132;
+  display: block;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .users-list .list-header {
+    display: none;
+  }
+
+  .user-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .col-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .col-info .user-header {
+    justify-content: center;
+  }
+
+  .user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .col-contact,
+  .col-status {
+    text-align: center;
+  }
+
+  .col-actions {
+    justify-content: center;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: auto;
+    min-width: 6rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .users-container {
+    margin: 1rem;
+  }
+}
