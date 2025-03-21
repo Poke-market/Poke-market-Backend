@@ -1,5 +1,6 @@
 import { Request, NextFunction } from "express";
 import { Response } from "../types/res.json";
+import { UnauthorizedError } from "../errors";
 
 export const errorSendMiddleware = (
   err: Error,
@@ -9,11 +10,18 @@ export const errorSendMiddleware = (
   next: NextFunction,
 ) => {
   if (req.path.startsWith("/api")) {
-    res.json(res.locals.processedError);
-  } else {
-    res.render("error", {
-      user: req.user,
-      message: err.message,
-    });
+    // we are sure that processedError is not undefined as it gets set in the previous middleware
+    res.json(res.locals.processedError!);
+    return;
   }
+
+  if (err instanceof UnauthorizedError) {
+    res.redirect("/login");
+    return;
+  }
+
+  res.render("error", {
+    user: req.user,
+    message: err.message,
+  });
 };

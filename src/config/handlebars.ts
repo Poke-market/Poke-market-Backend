@@ -14,6 +14,9 @@ const hbs = create({
   defaultLayout: "main",
   layoutsDir: "src/views/layouts",
   partialsDir: "src/views/partials",
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+  },
   helpers: {
     printIf: (condition: boolean, str: string) => (condition ? str : ""),
     selectedIf: (condition: boolean) => (condition ? "selected" : ""),
@@ -28,6 +31,12 @@ const hbs = create({
     and: compareOp<boolean>((a, b) => a && b),
     or: compareOp<boolean>((a, b) => a || b),
     price: (price: number) => `€ ${price}`,
+    formatDate: (date: Date) =>
+      date.toLocaleDateString("nl-NL", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
     section: function (
       this: { _sections?: Record<string, string> },
       name: string,

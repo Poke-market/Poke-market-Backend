@@ -66,6 +66,10 @@ header {
     display: flex;
     gap: 2rem;
 
+    & :last-child {
+      margin-left: 10rem;
+    }
+
     & a {
       color: var(--white);
       text-decoration: none;

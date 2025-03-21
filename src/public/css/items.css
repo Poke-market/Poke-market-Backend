@@ -1,5 +1,6 @@
 .items-container {
   max-width: 120rem;
+  width: 9001px;
   margin: 0 auto;
 
   & .items-header {

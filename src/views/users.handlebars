@@ -1,0 +1,134 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/users.css" />
+{{/section}}
+
+{{#section "scripts"}}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+      
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          const userId = this.getAttribute('data-id');
+          const userName = this.getAttribute('data-name');
+          
+          if (confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
+            fetch(`/api/users/${userId}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(response => {
+              if (response.ok) {
+                window.location.reload();
+              } else {
+                alert('Error deleting user');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('An error occurred while deleting the user');
+            });
+          }
+        });
+      });
+    });
+  </script>
+{{/section}}
+
+<div class="users-container">
+  <div class="users-header">
+    <h1>User Management</h1>
+    <div class="users-controls">
+      <div class="filter-sort">
+        <button class="filter-btn" onclick="document.getElementById('search-form').classList.toggle('show')">Filter</button>
+        <select class="sort-select" id="sort-select" onchange="window.location.href=this.value">
+          <option value="/admin/users?sort=default" {{#unless sortBy}}selected{{/unless}}>Default</option>
+          <option value="/admin/users?sort=name&order=asc" {{#if (and (eq sortBy 'name') (eq order 'asc'))}}selected{{/if}}>Name: A to Z</option>
+          <option value="/admin/users?sort=name&order=desc" {{#if (and (eq sortBy 'name') (eq order 'desc'))}}selected{{/if}}>Name: Z to A</option>
+          <option value="/admin/users?sort=createdAt&order=desc" {{#if (and (eq sortBy 'createdAt') (eq order 'desc'))}}selected{{/if}}>Newest First</option>
+          <option value="/admin/users?sort=createdAt&order=asc" {{#if (and (eq sortBy 'createdAt') (eq order 'asc'))}}selected{{/if}}>Oldest First</option>
+        </select>
+      </div>
+      <div class="view-options">
+        <button class="add-user-btn" onclick="window.location.href='/admin/users/add'">Add New User</button>
+        <span>Showing {{users.length}} of {{totalUsers}} users</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="users-list">
+    <div class="list-header">
+      <div class="col-image">Image</div>
+      <div class="col-info">User Info</div>
+      <div class="col-status">Status</div>
+      <div class="col-actions">Actions</div>
+    </div>
+
+    {{#each users}}
+    <div class="user-row">
+      <div class="col-image">
+        <div class="user-image">
+          <img src="{{this.avatar}}" alt="{{this.name}}" />
+        </div>
+      </div>
+      <div class="col-info">
+        <div class="user-header">
+          <h3 class="user-name">{{this.name}}</h3>
+          <div class="status-badges">
+            {{#if this.isAdmin}}
+              <span class="badge admin">Admin</span>
+            {{/if}}
+            {{#if this.emailVerified}}
+              <span class="badge verified">Verified</span>
+            {{else}}
+              <span class="badge unverified">Unverified</span>
+            {{/if}}
+          </div>
+        </div>
+        <div class="user-email">{{this.email}}</div>
+        <div class="user-meta">
+          <div class="user-id">ID: {{this._id}}</div>
+          <div class="user-created">
+            <p>Created: {{formatDate this.createdAt}}</p>
+            {{#if this.lastLogin}}
+                <div>Last Login: {{formatDate this.lastLogin}}</div>
+            {{else}}
+                <div>Never logged in</div>
+            {{/if}}
+            </div>
+        </div>
+      </div>
+      
+      <div class="col-status">
+        {{#if this.lastLogin}}
+          <span class="last-active">Active {{formatTimeAgo this.lastLogin}}</span>
+        {{else}}
+          <span class="last-active">Never active</span>
+        {{/if}}
+      </div>
+      
+      <div class="col-actions">
+        <a href="/users/{{this._id}}" class="edit-btn">Edit</a>
+        <button class="delete-btn" data-id="{{this._id}}" data-name="{{this.name}}">Delete</button>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  {{#if pagination}}
+  <div class="pagination">
+    {{#if pagination.hasPrevPage}}
+      <a href="/admin/users?page={{pagination.prevPage}}{{#if search}}&search={{search}}{{/if}}{{#if sortBy}}&sort={{sortBy}}{{/if}}" class="page-link">Previous</a>
+    {{/if}}
+    
+    <span class="current-page">Page {{pagination.currentPage}} of {{pagination.totalPages}}</span>
+    
+    {{#if pagination.hasNextPage}}
+      <a href="/admin/users?page={{pagination.nextPage}}{{#if search}}&search={{search}}{{/if}}{{#if sortBy}}&sort={{sortBy}}{{/if}}" class="page-link">Next</a>
+    {{/if}}
+  </div>
+  {{/if}}
+</div> 

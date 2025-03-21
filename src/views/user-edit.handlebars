@@ -1,0 +1,148 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/users.css" />
+{{/section}}
+
+{{#section "scripts"}}
+  <script type="module" src="/js/user-edit.js"></script>
+{{/section}}
+
+<div class="user-edit-container">
+  <div class="user-edit-header">
+    <h1>Edit User</h1>
+    <div class="user-edit-actions">
+      <a href="/users" class="back-btn">Back to Users</a>
+    </div>
+  </div>
+
+  <!-- Notification area for status/error messages -->
+  <div class="notification-container">
+    <div id="notification-area" class="notification"></div>
+  </div>
+  
+  <form id="user-edit-form" data-user-id="{{userDetails._id}}">
+    <div class="edit-section user-details">
+      <h2>User Information</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstname" class="form-label">First Name:</label>
+          <input type="text" id="firstname" name="firstname" value="{{userDetails.firstname}}" required class="form-input" />
+          <div id="firstname-error" class="error-message" aria-live="polite"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="lastname" class="form-label">Last Name:</label>
+          <input type="text" id="lastname" name="lastname" value="{{userDetails.lastname}}" required class="form-input" />
+          <div id="lastname-error" class="error-message" aria-live="polite"></div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" id="email" name="email" value="{{userDetails.email}}" required class="form-input" />
+        <div id="email-error" class="error-message" aria-live="polite"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="telephone" class="form-label">Telephone:</label>
+        <input type="tel" id="telephone" name="telephone" value="{{userDetails.telephone}}" required class="form-input" />
+        <div id="telephone-error" class="error-message" aria-live="polite"></div>
+      </div>
+    </div>
+    
+    <div class="edit-section address-details">
+      <h2>Address</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="street" class="form-label">Street:</label>
+          <input type="text" id="street" name="street" value="{{userDetails.street}}" required class="form-input" />
+          <div id="street-error" class="error-message" aria-live="polite"></div>
+        </div>
+        
+        <div class="form-group small-input">
+          <label for="housenumber" class="form-label">House Number:</label>
+          <input type="text" id="housenumber" name="housenumber" value="{{userDetails.housenumber}}" required class="form-input" />
+          <div id="housenumber-error" class="error-message" aria-live="polite"></div>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city" class="form-label">City:</label>
+          <input type="text" id="city" name="city" value="{{userDetails.city}}" required class="form-input" />
+          <div id="city-error" class="error-message" aria-live="polite"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="zipcode" class="form-label">Zip Code:</label>
+          <input type="text" id="zipcode" name="zipcode" value="{{userDetails.zipcode}}" required class="form-input" />
+          <div id="zipcode-error" class="error-message" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="edit-section user-status">
+      <h2>Account Status</h2>
+      
+      <div class="form-row status-toggles">
+        <div class="form-group toggle-group">
+          <label for="isAdmin" class="form-label">Admin Privileges:</label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="isAdmin" name="isAdmin" {{#if userDetails.isAdmin}}checked{{/if}} class="toggle-input" />
+            <label for="isAdmin" class="toggle-label"></label>
+            <span class="toggle-status">{{#if userDetails.isAdmin}}Enabled{{else}}Disabled{{/if}}</span>
+          </div>
+          <div class="status-description">
+            <p>Admin users can manage all aspects of the system including users, items, and orders.</p>
+          </div>
+        </div>
+        
+        <div class="form-group toggle-group">
+          <label for="isVerified" class="form-label">Verification Status:</label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="isVerified" name="isVerified" {{#if userDetails.isVerified}}checked{{/if}} class="toggle-input" />
+            <label for="isVerified" class="toggle-label"></label>
+            <span class="toggle-status">{{#if userDetails.isVerified}}Verified{{else}}Unverified{{/if}}</span>
+          </div>
+          <div class="status-description">
+            <p>Verified users have confirmed their email address and can access all features.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-actions">
+      <button type="button" id="cancel-btn" class="cancel-btn">Cancel</button>
+      <button type="submit" id="save-btn" class="save-btn">Save Changes</button>
+    </div>
+  </form>
+
+  <div class="danger-zone">
+    <h2>Danger Zone</h2>
+    <div class="danger-action">
+      <div class="action-description">
+        <h3>Delete User Account</h3>
+        <p>Permanently delete this user account and all associated data. This action cannot be undone.</p>
+      </div>
+      <button type="button" id="delete-user-btn" class="delete-btn" data-id="{{userDetails._id}}">Delete User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation modal for sensitive actions -->
+<div id="confirmation-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title">Confirm Action</h2>
+      <button type="button" class="close-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="modal-message">Are you sure you want to perform this action?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="modal-cancel" class="cancel-btn">Cancel</button>
+      <button type="button" id="modal-confirm" class="confirm-btn">Confirm</button>
+    </div>
+  </div>
+</div> 
