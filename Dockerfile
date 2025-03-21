@@ -12,6 +12,6 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 COPY --from=builder /usr/src/app/dist ./dist
 COPY package*.json ./
 RUN npm install --production
-ENV PORT=3000
+ENV NODE_ENV=production
 EXPOSE 3000
 CMD ["node", "dist/server.mjs"]
