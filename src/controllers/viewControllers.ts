@@ -52,64 +52,15 @@ export const renderItemsView = async (req: Request, res: Response) => {
 };
 
 export const renderLoginView = (req: Request, res: Response) => {
-  const tokenFromCookie: string | undefined =
-    typeof req.cookies?.token === "string" ? req.cookies.token : undefined;
-  const tokenFromHeader: string | undefined =
-    req.headers.authorization?.startsWith("Bearer")
-      ? req.headers.authorization.split(" ")[1]
-      : undefined;
-  const token: string | undefined = tokenFromCookie ?? tokenFromHeader;
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as { isAdmin?: boolean };
-      if (decoded.isAdmin) {
-        return res.redirect("/items");
-      }
-    } catch (error) {
-      console.log(
-        "Invalid token, rendering login page:",
-        error instanceof Error ? error.message : "Unknown error",
-      );
-    }
-  }
-
   res.render("login", {
-    user: req.user,
     title: "Poke-Mart Login",
   });
 };
 
 export const renderRegisterView = (req: Request, res: Response) => {
-  const tokenFromCookie: string | undefined =
-    typeof req.cookies?.token === "string" ? req.cookies.token : undefined;
-  const tokenFromHeader: string | undefined =
-    req.headers.authorization?.startsWith("Bearer")
-      ? req.headers.authorization.split(" ")[1]
-      : undefined;
-  const token: string | undefined = tokenFromCookie ?? tokenFromHeader;
-
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as { isAdmin?: boolean };
-      if (decoded.isAdmin) {
-        return res.render("register", {
-          user: req.user,
-          title: "Poke-Mart Register",
-        });
-      } else {
-        return res.redirect("/login");
-      }
-    } catch (error) {
-      console.log(
-        "Register view - invalid token:",
-        error instanceof Error ? error.message : "Unknown error",
-      );
-      return res.redirect("/login");
-    }
-  }
-
-  return res.redirect("/login");
+  res.render("register", {
+    title: "Poke-Mart Register",
+  });
 };
 
 export const renderTestView = (req: Request, res: Response) => {
