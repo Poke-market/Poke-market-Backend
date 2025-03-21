@@ -1,56 +1,160 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize form submission handler
-  initFormSubmission();
-
-  // Initialize toggle switches
-  initToggleSwitches();
-
-  // Initialize cancel button
-  initCancelButton();
-
-  // Initialize delete user functionality
-  initDeleteUser();
-
-  // Initialize modal functionality
-  initModal();
-});
-
 /**
- * Initialize the form submission handler
+ * User Edit Page JavaScript
+ * Handles form validation, submission, and user deletion
  */
-function initFormSubmission() {
-  const form = document.getElementById("user-edit-form");
-  if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+document.addEventListener("DOMContentLoaded", function () {
+  // Initialize UI elements
+  const form = document.getElementById("user-edit-form");
+  const userId = form.dataset.userId;
+  const cancelBtn = document.getElementById("cancel-btn");
+  const deleteBtn = document.getElementById("delete-user-btn");
+  const notificationArea = document.getElementById("notification-area");
+  const saveBtn = document.getElementById("save-btn");
+  const adminToggle = document.getElementById("isAdmin");
+  const verifiedToggle = document.getElementById("isVerified");
+  const modal = document.getElementById("confirmation-modal");
+  const modalTitle = document.getElementById("modal-title");
+  const modalMessage = document.getElementById("modal-message");
+  const modalConfirm = document.getElementById("modal-confirm");
+  const modalCancel = document.getElementById("modal-cancel");
+  const closeModal = document.querySelector(".close-modal");
+
+  // Track form modified state
+  let formModified = false;
+
+  // Form field elements
+  const formFields = [
+    "firstname",
+    "lastname",
+    "email",
+    "telephone",
+    "street",
+    "housenumber",
+    "city",
+    "zipcode",
+  ];
+
+  // Initialize event listeners
+  initFormListeners();
+  initToggleSwitches();
+  initModalListeners();
+
+  /**
+   * Initialize form event listeners
+   */
+  function initFormListeners() {
+    // Add input listeners to form fields
+    formFields.forEach((field) => {
+      const input = document.getElementById(field);
+      if (input) {
+        input.addEventListener("input", () => {
+          formModified = true;
+          clearFieldError(field);
+        });
+      }
+    });
+
+    // Form submission handler
+    form.addEventListener("submit", handleFormSubmit);
+
+    // Cancel button handler
+    cancelBtn.addEventListener("click", handleCancel);
+
+    // Delete button handler
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", confirmDelete);
+    }
+  }
+
+  /**
+   * Initialize toggle switches
+   */
+  function initToggleSwitches() {
+    // Admin toggle
+    if (adminToggle) {
+      adminToggle.addEventListener("change", function () {
+        formModified = true;
+        updateToggleStatus(this, "isAdmin");
+      });
+    }
+
+    // Verified toggle
+    if (verifiedToggle) {
+      verifiedToggle.addEventListener("change", function () {
+        formModified = true;
+        updateToggleStatus(this, "isVerified");
+      });
+    }
+  }
+
+  /**
+   * Initialize modal listeners
+   */
+  function initModalListeners() {
+    // Close modal buttons
+    [modalCancel, closeModal].forEach((el) => {
+      if (el) {
+        el.addEventListener("click", hideModal);
+      }
+    });
+
+    // Modal confirm button uses dynamic handler set in confirmDelete or confirmDiscard
+  }
+
+  /**
+   * Update toggle switch status text
+   */
+  function updateToggleStatus(toggleElement, toggleType) {
+    const statusElement =
+      toggleElement.parentElement.querySelector(".toggle-status");
+    if (statusElement) {
+      if (toggleType === "isAdmin") {
+        statusElement.textContent = toggleElement.checked
+          ? "Enabled"
+          : "Disabled";
+      } else if (toggleType === "isVerified") {
+        statusElement.textContent = toggleElement.checked
+          ? "Verified"
+          : "Unverified";
+      }
+    }
+  }
+
+  /**
+   * Handle form submission
+   */
+  async function handleFormSubmit(e) {
     e.preventDefault();
 
-    // Clear previous errors
-    clearErrors();
+    // Clear existing errors
+    clearAllErrors();
 
-    // Set loading state
-    setLoadingState(true);
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
 
-    // Get user ID from the form data attribute
-    const userId = form.dataset.userId;
-
-    // Collect form data
-    const formData = new FormData(form);
+    // Prepare form data
     const userData = {
-      firstname: formData.get("firstname"),
-      lastname: formData.get("lastname"),
-      email: formData.get("email"),
-      telephone: formData.get("telephone"),
-      street: formData.get("street"),
-      housenumber: formData.get("housenumber"),
-      city: formData.get("city"),
-      zipcode: formData.get("zipcode"),
-      isAdmin: formData.has("isAdmin"),
-      isVerified: formData.has("isVerified"),
+      firstname: document.getElementById("firstname").value,
+      lastname: document.getElementById("lastname").value,
+      email: document.getElementById("email").value,
+      telephone: document.getElementById("telephone").value,
+      street: document.getElementById("street").value,
+      housenumber: document.getElementById("housenumber").value,
+      city: document.getElementById("city").value,
+      zipcode: document.getElementById("zipcode").value,
+      isAdmin: document.getElementById("isAdmin").checked,
+      emailVerified: document.getElementById("isVerified").checked,
     };
 
     try {
-      // Send update request
+      // Set button to loading state
+      setLoadingState(true);
+      showNotification("Saving changes...", "loading");
+
+      // Submit form data
       const response = await fetch(`/api/users/${userId}`, {
         method: "PATCH",
         headers: {
@@ -61,256 +165,249 @@ function initFormSubmission() {
 
       const data = await response.json();
 
-      // Reset loading state
+      // Reset button state
       setLoadingState(false);
 
-      if (response.ok) {
-        // Show success message
-        showNotification("success", "User updated successfully");
-
-        // Update toggle status texts to match new state
-        updateToggleStatus("isAdmin", userData.isAdmin);
-        updateToggleStatus("isVerified", userData.isVerified);
-      } else {
-        // Handle validation errors
-        if (data.errors && Array.isArray(data.errors)) {
-          data.errors.forEach((err) => {
-            showFieldError(err.field, err.message);
-          });
-        } else {
-          // Show generic error
-          showNotification("error", data.message || "Failed to update user");
-        }
+      if (!response.ok) {
+        // Handle validation or other errors
+        handleSubmitErrors(data);
+        return;
       }
+
+      // Success
+      showNotification("User details updated successfully.", "success");
+      formModified = false;
     } catch (error) {
       console.error("Error updating user:", error);
-      showNotification("error", "An error occurred while updating the user");
       setLoadingState(false);
-    }
-  });
-}
-
-/**
- * Initialize the toggle switches for admin and verification status
- */
-function initToggleSwitches() {
-  const toggles = document.querySelectorAll(".toggle-input");
-
-  toggles.forEach((toggle) => {
-    toggle.addEventListener("change", () => {
-      updateToggleStatus(toggle.id, toggle.checked);
-    });
-  });
-}
-
-/**
- * Update the status text of a toggle switch
- */
-function updateToggleStatus(id, isChecked) {
-  const statusEl = document
-    .querySelector(`#${id}`)
-    .closest(".toggle-switch")
-    .querySelector(".toggle-status");
-  if (statusEl) {
-    if (id === "isAdmin") {
-      statusEl.textContent = isChecked ? "Enabled" : "Disabled";
-    } else if (id === "isVerified") {
-      statusEl.textContent = isChecked ? "Verified" : "Unverified";
+      showNotification("Error updating user: " + error.message, "error");
     }
   }
-}
 
-/**
- * Initialize the cancel button
- */
-function initCancelButton() {
-  const cancelBtn = document.getElementById("cancel-btn");
-  if (!cancelBtn) return;
-
-  cancelBtn.addEventListener("click", () => {
-    // Go back to users list
-    window.location.href = "/users";
-  });
-}
-
-/**
- * Initialize the delete user functionality
- */
-function initDeleteUser() {
-  const deleteBtn = document.getElementById("delete-user-btn");
-  if (!deleteBtn) return;
-
-  deleteBtn.addEventListener("click", () => {
-    const userId = deleteBtn.dataset.id;
-
-    // Show confirmation modal
-    showModal(
-      "Delete User",
-      "Are you sure you want to delete this user? This action cannot be undone.",
-      "Delete",
-      () => deleteUser(userId),
-    );
-  });
-}
-
-/**
- * Delete a user
- * @param {string} userId - The ID of the user to delete
- */
-async function deleteUser(userId) {
-  try {
-    const response = await fetch(`/api/users/${userId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Redirect to users list with success message
-      window.location.href = "/users?deleted=true";
+  /**
+   * Handle cancel button click
+   */
+  function handleCancel() {
+    if (formModified) {
+      confirmDiscard();
     } else {
-      // Show error
-      showNotification("error", data.message || "Failed to delete user");
+      // No changes, return to user list
+      window.location.href = "/users";
     }
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    showNotification("error", "An error occurred while deleting the user");
   }
-}
 
-/**
- * Initialize the modal functionality
- */
-function initModal() {
-  const modal = document.getElementById("confirmation-modal");
-  const closeBtn = modal.querySelector(".close-modal");
-  const cancelBtn = modal.querySelector("#modal-cancel");
+  /**
+   * Confirm discarding changes
+   */
+  function confirmDiscard() {
+    modalTitle.textContent = "Discard Changes";
+    modalMessage.textContent = "Are you sure you want to discard your changes?";
 
-  closeBtn.addEventListener("click", () => {
-    hideModal();
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    hideModal();
-  });
-
-  // Close modal when clicking outside
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) {
+    // Set confirm button handler
+    modalConfirm.onclick = function () {
       hideModal();
-    }
-  });
-}
+      window.location.href = "/users";
+    };
 
-/**
- * Show the confirmation modal
- * @param {string} title - The modal title
- * @param {string} message - The modal message
- * @param {string} confirmText - The text for the confirm button
- * @param {Function} onConfirm - The callback to execute when confirmed
- */
-function showModal(title, message, confirmText, onConfirm) {
-  const modal = document.getElementById("confirmation-modal");
-  const titleEl = modal.querySelector("#modal-title");
-  const messageEl = modal.querySelector("#modal-message");
-  const confirmBtn = modal.querySelector("#modal-confirm");
-
-  titleEl.textContent = title;
-  messageEl.textContent = message;
-  confirmBtn.textContent = confirmText;
-
-  // Set confirm button action
-  confirmBtn.onclick = () => {
-    hideModal();
-    onConfirm();
-  };
-
-  // Show modal
-  modal.classList.add("show");
-}
-
-/**
- * Hide the confirmation modal
- */
-function hideModal() {
-  const modal = document.getElementById("confirmation-modal");
-  modal.classList.remove("show");
-}
-
-/**
- * Clear all error messages
- */
-function clearErrors() {
-  // Clear field errors
-  document.querySelectorAll(".error-message").forEach((el) => {
-    el.textContent = "";
-  });
-
-  // Hide notification area
-  const notification = document.getElementById("notification-area");
-  if (notification) {
-    notification.style.display = "none";
-    notification.textContent = "";
-    notification.className = "notification";
+    showModal();
   }
-}
 
-/**
- * Show a notification message
- * @param {string} type - The type of notification ('error', 'success')
- * @param {string} message - The message to display
- */
-function showNotification(type, message) {
-  const notification = document.getElementById("notification-area");
-  if (!notification) return;
+  /**
+   * Confirm user deletion
+   */
+  function confirmDelete() {
+    const userName = `${document.getElementById("firstname").value} ${document.getElementById("lastname").value}`;
 
-  notification.textContent = message;
-  notification.className = `notification ${type}`;
-  notification.style.display = "block";
+    modalTitle.textContent = "Delete User";
+    modalMessage.textContent = `Are you sure you want to delete ${userName}? This action cannot be undone.`;
 
-  // Scroll to notification
-  notification.scrollIntoView({ behavior: "smooth", block: "center" });
-}
+    // Set confirm button handler
+    modalConfirm.onclick = function () {
+      hideModal();
+      deleteUser();
+    };
 
-/**
- * Show a field-specific error message
- * @param {string} field - The field name
- * @param {string} message - The error message
- */
-function showFieldError(field, message) {
-  const errorEl = document.getElementById(`${field}-error`);
-  if (errorEl) {
-    errorEl.textContent = message;
+    showModal();
+  }
 
-    // Add error class to the input
-    const input = document.getElementById(field);
-    if (input) {
-      input.classList.add("error");
+  /**
+   * Delete user
+   */
+  async function deleteUser() {
+    try {
+      // Show loading notification
+      showNotification("Deleting user...", "loading");
 
-      // Focus on the first field with error
-      if (!document.querySelector(".error:focus")) {
-        input.focus();
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error deleting user");
+      }
+
+      // Success - redirect to users list with success message
+      sessionStorage.setItem("userMessage", "User deleted successfully");
+      window.location.href = "/users";
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      showNotification("Error deleting user: " + error.message, "error");
+    }
+  }
+
+  /**
+   * Validate the form
+   */
+  function validateForm() {
+    let isValid = true;
+
+    // Required fields
+    formFields.forEach((field) => {
+      const input = document.getElementById(field);
+      if (input && !input.value.trim()) {
+        showFieldError(field, "This field is required");
+        isValid = false;
+      }
+    });
+
+    // Email validation
+    const emailInput = document.getElementById("email");
+    if (emailInput && emailInput.value.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailInput.value)) {
+        showFieldError("email", "Please enter a valid email address");
+        isValid = false;
       }
     }
-  }
-}
 
-/**
- * Set loading state during form submission
- * @param {boolean} isLoading - Whether the form is in loading state
- */
-function setLoadingState(isLoading) {
-  const saveBtn = document.getElementById("save-btn");
-  if (!saveBtn) return;
+    // Phone validation
+    const phoneInput = document.getElementById("telephone");
+    if (phoneInput && phoneInput.value.trim()) {
+      const phoneRegex = /^[0-9+\- ]{10,15}$/;
+      if (!phoneRegex.test(phoneInput.value)) {
+        showFieldError("telephone", "Please enter a valid phone number");
+        isValid = false;
+      }
+    }
 
-  if (isLoading) {
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = "Saving...";
-  } else {
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = "Save Changes";
+    return isValid;
   }
-}
+
+  /**
+   * Handle submit errors
+   */
+  function handleSubmitErrors(data) {
+    if (data.data && data.data.errors) {
+      // Field-specific errors
+      if (Array.isArray(data.data.errors)) {
+        data.data.errors.forEach((err) => {
+          if (Array.isArray(err)) {
+            // Format: [field, message]
+            const [field, message] = err;
+            showFieldError(field, message);
+          }
+        });
+      }
+
+      // Show general error message
+      showNotification("Please correct the errors in the form.", "error");
+    } else {
+      // General error
+      showNotification(data.message || "Error updating user.", "error");
+    }
+  }
+
+  /**
+   * Set button loading state
+   */
+  function setLoadingState(loading) {
+    if (loading) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+    } else {
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save Changes";
+    }
+  }
+
+  /**
+   * Show a field error
+   */
+  function showFieldError(field, message) {
+    const errorElement = document.getElementById(`${field}-error`);
+    if (errorElement) {
+      errorElement.textContent = message;
+    }
+  }
+
+  /**
+   * Clear a field error
+   */
+  function clearFieldError(field) {
+    const errorElement = document.getElementById(`${field}-error`);
+    if (errorElement) {
+      errorElement.textContent = "";
+    }
+  }
+
+  /**
+   * Clear all field errors
+   */
+  function clearAllErrors() {
+    document.querySelectorAll(".error-message").forEach((el) => {
+      el.textContent = "";
+    });
+  }
+
+  /**
+   * Show notification
+   */
+  function showNotification(message, type = "error") {
+    notificationArea.innerHTML = message;
+    notificationArea.className = `notification ${type} visible`;
+
+    if (type === "error") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  /**
+   * Clear notification
+   */
+  function clearNotification() {
+    notificationArea.className = "notification";
+    notificationArea.textContent = "";
+  }
+
+  /**
+   * Show modal
+   */
+  function showModal() {
+    modal.classList.add("show");
+  }
+
+  /**
+   * Hide modal
+   */
+  function hideModal() {
+    modal.classList.remove("show");
+  }
+
+  /**
+   * Check for stored user messages
+   */
+  function checkStoredMessages() {
+    const userMessage = sessionStorage.getItem("userMessage");
+    if (userMessage) {
+      showNotification(userMessage, "success");
+      sessionStorage.removeItem("userMessage");
+    }
+  }
+
+  // Check for stored messages on page load
+  checkStoredMessages();
+});
