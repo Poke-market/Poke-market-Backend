@@ -23,5 +23,6 @@ export const errorSendMiddleware = (
   res.render("error", {
     user: req.user,
     message: err.message,
+    statusCode: res.statusCode,
   });
 };
