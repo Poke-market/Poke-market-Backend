@@ -11,7 +11,7 @@
     <h1>Item Management</h1>
     <div class="items-controls">
       <div class="filter-sort">
-        <button class="filter-btn">Filter</button>
+        <button class="filter-btn" id="toggle-filter-btn">Filter</button>
         <select class="sort-select" id="sort-select">
           <option value="default" {{selectedIf (not sort)}}>Default</option>
           <option value="price-asc" {{selectedIf (and (eq sort "price") (eq order "asc"))}}>Price: Low to High</option>
@@ -21,11 +21,33 @@
         </select>
       </div>
       <div class="view-options">
-        <button class="add-item-btn">Add New Item</button>
-        <span>Showing {{info.count}} items</span>
+        <button class="add-item-btn" id="add-item-btn">Add New Item</button>
+        <span>Showing {{items.length}} of {{info.count}} items</span>
       </div>
     </div>
   </div>
+
+  <form id="search-form" class="search-form {{#if search}}show{{/if}}" action="/items" method="GET">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        name="search" 
+        class="search-input" 
+        placeholder="Search by name, description, category, or tags..." 
+        value="{{search}}"
+      >
+      {{#if search}}
+        <a href="/items" class="clear-search">Clear</a>
+      {{/if}}
+      <button type="submit" class="search-btn">Search</button>
+    </div>
+    {{#if sortBy}}
+      <input type="hidden" name="sort" value="{{sortBy}}">
+    {{/if}}
+    {{#if order}}
+      <input type="hidden" name="order" value="{{order}}">
+    {{/if}}
+  </form>
 
   <div class="items-list">
     <div class="list-header">

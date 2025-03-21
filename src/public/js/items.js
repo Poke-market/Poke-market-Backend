@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize elements
+  initFilterToggle();
+  initAddItemButton();
+
   const sortSelect = document.getElementById("sort-select");
 
   sortSelect.addEventListener("change", function () {
@@ -66,3 +70,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
+/**
+ * Initialize the filter toggle button
+ */
+function initFilterToggle() {
+  const filterBtn = document.getElementById("toggle-filter-btn");
+  if (!filterBtn) return;
+
+  filterBtn.addEventListener("click", () => {
+    const searchForm = document.getElementById("search-form");
+    if (searchForm) {
+      searchForm.classList.toggle("show");
+    }
+  });
+}
+
+/**
+ * Initialize the Add Item button
+ */
+function initAddItemButton() {
+  const addItemBtn = document.getElementById("add-item-btn");
+  if (!addItemBtn) return;
+
+  addItemBtn.addEventListener("click", () => {
+    window.location.href = "/items/add";
+  });
+}

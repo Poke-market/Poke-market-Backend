@@ -18,6 +18,7 @@ export const renderItemsView = async (req: Request, res: Response) => {
     title: "Poke-Mart Shop",
     sort: req.query.sort,
     order: req.query.order,
+    search: req.query.search,
   });
 };
 
