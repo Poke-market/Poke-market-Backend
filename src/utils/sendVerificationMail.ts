@@ -1,7 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import {
   SENDGRID_API_KEY,
-  SENDGRID_TEMPLATE_ID,
+  SENDGRID_TEMPLATE_ID_VERIFY,
   SENDGRID_TEMPLATE_ID_RESET,
   FROM_EMAIL,
 } from "../config/env";
@@ -25,7 +25,7 @@ export const sendVerificationEmail = async (data: EmailData) => {
 
       template_id:
         data.type === "verify"
-          ? SENDGRID_TEMPLATE_ID
+          ? SENDGRID_TEMPLATE_ID_VERIFY
           : SENDGRID_TEMPLATE_ID_RESET,
       personalizations: [
         {
