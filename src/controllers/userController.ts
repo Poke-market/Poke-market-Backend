@@ -6,37 +6,22 @@ import mongoose from "mongoose";
 import { ForbiddenError, NotFoundError, ValidationError } from "../errors";
 import { User } from "../models/userModel";
 import { Item } from "../models/itemModel";
+import {
+  getUserById,
+  getUsers,
+  deleteUser as deleteUserService,
+} from "../services/userService";
+import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 
 export const getAllUsers = async (req: Request, res: Response) => {
-  const users = await User.find()
-    .select("-password")
-    //only show name, id from wishlist
-    .populate("wishList", "name _id");
-  res.status(200).json({ status: "success", data: users });
+  const { users, info } = await getUsers(req.query, makePageLinkBuilder(req));
+  res.status(200).json({ status: "success", data: { info, users } });
 };
 
 export const getUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  //TODO to be changed to logged-in user
-  // const user = req.user;
-
-  if (!mongoose.isValidObjectId(id))
-    throw new ValidationError(
-      "id",
-      "Item id is not valid id by Mongoose standards",
-    );
-  //TODO to be changed to logged-in user
-  // if (!user) {
-  //   throw new NotFoundError("User not found");
-  // }
-  // if (user._id.toString() !== id) {
-  //   throw new BadRequestError("Unauthorized acess");
-  // }
-  const userdetails = await User.findById(id)
-    .select("-password")
-    .populate("wishList", "name _id");
-
-  res.status(200).json({ status: "success", data: userdetails });
+  const user = await getUserById(id);
+  res.status(200).json({ status: "success", data: user });
 };
 
 export const addToWishlist = async (req: Request, res: Response) => {
@@ -123,7 +108,7 @@ export const addUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = await User.findByIdAndDelete(id);
+  const user = await deleteUserService(id);
   res.status(200).json({ status: "success", data: user });
 };
 
