@@ -3,7 +3,7 @@ name: Comment PR on Deploy
 on:
   push:
     branches:
-      - development
+      - experiment/___-test-google-clooud
 
 permissions:
   pull-requests: write
