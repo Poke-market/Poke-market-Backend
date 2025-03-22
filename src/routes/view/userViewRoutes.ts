@@ -3,7 +3,7 @@ import {
   renderUsersView,
   renderUserEditView,
   renderUserAddView,
-} from "../../controllers/viewControllers/userViewControllers";
+} from "../../controllers/view/userViewControllers";
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { isAdmin } from "../../middleware/isAdmin";
 

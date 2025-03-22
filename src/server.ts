@@ -5,7 +5,7 @@ import express from "express";
 import mongoose from "mongoose";
 import hbs from "./config/handlebars";
 
-import { notFound } from "./controllers/apiControllers/notFoundController";
+import { notFound } from "./controllers/api/notFoundController";
 import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
 import { errorSendMiddleware } from "./middleware/errorSendMiddleware";
 import arcjetMiddleware from "./middleware/arcjetMiddleware";

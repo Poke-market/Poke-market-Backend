@@ -3,7 +3,7 @@ import {
   renderItemsView,
   renderItemEditView,
   renderItemAddView,
-} from "../../controllers/viewControllers/itemViewControllers";
+} from "../../controllers/view/itemViewControllers";
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { isAdmin } from "../../middleware/isAdmin";
 

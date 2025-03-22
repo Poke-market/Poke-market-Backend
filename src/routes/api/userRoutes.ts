@@ -11,7 +11,7 @@ import {
   removeFromWishlist,
   updateUser,
   replaceUser,
-} from "../../controllers/apiControllers/userController";
+} from "../../controllers/api/userController";
 
 const router = express.Router();
 

@@ -4,7 +4,7 @@ import {
   renderLogoutView,
   renderRegisterView,
   renderVerifyView,
-} from "../../controllers/viewControllers/authViewControllers";
+} from "../../controllers/view/authViewControllers";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
 const router = express.Router();

@@ -6,7 +6,7 @@ import {
   addItem,
   deleteItem,
   getItemByName,
-} from "../../controllers/apiControllers/itemsController";
+} from "../../controllers/api/itemsController";
 
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { isAdmin } from "../../middleware/isAdmin";

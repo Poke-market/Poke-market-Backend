@@ -1,5 +1,5 @@
 import express from "express";
-import { renderHomeView } from "../../controllers/viewControllers/homeViewControllers";
+import { renderHomeView } from "../../controllers/view/homeViewControllers";
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { isAdmin } from "../../middleware/isAdmin";
 
