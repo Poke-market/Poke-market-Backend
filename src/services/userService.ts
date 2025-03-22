@@ -17,7 +17,7 @@ export const PaginationParamsSchema = z.object({
 export const FilterParamsSchema = z.object({
   search: z.string().trim().optional(),
   isAdmin: z.boolean().optional(),
-  emailVerified: z.boolean().optional(),
+  isVerified: z.boolean().optional(),
 });
 
 export const SortParamsSchema = z.object({
@@ -37,7 +37,7 @@ export type FilterParams = z.infer<typeof FilterParamsSchema>;
 export type SortParams = z.infer<typeof SortParamsSchema>;
 
 export function buildUsersFilter(params: FilterParams) {
-  const { search, isAdmin, emailVerified } = FilterParamsSchema.parse(params);
+  const { search, isAdmin, isVerified } = FilterParamsSchema.parse(params);
   const filter: FilterQuery<typeof User> = {};
 
   // Handle search parameter
@@ -54,9 +54,9 @@ export function buildUsersFilter(params: FilterParams) {
     filter.isAdmin = isAdmin;
   }
 
-  // Handle emailVerified filter
-  if (emailVerified !== undefined) {
-    filter.emailVerified = emailVerified;
+  // Handle isVerified filter
+  if (isVerified !== undefined) {
+    filter.isVerified = isVerified;
   }
 
   return filter;
@@ -153,15 +153,44 @@ export async function deleteUser(id: string) {
 // Full user schema for PUT requests (requires all fields except password)
 export const UserFullSchema = registerSchema.omit({ password: true }).extend({
   isAdmin: z.boolean(),
-  emailVerified: z.boolean(),
+  isVerified: z.boolean(),
   password: registerSchema.shape.password.optional(),
+});
+
+// User create schema for adding new users
+export const UserCreateSchema = registerSchema.extend({
+  isAdmin: z.boolean().default(false),
+  isVerified: z.boolean().default(false),
 });
 
 // User update schema for validation
 export const UserUpdateSchema = UserFullSchema.partial();
 
 export type UserFullData = z.infer<typeof UserFullSchema>;
+export type UserCreateData = z.infer<typeof UserCreateSchema>;
 export type UserUpdateData = z.infer<typeof UserUpdateSchema>;
+
+export async function addUser(userData: UserCreateData) {
+  // Check if email already exists
+  const emailExists = await User.findOne({ email: userData.email });
+  if (emailExists) {
+    throw new ValidationError(
+      "email",
+      "Email is already in use by another account",
+    );
+  }
+
+  // Hash password
+  userData.password = await bcrypt.hash(userData.password, 10);
+
+  // Create new user
+  const newUser = await User.create(userData);
+
+  // Return user without sensitive data
+  return User.findById(newUser._id).select(
+    "-password -verificationToken -resetToken",
+  );
+}
 
 export async function updateUser(id: string, userUpdateData: UserUpdateData) {
   if (!mongoose.isValidObjectId(id)) {

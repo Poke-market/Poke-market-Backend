@@ -13,6 +13,8 @@ import {
   updateUser as updateUserService,
   UserUpdateSchema,
   UserFullSchema,
+  addUser as addUserService,
+  UserCreateSchema,
 } from "../services/userService";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 
@@ -84,29 +86,9 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
 };
 
 export const addUser = async (req: Request, res: Response) => {
-  const {
-    city,
-    email,
-    firstname,
-    housenumber,
-    lastname,
-    password,
-    street,
-    telephone,
-    zipcode,
-  } = req.body as Record<string, string>;
-  const user = await User.create({
-    city,
-    email,
-    firstname,
-    housenumber,
-    lastname,
-    password,
-    street,
-    telephone,
-    zipcode,
-  });
-  res.status(201).json({ status: "success", data: user });
+  const userData = UserCreateSchema.parse(req.body);
+  const newUser = await addUserService(userData);
+  res.status(201).json({ status: "success", data: newUser });
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
