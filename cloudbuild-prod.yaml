@@ -1,26 +1,26 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/strong-ward-453503-f1/development:dev", "."]
+    args: ["build", "-t", "gcr.io/strong-ward-453503-f1/production:prod", "."]
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/strong-ward-453503-f1/development:dev"]
+    args: ["push", "gcr.io/strong-ward-453503-f1/production:prod"]
   - name: "gcr.io/cloud-builders/gcloud"
     args:
       - "run"
       - "deploy"
-      - "development"
+      - "production"
       - "--image"
-      - "gcr.io/strong-ward-453503-f1/development:dev"
+      - "gcr.io/strong-ward-453503-f1/production:prod"
       - "--region"
       - "us-central1"
       - "--platform"
       - "managed"
-      - "--allow-unauthenticated"
+      - "--allow-unauthenticated" # Change to --no-allow-unauthenticated for prod if needed
       - "--timeout"
       - "300s"
       - "--min-instances"
-      - "0"
+      - "1"
       - "--max-instances"
-      - "80"
+      - "100"
       - "--port"
       - "3000"
       - "--clear-env-vars"
