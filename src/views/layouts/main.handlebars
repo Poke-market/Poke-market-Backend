@@ -14,13 +14,13 @@
           <a href="/">Poke-Mart Admin</a>
         </div>
         <div class="nav-links">
-        {{#if user.isAdmin}}
-          <a href="/items">Items</a>
-          <a href="/users">Users</a>
-        {{/if}}
-        {{#if user}}
-          <a href="/logout">Logout</a>
-        {{/if}}
+          {{#if user.isAdmin}}
+            <a href="/items">Items</a>
+            <a href="/users">Users</a>
+          {{/if}}
+          {{#if user}}
+            <a href="/logout">Logout</a>
+          {{/if}}
         </div>
       </nav>
     </header>
