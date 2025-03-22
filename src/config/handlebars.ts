@@ -30,6 +30,8 @@ const hbs = create({
     gte: compareOp<number>((a, b) => a >= b),
     and: compareOp<boolean>((a, b) => a && b),
     or: compareOp<boolean>((a, b) => a || b),
+    includes: <T>(array: T[], value: T): boolean =>
+      Array.isArray(array) && array.includes(value),
     price: (price: number) => `€ ${price}`,
     formatDate: (date: Date) =>
       date.toLocaleDateString("nl-NL", {

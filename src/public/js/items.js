@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize elements
   initFilterToggle();
   initAddItemButton();
+  initEditButtons();
 
   const sortSelect = document.getElementById("sort-select");
 
@@ -95,5 +96,22 @@ function initAddItemButton() {
 
   addItemBtn.addEventListener("click", () => {
     window.location.href = "/items/add";
+  });
+}
+
+/**
+ * Initialize the Edit buttons
+ */
+function initEditButtons() {
+  const editButtons = document.querySelectorAll(".edit-btn");
+  if (!editButtons.length) return;
+
+  editButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const itemId = button.getAttribute("data-id");
+      if (itemId) {
+        window.location.href = `/items/${itemId}`;
+      }
+    });
   });
 }

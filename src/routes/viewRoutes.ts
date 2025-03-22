@@ -9,6 +9,8 @@ import {
   renderUsersView,
   renderUserEditView,
   renderUserAddView,
+  renderItemEditView,
+  renderItemAddView,
 } from "../controllers/viewControllers";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { isAdmin } from "../middleware/isAdmin";
@@ -16,10 +18,14 @@ const router = express.Router();
 
 router.get("/", authMiddleware, isAdmin, renderHomeView);
 router.get("/items", authMiddleware, isAdmin, renderItemsView);
-router.get("/login", renderLoginView);
-router.get("/register", renderRegisterView);
-router.get("/logout", renderLogoutView);
+router.get("/items/add", authMiddleware, isAdmin, renderItemAddView);
+router.get("/items/:id", authMiddleware, isAdmin, renderItemEditView);
+
 router.get("/test", renderTestView);
+router.get("/register", renderRegisterView);
+router.get("/login", renderLoginView);
+router.get("/logout", authMiddleware, renderLogoutView);
+
 router.get("/users", authMiddleware, isAdmin, renderUsersView);
 router.get("/users/add", authMiddleware, isAdmin, renderUserAddView);
 router.get("/users/:id", authMiddleware, isAdmin, renderUserEditView);

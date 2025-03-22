@@ -2,6 +2,7 @@ import { Request } from "express";
 import { Response } from "../types/res.json";
 import mongoose from "mongoose";
 import { z } from "zod";
+import validator from "validator";
 // import { Error as MongooseError } from "mongoose";
 
 import { NotFoundError, ValidationError } from "../errors";
@@ -17,6 +18,7 @@ import {
   getItems as getItemsService,
   deleteItem as deleteItemService,
 } from "../services/itemService";
+const { isURL } = validator;
 
 // const { ValidationError } = MongooseError;
 
@@ -62,7 +64,7 @@ export const addItem = async (req: Request, res: Response) => {
       category: z.string(),
       description: z.string(),
       name: z.string(),
-      photoUrl: z.string().url(),
+      photoUrl: z.string().refine(isURL, { message: "Invalid URL" }),
       price: z.number(),
       tags: z.string().array(),
       isNewItem: z.boolean().optional(),
@@ -140,7 +142,7 @@ export const updateItem = async (req: Request, res: Response) => {
       category: z.string().optional(),
       description: z.string().optional(),
       name: z.string().optional(),
-      photoUrl: z.string().url().optional(),
+      photoUrl: z.string().refine(isURL, { message: "Invalid URL" }).optional(),
       price: z.number().optional(),
       tags: z.string().array().optional(),
       isNewItem: z.boolean().optional(),
