@@ -62,11 +62,5 @@ jobs:
 - Tags: \`/api/tags\`
 - Slugs: \`/api/slug\`
 
-  > 🔍 **Testing Checklist**
-  > - Verify API endpoints are responding
-  > - Check authentication flows
-  > - Validate data responses
-  > - Test error handling
-
   *This is an automated message from your friendly deployment bot* 🤖
   });
