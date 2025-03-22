@@ -1,4 +1,4 @@
-name: Comment PR with API URL
+name: Updated API URL
 
 on:
   pull_request:
@@ -45,22 +45,17 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `API updated! Access it here: ${serviceUrl}
-  
-              ✨ New API Update Available!
-              Your changes have been successfully deployed to the development environment.
+              body: `## 🚀 Development API Updated
+            
+              #### 🔗 API Details
+              - URL: ${serviceUrl}
+              - Environment: Development
+              - Status: Ready for Testing
               
-              🔗 API Details
-            - URL: ${serviceUrl}
-            - Environment: Development
-            - Status: Ready for Testing
-              
-              📝 Available Endpoints
-            - Auth: \`/api/auth\`
-            - Items: \`/api/items\`
-            - Users: \`/api/users\`
-            - Tags: \`/api/tags\`
-            - Slugs: \`/api/slug\`
-              
-              This is an automated message from the deployment bot 🤖`
-              });
+              #### 📝 Available Endpoints
+              - Auth: \`/api/auth\`
+              - Items: \`/api/items\`
+              - Users: \`/api/users\`
+              - Tags: \`/api/tags\`
+              - Slugs: \`/api/slug\` 
+              `});
