@@ -1,12 +1,13 @@
 import { type FilterQuery, type SortOrder } from "mongoose";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { NotFoundError, BadRequestError } from "../errors";
+import { NotFoundError, BadRequestError, ValidationError } from "../errors";
 import {
   Item,
   flattenItemTags,
   categories,
   Category,
+  discountTypes,
 } from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 import { RawQuery } from "../types/query";
@@ -15,6 +16,10 @@ import {
   buildNestedPropSorter,
   NestedPropSorter,
 } from "../utils/nestedPropsSorter";
+import { generatePaginationInfo } from "../utils/paginationHelper";
+import validator from "validator";
+
+const { isURL } = validator;
 
 // Define the input schemas
 export const PaginationParamsSchema = z.object({
@@ -39,11 +44,35 @@ export const SortParamsSchema = z.object({
     .default("asc"),
 });
 
+export const CreateItemSchema = z.object({
+  category: z.string(),
+  description: z.string(),
+  name: z.string(),
+  photoUrl: z.string().refine(isURL, { message: "Invalid URL" }),
+  price: z.number(),
+  tags: z.string().array(),
+  isNewItem: z.boolean().optional(),
+  discount: z
+    .object({
+      amount: z.number().optional(),
+      type: z.enum(discountTypes).optional(),
+    })
+    .optional(),
+});
+
+export const UpdateItemSchema = CreateItemSchema.partial();
+
+export const GetItemByNameSchema = z.object({
+  name: z.string(),
+});
+
 // Infer types from schemas (after Zod parsing)
 export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 export type FilterParams = z.infer<typeof FilterParamsSchema>;
 export type SortParams = z.infer<typeof SortParamsSchema>;
-
+export type CreateItemParams = z.infer<typeof CreateItemSchema>;
+export type UpdateItemParams = z.infer<typeof UpdateItemSchema>;
+export type GetItemByNameParams = z.infer<typeof GetItemByNameSchema>;
 export async function buildItemsFilter(params: FilterParams) {
   const { search, cat, tag } = FilterParamsSchema.parse(params);
   const catFilter: FilterQuery<typeof Item>[] = [];
@@ -153,7 +182,6 @@ export async function getItems(
   const { mongoSorter, memorySorter } = buildItemsSorter(params);
   const { limit, page } = PaginationParamsSchema.parse(params);
   const itemCount = await Item.countDocuments(filter);
-  const totalPages = Math.ceil(itemCount / limit);
   const skip = (page - 1) * limit;
 
   if (page > 1 && skip >= itemCount) throw new NotFoundError("Page not found");
@@ -172,16 +200,18 @@ export async function getItems(
     memorySorter(items);
   }
 
+  // Generate base pagination info
+  const paginationInfo = generatePaginationInfo(
+    itemCount,
+    page,
+    limit,
+    getPageLink,
+  );
+
   return {
     info: {
-      count: itemCount,
+      ...paginationInfo,
       categorieCount: await countCategories(filterWithoutCats),
-      page: page,
-      pages: totalPages,
-      prev: page > 1 ? getPageLink(page - 1) : null,
-      next: page < totalPages ? getPageLink(page + 1) : null,
-      first: page > 1 ? getPageLink(1) : null,
-      last: page < totalPages ? getPageLink(totalPages) : null,
     },
     items: items.map((item) => flattenItemTags(item.toObject())),
   };
@@ -201,5 +231,133 @@ export async function deleteItem(id: string) {
     data: {
       item: flattenItemTags(item.toObject()),
     },
+  };
+}
+
+export async function getItemById(id: string) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ValidationError(
+      "id",
+      "Item id is not valid id by Mongoose standards",
+    );
+  }
+
+  const item = await Item.findById(id).populate("tags");
+  if (!item) throw new NotFoundError("No item found");
+
+  return {
+    item: flattenItemTags(item.toObject()),
+  };
+}
+
+export async function getItemByName(name: string) {
+  const item = await Item.findOne({ name }).populate("tags");
+  if (!item) throw new NotFoundError("Item not found");
+
+  return {
+    item: flattenItemTags(item.toObject()),
+  };
+}
+
+export async function addItem(itemData: CreateItemParams) {
+  const { category, tags, name, ...otherData } = itemData;
+
+  // Check if category matches the allowed categories
+  if (!categories.includes(category)) {
+    throw new ValidationError(
+      "id",
+      `Category is not valid please choose between: ${categories.join(", ")}`,
+    );
+  }
+
+  // Check if name is unique
+  const nameExists = await Item.countDocuments({ name });
+  if (nameExists) {
+    throw new ValidationError(
+      "name",
+      `Item with name '${name}' already exists`,
+    );
+  }
+
+  // Convert tag names into their corresponding ObjectIds
+  const tagsObjectIds = await Promise.all(
+    tags.map(async (tagName: string) => {
+      const tagDoc = await Tag.findOne({ name: tagName });
+      if (!tagDoc) {
+        throw new ValidationError(
+          "tag",
+          `Tag '${tagName}' does not exist in the database.`,
+        );
+      }
+      return tagDoc._id;
+    }),
+  );
+
+  const item = await Item.create({
+    category,
+    name,
+    tags: tagsObjectIds,
+    ...otherData,
+  }).then((item) => item.populate("tags"));
+
+  return {
+    item: flattenItemTags(item.toObject()),
+  };
+}
+
+export async function updateItem(id: string, itemData: UpdateItemParams) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ValidationError(
+      "id",
+      "Item id is not valid id by Mongoose standards",
+    );
+  }
+
+  // Check if name is unique (except for the current item)
+  if (itemData.name) {
+    const nameExists = await Item.countDocuments({
+      name: itemData.name,
+      _id: { $ne: id },
+    });
+    if (nameExists) {
+      throw new ValidationError(
+        "name",
+        `Item with name '${itemData.name}' already exists`,
+      );
+    }
+  }
+
+  const { tags: _tags, ...otherData } = itemData;
+
+  // Convert tag names into their corresponding ObjectIds if provided
+  let tags;
+  if (_tags) {
+    tags = await Promise.all(
+      _tags.map(async (tagName) => {
+        const tagDoc = await Tag.findOne({ name: tagName });
+        if (!tagDoc) {
+          throw new ValidationError(
+            "tag",
+            `Tag '${tagName}' does not exist in the database.`,
+          );
+        }
+        return tagDoc._id;
+      }),
+    );
+  }
+
+  const item = await Item.findByIdAndUpdate(
+    id,
+    {
+      ...otherData,
+      ...(tags && { tags }),
+    },
+    { new: true },
+  ).populate("tags", "name _id");
+
+  if (!item) throw new NotFoundError("Item not found");
+
+  return {
+    item: flattenItemTags(item.toObject()),
   };
 }

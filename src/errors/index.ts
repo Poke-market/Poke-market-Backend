@@ -10,5 +10,6 @@ export * from "./ApiError";
 /* 409 */ export * from "./client/ConflictError";
 /* 422 */ export * from "./client/ValidationError";
 /* 429 */ export * from "./client/TooManyRequestError";
+/* 4XX */ export * from "./client/VerificationError";
 
 /* 500 */ export * from "./server/ServerError";

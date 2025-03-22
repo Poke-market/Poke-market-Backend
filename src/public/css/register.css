@@ -1,12 +1,20 @@
 /**/
 
+/* Center register form on screen */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
 .register-container {
-  max-width: 40rem;
-  margin: 4rem auto;
+  max-width: 55rem;
+  width: 92%;
   background-color: var(--white);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
 }
 
 /* Notification styling */
@@ -70,21 +78,20 @@
 .register-container h1 {
   font-size: 2rem;
   color: var(--text-color-2);
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
   text-align: center;
 }
 
 #register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 
   .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
 
     .form-label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       font-weight: 500;
       color: var(--text-color-2);
       font-size: 1.4rem;
@@ -94,28 +101,27 @@
 
 .form-row {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 0;
 
   .form-group {
     flex: 1;
-  }
-
-  .small-input {
-    flex: 0.4;
+    margin-bottom: 0;
   }
 }
 
 .form-input {
   display: block;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   font-size: 1.4rem;
   line-height: 1.5;
   color: var(--text-color);
   background-color: var(--white);
   border: 1px solid var(--grey);
   border-radius: 4px;
-  transition: border-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  height: 4.2rem;
 }
 
 .form-input:focus {
@@ -124,54 +130,625 @@
   box-shadow: 0 0 0 2px rgba(58, 118, 207, 0.25);
 }
 
+/* Form feedback optimization for side-by-side layout */
 .form-feedback {
   font-size: 1.2rem;
   color: var(--red);
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
+  line-height: 1.5;
+  min-height: 1.8rem;
+  display: block;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
-.admin-notice {
-  background-color: var(--blue-grey);
-  padding: 1rem;
-  border-radius: 4px;
-  margin: 1rem 0;
-  font-size: 1.3rem;
+/* Password field specific styling */
+.form-row .form-group:has(#password) {
+  position: relative;
+}
+
+/* Error message styling */
+.error-message {
+  color: var(--red);
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  min-height: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  line-height: 1;
+}
+
+.error-message:not(:empty) {
+  opacity: 1;
+}
+
+/* Password feedback styling */
+.password-feedback {
+  color: #ff9800; /* Orange for warnings */
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  line-height: 1;
+  transition: all 0.3s ease;
+  min-height: 7.2rem; /* Ensure enough space for multiple validation messages */
+  margin-bottom: 0.5rem;
+}
+
+.feedback-item {
+  margin-bottom: 0.3rem;
+  position: relative;
+  padding-left: 1.2rem;
+  color: #ff9800; /* Ensure all feedback items are orange */
+}
+
+.feedback-item::before {
+  content: "•";
+  position: absolute;
+  left: 0.3rem;
+  color: currentColor;
+}
+
+/* Warning state for password field */
+.form-input.password-warning {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.25);
 }
 
 .submit-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   background-color: var(--basic-blue);
   color: var(--white);
   border: none;
   border-radius: 4px;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .submit-btn:hover {
   background-color: var(--light-blue);
 }
 
-/* Error message styling */
-.error-message {
-  color: var(--red);
-  font-size: 1.3rem;
-  margin-top: 0.5rem;
+/* Login link styling */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--grey);
+}
+
+.login-link p {
+  font-size: 1.4rem;
+  color: var(--text-color-2);
+}
+
+.login-link a {
+  color: var(--basic-blue);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-link a:hover {
+  color: var(--light-blue);
+  text-decoration: underline;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  main {
+    padding: 1rem 0;
+  }
+
   .register-container {
     max-width: 100%;
-    margin: 2rem 1rem;
-    padding: 1.5rem;
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 6px;
   }
 
   .form-row {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.25rem;
   }
+
+  /* Reset all flex proportions for mobile */
+  .form-row .form-group {
+    flex: 1 !important;
+  }
+
+  /* Make inputs taller on mobile for better touch targets */
+  .form-input {
+    height: 4.5rem;
+    font-size: 1.6rem;
+  }
+
+  /* Increase label size for better readability */
+  .form-label {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Make submit button full width and larger on mobile */
+  .submit-btn {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.6rem;
+  }
+}
+
+/* Container with fixed height to prevent layout shifts */
+.notification-container {
+  min-height: 7rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+/* Notification area using visibility instead of display */
+#notification-area {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* When notification is visible */
+#notification-area.notification.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Notification types */
+.notification.error {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.notification.success {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  color: #2e7d32;
+}
+
+.notification.loading {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  color: #0d47a1;
+}
+
+/* Style for input fields with errors */
+.form-group:has(.error-message:not(:empty)) input {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.25);
+}
+
+/* Success container styling */
+.success-container {
+  background-color: var(--white);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.success-icon {
+  font-size: 4rem;
+  color: var(--green, #4caf50);
+  background-color: rgba(76, 175, 80, 0.1);
+  width: 7rem;
+  height: 7rem;
+  line-height: 7rem;
+  border-radius: 50%;
+  margin: 0 auto 2rem;
+}
+
+.success-container h2 {
+  font-size: 2rem;
+  color: var(--basic-blue);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.success-message {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--text-color-2);
+  margin-bottom: 2rem;
+}
+
+.success-message p {
+  margin-bottom: 0.5rem;
+}
+
+.login-button {
+  display: inline-block;
+  background-color: var(--basic-blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: var(--light-blue);
+}
+
+/* Redirect countdown styling */
+.redirect-countdown {
+  font-size: 1.4rem;
+  color: var(--text-color-3);
+  margin-top: 2rem;
+  font-weight: 500;
+}
+
+#countdown {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+/* Responsive adjustments for success container */
+@media (max-width: 768px) {
+  .success-container {
+    max-width: 100%;
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Pokemon success styling */
+.pokemon-success {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+}
+
+.pokeball {
+  width: 8rem;
+  height: 8rem;
+  background: linear-gradient(
+    to bottom,
+    #ee1515 0%,
+    #ee1515 50%,
+    white 50%,
+    white 100%
+  );
+  border-radius: 50%;
+  border: 0.5rem solid #222224;
+  position: relative;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  animation:
+    shake-left 1.5s ease-in-out 0.5s,
+    pause 0.8s ease-in-out 2s,
+    shake-right 1.5s ease-in-out 2.8s;
+  transform-origin: center;
+}
+
+.pokeball::before {
+  content: "";
+  position: absolute;
+  background-color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 0.5rem solid #222224;
+  z-index: 2;
+}
+
+.pokeball::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 0.5rem;
+  background-color: #222224;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Animation for pokeball with horizontal movement - starting left */
+@keyframes shake-left {
+  0% {
+    transform: rotate(0) translateX(0);
+  }
+  15% {
+    transform: rotate(-5deg) translateX(-0.5rem);
+  }
+  30% {
+    transform: rotate(5deg) translateX(0.5rem);
+  }
+  45% {
+    transform: rotate(-3deg) translateX(-0.3rem);
+  }
+  60% {
+    transform: rotate(3deg) translateX(0.3rem);
+  }
+  75% {
+    transform: rotate(-1deg) translateX(-0.1rem);
+  }
+  90% {
+    transform: rotate(1deg) translateX(0.1rem);
+  }
+  100% {
+    transform: rotate(0) translateX(0);
+  }
+}
+
+/* Pause animation */
+@keyframes pause {
+  0%,
+  100% {
+    transform: rotate(0) translateX(0);
+  }
+}
+
+/* Animation for pokeball with horizontal movement - starting right */
+@keyframes shake-right {
+  0% {
+    transform: rotate(0) translateX(0);
+  }
+  15% {
+    transform: rotate(5deg) translateX(0.5rem);
+  }
+  30% {
+    transform: rotate(-5deg) translateX(-0.5rem);
+  }
+  45% {
+    transform: rotate(3deg) translateX(0.3rem);
+  }
+  60% {
+    transform: rotate(-3deg) translateX(-0.3rem);
+  }
+  75% {
+    transform: rotate(1deg) translateX(0.1rem);
+  }
+  90% {
+    transform: rotate(-1deg) translateX(-0.1rem);
+  }
+  100% {
+    transform: rotate(0) translateX(0);
+  }
+}
+
+/* Simple directional animations - starting from pokeball border */
+@keyframes star-up {
+  0% {
+    transform: translate(-50%, -150%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -300%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-slight-right {
+  0% {
+    transform: translate(-25%, -150%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0%, -250%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-right {
+  0% {
+    transform: translate(50%, -50%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(200%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-left {
+  0% {
+    transform: translate(-150%, -50%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-300%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-right {
+  0% {
+    transform: translate(25%, -125%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(150%, -200%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-left {
+  0% {
+    transform: translate(-125%, -125%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-250%, -200%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-far-right {
+  0% {
+    transform: translate(25%, -150%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100%, -280%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-far-left {
+  0% {
+    transform: translate(-125%, -150%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-200%, -280%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-right-up {
+  0% {
+    transform: translate(100%, -75%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(250%, -120%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-left-up {
+  0% {
+    transform: translate(-175%, -75%) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-350%, -120%) scale(1);
+    opacity: 0;
+  }
+}
+
+#password-feedback {
+  color: var(--text-color-3);
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  line-height: 1;
+}
+
+#password-feedback ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0.3rem 0;
+}
+
+#password-feedback li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+#password-feedback li::before {
+  content: "•";
+  position: absolute;
+  left: 0.3rem;
+  color: currentColor;
+}
+
+#password-feedback li.valid {
+  color: var(--green, #4caf50);
+}
+
+#password-feedback li.invalid {
+  color: var(--red);
+}
+
+/* Warning message styling */
+.warning-message {
+  color: #ff9800; /* Orange for warnings */
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  min-height: 1.5rem;
+  line-height: 1.5;
+  opacity: 1;
+}
+
+/* Optimize field widths based on expected content */
+/* Name fields - equal width */
+.form-row:first-of-type {
+  .form-group {
+    flex: 1;
+  }
+}
+
+/* Email and telephone - email is larger */
+.form-row:has(#email, #telephone) {
+  .form-group:has(#email) {
+    flex: 0.65; /* Email needs more space */
+  }
+  .form-group:has(#telephone) {
+    flex: 0.35; /* Telephone needs less space */
+  }
+}
+
+/* Street and house number - street is larger */
+.form-row:has(#street, #housenumber) {
+  .form-group:has(#street) {
+    flex: 0.7; /* Make street column larger */
+  }
+  .form-group:has(#housenumber) {
+    flex: 0.3; /* Make house number column smaller */
+  }
+}
+
+/* City and zipcode - city is larger */
+.form-row:has(#city, #zipcode) {
+  .form-group:has(#city) {
+    flex: 0.7; /* City needs more space */
+  }
+  .form-group:has(#zipcode) {
+    flex: 0.3; /* Zipcode is usually shorter */
+  }
+}
+
+/* Password fields specific spacing */
+.form-group:has(#password),
+.form-group:has(#password-confirm) {
+  margin-top: 0.5rem;
 }

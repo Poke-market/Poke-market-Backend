@@ -113,7 +113,9 @@ itemSchema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
-export const flattenItemTags = (item: object) => ({
+export const flattenItemTags = <T extends object>(
+  item: T,
+): Omit<T, "tags"> & { tags: string[] } => ({
   ...item,
   tags: (item as { tags: { name: string }[] }).tags.map((tag) => tag.name),
 });
