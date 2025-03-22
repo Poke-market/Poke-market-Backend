@@ -1,9 +1,10 @@
 name: Comment PR with API URL
 
 on:
-  push:
+  pull_request:
     branches:
       - experiment/___-test-google-clooud
+    types: [opened, reopened] # Runs when PR is opened or reopened
 
 jobs:
   comment-pr:
@@ -22,18 +23,10 @@ jobs:
       - name: Get Cloud Run Service URL
         id: get-url
         run: |
-          BRANCH="${{ github.ref_name }}"
-          if [[ "$BRANCH" == "development" ]]; then
-            SERVICE="poke-market"
-          elif [[ "$BRANCH" == "main" ]]; then
-            SERVICE="poke-market-prod"
-          else
-            echo "Branch '$BRANCH' is not 'development' or 'main'. Skipping URL fetch."
-            exit 0  # Exit gracefully if not a target branch
-          fi
+          SERVICE="poke-market-test"  # Fixed service for this branch
           URL=$(gcloud run services describe "$SERVICE" --region us-central1 --format 'value(status.url)')
           echo "service_url=$URL" >> $GITHUB_OUTPUT
-          rm /tmp/gcp-credentials.json  # Clean up
+          rm /tmp/gcp-credentials.json
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
@@ -43,26 +36,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const branch = "${{ github.ref_name }}";
             const serviceUrl = "${{ steps.get-url.outputs.service_url }}";
-            const repo = context.repo.repo;
-            const owner = context.repo.owner;
-
-            const { data: pulls } = await github.rest.pulls.list({
-              owner: owner,
-              repo: repo,
-              head: `${owner}:${branch}`,
-              state: "open"
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `API updated! Access it here: ${serviceUrl}`
             });
-
-            if (pulls.length > 0) {
-              const prNumber = pulls[0].number;
-              await github.rest.issues.createComment({
-                owner: owner,
-                repo: repo,
-                issue_number: prNumber,
-                body: `API updated! Access it here: ${serviceUrl}`
-              });
-            } else {
-              console.log("No open PR found for this branch.");
-            }
