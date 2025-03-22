@@ -57,5 +57,4 @@ jobs:
               - Items: \`/api/items\`
               - Users: \`/api/users\`
               - Tags: \`/api/tags\`
-              - Slugs: \`/api/slug\` 
               `});
