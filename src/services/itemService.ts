@@ -313,9 +313,12 @@ export async function updateItem(id: string, itemData: UpdateItemParams) {
     );
   }
 
-  // Check if name is unique
+  // Check if name is unique (except for the current item)
   if (itemData.name) {
-    const nameExists = await Item.countDocuments({ name: itemData.name });
+    const nameExists = await Item.countDocuments({
+      name: itemData.name,
+      _id: { $ne: id },
+    });
     if (nameExists) {
       throw new ValidationError(
         "name",
