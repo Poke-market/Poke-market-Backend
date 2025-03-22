@@ -1,5 +1,6 @@
 import { create } from "express-handlebars";
 import type { Engine } from "express-handlebars/types";
+import { getFirstLevelDirNamesSync } from "../utils/getFistLevelDirNames";
 
 // Handlebars logical helpers factory, compares two or more values
 const compareOp =
@@ -64,4 +65,9 @@ const voidEngine = (...args: Parameters<Engine>) => {
 export default {
   ...hbs,
   engine: voidEngine,
+};
+
+export const getViewPaths = (path: string) => {
+  const views = getFirstLevelDirNamesSync(path);
+  return [path, ...views.map((view) => `${path}/${view}`)];
 };

@@ -10,8 +10,9 @@ import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
 import { errorSendMiddleware } from "./middleware/errorSendMiddleware";
 import arcjetMiddleware from "./middleware/arcjetMiddleware";
 import cookieParser from "cookie-parser";
-import apiRoutes from "./routes/apiRoutes";
-import viewRoutes from "./routes/viewRoutes";
+import apiRoutes from "./routes/api";
+import viewRoutes from "./routes/view";
+import { getViewPaths } from "./config/handlebars";
 
 // Variables
 const app = express();
@@ -26,7 +27,8 @@ app.use(arcjetMiddleware);
 // Configure Handlebars view engine
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
-app.set("views", "src/views");
+
+app.set("views", getViewPaths("src/views"));
 app.use(express.static("src/public"));
 
 // API Routes
