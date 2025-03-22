@@ -64,46 +64,95 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function validatePassword() {
+    // Safety check to ensure elements exist
+    if (!passwordInput || !passwordFeedback) {
+      console.error("Password input or feedback elements not found");
+      return false;
+    }
+
     const password = passwordInput.value;
+    const feedback = [];
     let isValid = true;
-    let feedback = "";
 
-    if (password.length < 8 || password.length > 25) {
-      feedback += "• Password must be 8-25 characters<br>";
+    // Check password requirements
+    if (password.length < 8) {
+      feedback.push("Password must be at least 8 characters long");
       isValid = false;
     }
-
+    if (password.length > 25) {
+      feedback.push("Password must be less than 25 characters");
+      isValid = false;
+    }
     if (!/[A-Z]/.test(password)) {
-      feedback += "• Must contain at least one uppercase letter<br>";
+      feedback.push("Password must include at least one uppercase letter");
       isValid = false;
     }
-
     if (!/[a-z]/.test(password)) {
-      feedback += "• Must contain at least one lowercase letter<br>";
+      feedback.push("Password must include at least one lowercase letter");
       isValid = false;
     }
-
     if (!/[0-9]/.test(password)) {
-      feedback += "• Must contain at least one digit<br>";
+      feedback.push("Password must include at least one number");
       isValid = false;
     }
-
     if (!/[!@#$%^&*]/.test(password)) {
-      feedback +=
-        "• Must contain at least one special character (!@#$%^&*)<br>";
+      feedback.push(
+        "Password must include at least one special character (!@#$%^&*)",
+      );
       isValid = false;
     }
 
-    passwordFeedback.innerHTML = feedback;
+    if (feedback.length > 0) {
+      passwordFeedback.innerHTML = feedback
+        .map((msg) => `<div class="feedback-item">${msg}</div>`)
+        .join("");
+      passwordFeedback.style.display = "block";
+
+      // Add orange warning border while there are validation issues
+      passwordInput.classList.add("password-warning");
+      passwordInput.classList.remove("invalid"); // Remove red border if present
+    } else {
+      // Hide feedback div when all requirements are met
+      passwordFeedback.innerHTML = "";
+      passwordFeedback.style.display = "none";
+
+      // Remove orange warning border when requirements are met
+      passwordInput.classList.remove("password-warning");
+    }
+
     return isValid;
   }
 
   function checkPasswordsMatch() {
-    if (passwordInput.value !== passwordConfirmInput.value) {
-      showFieldError("password-confirm", "Passwords don't match");
+    // Safety check to ensure elements exist
+    if (!passwordInput || !passwordConfirmInput) {
+      console.error("Password input elements not found");
+      return false;
+    }
+
+    const password = passwordInput.value;
+    const confirmPassword = passwordConfirmInput.value;
+    const errorDiv = document.getElementById("password-confirm-error");
+
+    if (!errorDiv) {
+      console.error("Password confirm error element not found");
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      errorDiv.textContent = "Passwords do not match";
+      // Use warning style instead of error for password mismatches
+      passwordConfirmInput.classList.add("password-warning");
+      passwordConfirmInput.classList.remove("invalid");
+      errorDiv.classList.add("warning-message");
+      errorDiv.classList.remove("error-message");
       return false;
     } else {
-      showFieldError("password-confirm", "");
+      errorDiv.textContent = "";
+      passwordConfirmInput.classList.remove("password-warning");
+      // Reset message classes
+      errorDiv.classList.remove("warning-message");
+      errorDiv.classList.add("error-message");
       return true;
     }
   }
@@ -132,41 +181,111 @@ document.addEventListener("DOMContentLoaded", function () {
   // Special case for password input - keeps validation but clears error message
   passwordInput.addEventListener("input", () => {
     validatePassword();
-    clearFieldError("password");
   });
 
   // Special case for password confirmation - check if passwords match
   passwordConfirmInput.addEventListener("input", () => {
-    checkPasswordsMatch();
+    if (passwordInput.value && passwordConfirmInput.value) {
+      checkPasswordsMatch();
+    } else {
+      clearFieldError("password-confirm");
+    }
   });
 
+  // Show password requirements when field is focused
+  passwordInput.addEventListener("focus", () => {
+    validatePassword();
+  });
+
+  // Handle form submission
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     // Clear field errors
     clearErrors();
 
+    // Validate all required fields
+    let isValid = true;
+    let firstErrorField = null;
+
+    // Required fields
+    const requiredFields = [
+      "email",
+      "firstname",
+      "lastname",
+      "street",
+      "housenumber",
+      "city",
+      "zipcode",
+      "telephone",
+      "password",
+      "password-confirm",
+    ];
+
+    // Check for empty required fields
+    requiredFields.forEach((field) => {
+      const input = document.getElementById(field);
+      if (!input || !input.value.trim()) {
+        const errorDiv = document.getElementById(`${field}-error`);
+        if (errorDiv) {
+          errorDiv.textContent = "This field is required";
+          errorDiv.classList.add("error-message");
+          errorDiv.classList.remove("warning-message");
+          isValid = false;
+          firstErrorField ??= field;
+          input?.classList.add("invalid");
+        }
+      }
+    });
+
+    // Email validation
+    const emailInput = document.getElementById("email");
+    if (
+      emailInput &&
+      emailInput.value &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)
+    ) {
+      document.getElementById("email-error").textContent =
+        "Please enter a valid email address";
+      emailInput.classList.add("invalid");
+      isValid = false;
+      firstErrorField ??= "email";
+    }
+
+    // Validate password
+    if (!validatePassword()) {
+      isValid = false;
+      firstErrorField ??= "password";
+    }
+
     // Check passwords match
     if (!checkPasswordsMatch()) {
-      showNotification("Passwords don't match.", "error");
+      isValid = false;
+      firstErrorField ??= "password-confirm";
+    }
+
+    // If form is not valid, focus on the first error field and stop submission
+    if (!isValid) {
+      document.getElementById(firstErrorField)?.focus();
       return;
     }
 
-    const userData = {
-      email: document.getElementById("email").value,
-      password: passwordInput.value,
-      firstname: document.getElementById("firstname").value,
-      lastname: document.getElementById("lastname").value,
-      city: document.getElementById("city").value,
-      street: document.getElementById("street").value,
-      housenumber: document.getElementById("housenumber").value,
-      zipcode: document.getElementById("zipcode").value,
-      telephone: document.getElementById("telephone").value,
-    };
-
+    // Form is valid, proceed with submission
     try {
       // Show loading button state
       setLoadingState(true, "Processing registration...");
+
+      const userData = {
+        email: document.getElementById("email").value,
+        password: passwordInput.value,
+        firstname: document.getElementById("firstname").value,
+        lastname: document.getElementById("lastname").value,
+        city: document.getElementById("city").value,
+        street: document.getElementById("street").value,
+        housenumber: document.getElementById("housenumber").value,
+        zipcode: document.getElementById("zipcode").value,
+        telephone: document.getElementById("telephone").value,
+      };
 
       const response = await fetch("/api/auth/register", {
         method: "POST",

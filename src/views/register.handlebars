@@ -39,24 +39,37 @@
   </div>
   
   <form id="register-form" novalidate>
-    <div class="form-group">
-      <label for="email" class="form-label">Email:</label>
-      <input type="email" id="email" name="email" required class="form-input" />
-      <div id="email-error" class="error-message" aria-live="polite"></div>
+    <!-- Name fields - first row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstname" class="form-label">First Name:</label>
+        <input type="text" id="firstname" name="firstname" required class="form-input" />
+        <div id="firstname-error" class="error-message" aria-live="polite"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="lastname" class="form-label">Last Name:</label>
+        <input type="text" id="lastname" name="lastname" required class="form-input" />
+        <div id="lastname-error" class="error-message" aria-live="polite"></div>
+      </div>
     </div>
     
-    <div class="form-group">
-      <label for="firstname" class="form-label">First Name:</label>
-      <input type="text" id="firstname" name="firstname" required class="form-input" />
-      <div id="firstname-error" class="error-message" aria-live="polite"></div>
+    <!-- Email and telephone - second row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" id="email" name="email" required class="form-input" />
+        <div id="email-error" class="error-message" aria-live="polite"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="telephone" class="form-label">Telephone:</label>
+        <input type="tel" id="telephone" name="telephone" required class="form-input" />
+        <div id="telephone-error" class="error-message" aria-live="polite"></div>
+      </div>
     </div>
     
-    <div class="form-group">
-      <label for="lastname" class="form-label">Last Name:</label>
-      <input type="text" id="lastname" name="lastname" required class="form-input" />
-      <div id="lastname-error" class="error-message" aria-live="polite"></div>
-    </div>
-    
+    <!-- Street and house number - third row -->
     <div class="form-row">
       <div class="form-group">
         <label for="street" class="form-label">Street:</label>
@@ -71,6 +84,7 @@
       </div>
     </div>
     
+    <!-- City and zipcode - fourth row -->
     <div class="form-row">
       <div class="form-group">
         <label for="city" class="form-label">City:</label>
@@ -85,19 +99,14 @@
       </div>
     </div>
     
-    <div class="form-group">
-      <label for="telephone" class="form-label">Telephone:</label>
-      <input type="tel" id="telephone" name="telephone" required class="form-input" />
-      <div id="telephone-error" class="error-message" aria-live="polite"></div>
-    </div>
-    
+    <!-- Password field -->
     <div class="form-group">
       <label for="password" class="form-label">Password:</label>
       <input type="password" id="password" name="password" required class="form-input" />
-      <div id="password-feedback" class="form-feedback"></div>
-      <div id="password-error" class="error-message" aria-live="polite"></div>
+      <div id="password-feedback" class="password-feedback"></div>
     </div>
     
+    <!-- Confirm Password field -->
     <div class="form-group">
       <label for="password-confirm" class="form-label">Confirm Password:</label>
       <input type="password" id="password-confirm" name="password-confirm" required class="form-input" />

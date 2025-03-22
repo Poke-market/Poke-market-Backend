@@ -1,12 +1,20 @@
 /**/
 
+/* Center register form on screen */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
 .register-container {
-  max-width: 40rem;
-  margin: 4rem auto;
+  max-width: 55rem;
+  width: 92%;
   background-color: var(--white);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
 }
 
 /* Notification styling */
@@ -70,21 +78,20 @@
 .register-container h1 {
   font-size: 2rem;
   color: var(--text-color-2);
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
   text-align: center;
 }
 
 #register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 
   .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
 
     .form-label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       font-weight: 500;
       color: var(--text-color-2);
       font-size: 1.4rem;
@@ -94,28 +101,27 @@
 
 .form-row {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 0;
 
   .form-group {
     flex: 1;
-  }
-
-  .small-input {
-    flex: 0.4;
+    margin-bottom: 0;
   }
 }
 
 .form-input {
   display: block;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   font-size: 1.4rem;
   line-height: 1.5;
   color: var(--text-color);
   background-color: var(--white);
   border: 1px solid var(--grey);
   border-radius: 4px;
-  transition: border-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  height: 4.2rem;
 }
 
 .form-input:focus {
@@ -124,41 +130,91 @@
   box-shadow: 0 0 0 2px rgba(58, 118, 207, 0.25);
 }
 
+/* Form feedback optimization for side-by-side layout */
 .form-feedback {
   font-size: 1.2rem;
   color: var(--red);
+  margin-top: 0.3rem;
+  line-height: 1.5;
+  min-height: 1.8rem;
+  display: block;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Password field specific styling */
+.form-row .form-group:has(#password) {
+  position: relative;
+}
+
+/* Error message styling */
+.error-message {
+  color: var(--red);
+  font-size: 1.2rem;
   margin-top: 0.5rem;
+  min-height: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  line-height: 1;
+}
+
+.error-message:not(:empty) {
+  opacity: 1;
+}
+
+/* Password feedback styling */
+.password-feedback {
+  color: #ff9800; /* Orange for warnings */
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  line-height: 1;
+  transition: all 0.3s ease;
+  min-height: 7.2rem; /* Ensure enough space for multiple validation messages */
+  margin-bottom: 0.5rem;
+}
+
+.feedback-item {
+  margin-bottom: 0.3rem;
+  position: relative;
+  padding-left: 1.2rem;
+  color: #ff9800; /* Ensure all feedback items are orange */
+}
+
+.feedback-item::before {
+  content: "•";
+  position: absolute;
+  left: 0.3rem;
+  color: currentColor;
+}
+
+/* Warning state for password field */
+.form-input.password-warning {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 1px rgba(255, 152, 0, 0.25);
 }
 
 .submit-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 1.5rem;
   background-color: var(--basic-blue);
   color: var(--white);
   border: none;
   border-radius: 4px;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .submit-btn:hover {
   background-color: var(--light-blue);
 }
 
-/* Error message styling */
-.error-message {
-  color: var(--red);
-  font-size: 1.3rem;
-  margin-top: 0.5rem;
-}
-
 /* Login link styling */
 .login-link {
   text-align: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--grey);
 }
 
@@ -181,21 +237,50 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  main {
+    padding: 1rem 0;
+  }
+
   .register-container {
     max-width: 100%;
-    margin: 2rem 1rem;
-    padding: 1.5rem;
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 6px;
   }
 
   .form-row {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.25rem;
+  }
+
+  /* Reset all flex proportions for mobile */
+  .form-row .form-group {
+    flex: 1 !important;
+  }
+
+  /* Make inputs taller on mobile for better touch targets */
+  .form-input {
+    height: 4.5rem;
+    font-size: 1.6rem;
+  }
+
+  /* Increase label size for better readability */
+  .form-label {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Make submit button full width and larger on mobile */
+  .submit-btn {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.6rem;
   }
 }
 
 /* Container with fixed height to prevent layout shifts */
 .notification-container {
-  height: 5rem;
+  height: 4rem;
   margin-bottom: 1.5rem;
   overflow: hidden;
 }
@@ -239,21 +324,6 @@
   color: #0d47a1;
 }
 
-/* Error message styling */
-.error-message {
-  color: var(--red);
-  font-size: 1.2rem;
-  margin-top: 0.3rem;
-  min-height: 1.5rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  line-height: 1.3;
-}
-
-.error-message:not(:empty) {
-  opacity: 1;
-}
-
 /* Style for input fields with errors */
 .form-group:has(.error-message:not(:empty)) input {
   border-color: var(--red);
@@ -264,6 +334,7 @@
 .success-container {
   background-color: var(--white);
   text-align: center;
+  padding: 1rem 0;
 }
 
 .success-icon {
@@ -341,7 +412,7 @@
 .pokemon-success {
   display: flex;
   justify-content: center;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem;
   position: relative;
 }
 
@@ -822,4 +893,92 @@
     transform: translate(-350%, -120%) scale(1);
     opacity: 0;
   }
+}
+
+#password-feedback {
+  color: var(--text-color-3);
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  line-height: 1;
+}
+
+#password-feedback ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0.3rem 0;
+}
+
+#password-feedback li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+#password-feedback li::before {
+  content: "•";
+  position: absolute;
+  left: 0.3rem;
+  color: currentColor;
+}
+
+#password-feedback li.valid {
+  color: var(--green, #4caf50);
+}
+
+#password-feedback li.invalid {
+  color: var(--red);
+}
+
+/* Warning message styling */
+.warning-message {
+  color: #ff9800; /* Orange for warnings */
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  min-height: 1.5rem;
+  line-height: 1.5;
+  opacity: 1;
+}
+
+/* Optimize field widths based on expected content */
+/* Name fields - equal width */
+.form-row:first-of-type {
+  .form-group {
+    flex: 1;
+  }
+}
+
+/* Email and telephone - email is larger */
+.form-row:has(#email, #telephone) {
+  .form-group:has(#email) {
+    flex: 0.65; /* Email needs more space */
+  }
+  .form-group:has(#telephone) {
+    flex: 0.35; /* Telephone needs less space */
+  }
+}
+
+/* Street and house number - street is larger */
+.form-row:has(#street, #housenumber) {
+  .form-group:has(#street) {
+    flex: 0.7; /* Make street column larger */
+  }
+  .form-group:has(#housenumber) {
+    flex: 0.3; /* Make house number column smaller */
+  }
+}
+
+/* City and zipcode - city is larger */
+.form-row:has(#city, #zipcode) {
+  .form-group:has(#city) {
+    flex: 0.7; /* City needs more space */
+  }
+  .form-group:has(#zipcode) {
+    flex: 0.3; /* Zipcode is usually shorter */
+  }
+}
+
+/* Password fields specific spacing */
+.form-group:has(#password),
+.form-group:has(#password-confirm) {
+  margin-top: 0.5rem;
 }
