@@ -8,9 +8,6 @@ import {
   getItemById,
   getItemByName,
   getItems,
-  getItemsByCategory,
-  getItemsByCategoryQuerry,
-  getItemsByNameQuerry,
   updateItem,
 } from "../controllers/itemsController";
 
@@ -22,9 +19,6 @@ router
   .get("/", getItems)
   .get("/name", getItemByName)
   .patch("/:id", authMiddleware, isAdmin, updateItem)
-  .get("/:id", getItemById)
-  .post("/category", getItemsByCategory) //.get werkt niet
-  .get("/category/:category", getItemsByCategoryQuerry)
-  .get("/name/:name", getItemsByNameQuerry);
+  .get("/:id", getItemById);
 
 export default router;
