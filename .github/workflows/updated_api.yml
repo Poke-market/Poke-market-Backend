@@ -43,7 +43,7 @@ jobs:
 
       # Comment on PR
       - name: Comment on PR
-        if: steps.get-url.outputs.service_url != ''  # Only run if URL was set
+        if: steps.get-url.outputs.service_url != '' # Only run if URL was set
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
