@@ -39,7 +39,6 @@ jobs:
               head: `${owner}:${branch}`,
               state: "open"
             });
-
             if (pulls.length > 0) {
               const prNumber = pulls[0].number;
               await github.rest.issues.createComment({
