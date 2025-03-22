@@ -1,10 +1,9 @@
-name: Comment PR with API URL
+name: Comment PR on Deploy
 
 on:
-  pull_request:
+  push:
     branches:
-      - experiment/___-test-google-clooud
-    types: [opened, reopened]
+      - development
 
 permissions:
   pull-requests: write
@@ -23,6 +22,10 @@ jobs:
           gcloud config set project strong-ward-453503-f1
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Wait for Deployment (Optional)
+        run: |
+          sleep 30  # Adjust based on Cloud Build deploy time
 
       - name: Get Cloud Run Service URL
         id: get-url
@@ -45,20 +48,22 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `API updated! Access it here: ${serviceUrl}`
+              body: `API updated! Access it here: ${serviceUrl}
+  
               ✨ New API Update Available!
               Your changes have been successfully deployed to the development environment.
-
+              
               🔗 API Details
-              - URL: ${serviceUrl}
-              - Environment: Development
-              - Status: Ready for Testing
+            - URL: ${serviceUrl}
+            - Environment: Development
+            - Status: Ready for Testing
               
               📝 Available Endpoints
-              - Auth: \`/api/auth\`
-              - Items: \`/api/items\`
-              - Users: \`/api/users\`
-              - Tags: \`/api/tags\`
-              - Slugs: \`/api/slug\`
-            
-              This is an automated message from your friendly deployment bot 🤖});
+            - Auth: \`/api/auth\`
+            - Items: \`/api/items\`
+            - Users: \`/api/users\`
+            - Tags: \`/api/tags\`
+            - Slugs: \`/api/slug\`
+              
+              This is an automated message from your friendly deployment bot 🤖`
+              });
