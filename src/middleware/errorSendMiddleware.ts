@@ -16,7 +16,7 @@ export const errorSendMiddleware = (
   }
 
   if (err instanceof UnauthorizedError) {
-    res.redirect("/login");
+    res.redirect("/auth/login");
     return;
   }
 

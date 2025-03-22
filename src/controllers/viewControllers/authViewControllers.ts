@@ -22,12 +22,14 @@ export const renderVerifyView = async (req: Request, res: Response) => {
     res.render("verification", {
       title: "Verification Successful!",
       message: "Congratulations! Your account has been verified.!",
+      success: true,
     });
   } catch (error) {
     if (error instanceof VerificationError) {
       res.render("verification", {
         title: "Verification Failed",
         message: error.message,
+        success: false,
       });
     }
     throw error;

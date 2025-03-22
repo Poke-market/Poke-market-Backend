@@ -280,7 +280,7 @@ main {
 
 /* Container with fixed height to prevent layout shifts */
 .notification-container {
-  height: 4rem;
+  min-height: 7rem;
   margin-bottom: 1.5rem;
   overflow: hidden;
 }
@@ -295,14 +295,12 @@ main {
   transition: opacity 0.3s ease;
   opacity: 0;
   visibility: hidden;
-  max-height: 0;
 }
 
 /* When notification is visible */
 #notification-area.notification.visible {
   opacity: 1;
   visibility: visible;
-  max-height: 5rem;
 }
 
 /* Notification types */
@@ -430,7 +428,11 @@ main {
   border: 0.5rem solid #222224;
   position: relative;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-  animation: shake 1.5s ease-in-out 0.5s;
+  animation:
+    shake-left 1.5s ease-in-out 0.5s,
+    pause 0.8s ease-in-out 2s,
+    shake-right 1.5s ease-in-out 2.8s;
+  transform-origin: center;
 }
 
 .pokeball::before {
@@ -453,254 +455,13 @@ main {
   width: 100%;
   height: 0.5rem;
   background-color: #222224;
-  top: calc(50% - 0.25rem);
-  left: 0;
-}
-
-/* Stars animation */
-.pokemon-success::before,
-.pokemon-success::after,
-.pokemon-success .star-1,
-.pokemon-success .star-2,
-.pokemon-success .star-3,
-.pokemon-success .star-4,
-.pokemon-success .star-5,
-.pokemon-success .star-6,
-.pokemon-success .star-7,
-.pokemon-success .star-8,
-.pokemon-success .star-9,
-.pokemon-success .star-10,
-.pokemon-success .star-11,
-.pokemon-success .star-12,
-.pokemon-success .star-13,
-.pokemon-success .star-14 {
-  content: "★";
-  position: absolute;
-  color: #ffde00; /* Pokemon yellow */
-  opacity: 0;
-  z-index: 3;
-  filter: drop-shadow(0 0 5px rgba(255, 222, 0, 0.7));
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  transform: translateY(-50%);
 }
 
-/* Different sized stars */
-.pokemon-success::before {
-  font-size: 2.4rem;
-}
-
-.pokemon-success::after {
-  font-size: 1.9rem;
-}
-
-.pokemon-success .star-1 {
-  font-size: 2.2rem;
-}
-
-.pokemon-success .star-2 {
-  font-size: 1.8rem;
-}
-
-.pokemon-success .star-3 {
-  font-size: 2rem;
-}
-
-.pokemon-success .star-4 {
-  font-size: 1.5rem;
-}
-
-.pokemon-success .star-5 {
-  font-size: 2.3rem;
-}
-
-.pokemon-success .star-6 {
-  font-size: 1.7rem;
-}
-
-.pokemon-success .star-7 {
-  font-size: 1.6rem;
-}
-
-.pokemon-success .star-8 {
-  font-size: 2.1rem;
-}
-
-.pokemon-success .star-9 {
-  font-size: 1.4rem;
-}
-
-.pokemon-success .star-10 {
-  font-size: 2.5rem;
-}
-
-.pokemon-success .star-11 {
-  font-size: 1.3rem;
-}
-
-.pokemon-success .star-12 {
-  font-size: 1.9rem;
-}
-
-.pokemon-success .star-13 {
-  font-size: 1.2rem;
-}
-
-.pokemon-success .star-14 {
-  font-size: 2rem;
-}
-
-/* Star animations with faster timing - mostly upper hemisphere */
-.pokemon-success::before {
-  animation: star-up 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success::after {
-  animation: star-up-slight-right 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-1 {
-  animation: star-right 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-2 {
-  animation: star-left 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-3 {
-  animation: star-up-right 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-4 {
-  animation: star-up-left 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-5 {
-  animation: star-up-far-right 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-6 {
-  animation: star-up-far-left 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-7 {
-  animation: star-right-up 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-8 {
-  animation: star-left-up 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-9 {
-  animation: star-up-right-more 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-10 {
-  animation: star-up-left-more 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-11 {
-  animation: star-right-more 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-12 {
-  animation: star-left-more 0.4s ease-out 2s forwards;
-}
-
-.pokemon-success .star-13 {
-  animation: star-up-steep 0.4s ease-out 2.05s forwards;
-}
-
-.pokemon-success .star-14 {
-  animation: star-up-slight-left 0.4s ease-out 2.05s forwards;
-}
-
-/* Additional star animations */
-@keyframes star-up-right-more {
-  0% {
-    transform: translate(10%, -140%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(80%, -220%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes star-up-left-more {
-  0% {
-    transform: translate(-110%, -140%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-180%, -220%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes star-right-more {
-  0% {
-    transform: translate(80%, -30%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(220%, -60%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes star-left-more {
-  0% {
-    transform: translate(-180%, -30%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-320%, -60%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes star-up-steep {
-  0% {
-    transform: translate(-50%, -180%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -350%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes star-up-slight-left {
-  0% {
-    transform: translate(-75%, -150%) scale(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-100%, -250%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes shake {
+/* Animation for pokeball with horizontal movement - starting left */
+@keyframes shake-left {
   0% {
     transform: rotate(0) translateX(0);
   }
@@ -727,31 +488,40 @@ main {
   }
 }
 
-.success-container h2 {
-  font-size: 2rem;
-  color: var(--basic-blue);
-  margin-bottom: 2rem;
-  text-align: center;
-  font-weight: 600;
+/* Pause animation */
+@keyframes pause {
+  0%,
+  100% {
+    transform: rotate(0) translateX(0);
+  }
 }
 
-.login-button {
-  display: inline-block;
-  background-color: var(--basic-blue);
-  color: var(--white);
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-size: 1.4rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background-color 0.2s ease;
-  margin-top: 1rem;
-  border: none;
-  cursor: pointer;
-}
-
-.login-button:hover {
-  background-color: var(--light-blue);
+/* Animation for pokeball with horizontal movement - starting right */
+@keyframes shake-right {
+  0% {
+    transform: rotate(0) translateX(0);
+  }
+  15% {
+    transform: rotate(5deg) translateX(0.5rem);
+  }
+  30% {
+    transform: rotate(-5deg) translateX(-0.5rem);
+  }
+  45% {
+    transform: rotate(3deg) translateX(0.3rem);
+  }
+  60% {
+    transform: rotate(-3deg) translateX(-0.3rem);
+  }
+  75% {
+    transform: rotate(1deg) translateX(0.1rem);
+  }
+  90% {
+    transform: rotate(-1deg) translateX(-0.1rem);
+  }
+  100% {
+    transform: rotate(0) translateX(0);
+  }
 }
 
 /* Simple directional animations - starting from pokeball border */

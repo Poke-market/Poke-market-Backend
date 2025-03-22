@@ -11,11 +11,41 @@
 
 </head>
 <body>
-    <div class="container">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokéball" class="pokemon-icon">
+    <div class="verification-container">
         <h1>{{title}}</h1>
-        <p>{{message}}</p>
-        <a href="/items" class="btn">Return to Homepage</a>
+        
+        {{#if success}}
+            <div class="success-container">
+                <div class="pokemon-success">
+                    <div class="pokeball"></div>
+                    <span class="star-1">★</span>
+                    <span class="star-2">★</span>
+                    <span class="star-3">★</span>
+                    <span class="star-4">★</span>
+                    <span class="star-5">★</span>
+                    <span class="star-6">★</span>
+                    <span class="star-7">★</span>
+                    <span class="star-8">★</span>
+                    <span class="star-9">★</span>
+                    <span class="star-10">★</span>
+                    <span class="star-11">★</span>
+                    <span class="star-12">★</span>
+                    <span class="star-13">★</span>
+                    <span class="star-14">★</span>
+                </div>
+                <h2>Verification Successful!</h2>
+                <div class="success-message">{{message}}</div>
+                <a href="/auth/login" class="login-button">Go to Login</a>
+            </div>
+        {{else}}
+            <div class="notification-container">
+                <div class="notification error">
+                    <h3>Verification Failed</h3>
+                    <p>{{message}}</p>
+                </div>
+            </div>
+            <a href="/" class="home-button">Return to Home</a>
+        {{/if}}
     </div>
 </body>
 </html>

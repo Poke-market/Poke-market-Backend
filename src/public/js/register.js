@@ -203,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Clear field errors
     clearErrors();
+    clearNotification();
 
     // Validate all required fields
     let isValid = true;

@@ -1,5 +1,15 @@
 {{#section "styles"}}
   <link rel="stylesheet" href="/css/register.css" />
+  <style>
+    /* Override star animations from register.css */
+    .pokemon-success::before,
+    .pokemon-success::after {
+      display: none !important;
+      content: none !important;
+      animation: none !important;
+      opacity: 0 !important;
+    }
+  </style>
 {{/section}}
 
 {{#section "scripts"}}
@@ -18,20 +28,6 @@
   <div id="success-container" class="success-container" style="display: none;">
     <div class="pokemon-success">
       <div class="pokeball"></div>
-      <span class="star-1">★</span>
-      <span class="star-2">★</span>
-      <span class="star-3">★</span>
-      <span class="star-4">★</span>
-      <span class="star-5">★</span>
-      <span class="star-6">★</span>
-      <span class="star-7">★</span>
-      <span class="star-8">★</span>
-      <span class="star-9">★</span>
-      <span class="star-10">★</span>
-      <span class="star-11">★</span>
-      <span class="star-12">★</span>
-      <span class="star-13">★</span>
-      <span class="star-14">★</span>
     </div>
     <h2>Registration Successful!</h2>
     <div id="success-message" class="success-message"></div>
