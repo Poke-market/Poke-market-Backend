@@ -1,45 +1,46 @@
 import { Request } from "express";
 import { Response } from "../types/res.json";
-import { Tag } from "../models/tagModel";
+import * as tagService from "../services/tagService";
+import { CreateTagSchema, UpdateTagSchema } from "../services/tagService";
 
 //get all tags
 export const getTags = async (req: Request, res: Response) => {
-  const tags = await Tag.find();
+  const tags = await tagService.getTags();
   res.status(200).json({ status: "success", data: tags });
 };
 
 //add tag
 export const addTag = async (req: Request, res: Response) => {
-  const { name } = req.body as Record<string, string>;
-  const tag = await Tag.create({ name });
+  const { name } = CreateTagSchema.parse(req.body);
+  const tag = await tagService.addTag(name);
   res.status(201).json({ status: "success", data: tag });
 };
 
 //delete tag
 export const deleteTag = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const tag = await Tag.findByIdAndDelete(id);
+  const tag = await tagService.deleteTag(id);
   res.status(200).json({ status: "success", data: tag });
 };
 
 //update tag
 export const updateTag = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name } = req.body as Record<string, string>;
-  const tag = await Tag.findByIdAndUpdate(id, { name }, { new: true });
+  const { name } = UpdateTagSchema.parse(req.body);
+  const tag = await tagService.updateTag(id, name);
   res.status(200).json({ status: "success", data: tag });
 };
 
 //get tag by name
 export const getTagByName = async (req: Request, res: Response) => {
   const { name } = req.params;
-  const tag = await Tag.findOne({ name });
+  const tag = await tagService.getTagByName(name);
   res.status(200).json({ status: "success", data: tag });
 };
 
 //get tag by id
 export const getTagById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const tag = await Tag.findById(id);
+  const tag = await tagService.getTagById(id);
   res.status(200).json({ status: "success", data: tag });
 };
