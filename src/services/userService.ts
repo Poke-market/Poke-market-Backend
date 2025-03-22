@@ -150,10 +150,11 @@ export async function deleteUser(id: string) {
   return user;
 }
 
-// Full user schema for PUT requests (requires all fields)
-export const UserFullSchema = registerSchema.extend({
-  isAdmin: z.boolean().optional(),
-  emailVerified: z.boolean().optional(),
+// Full user schema for PUT requests (requires all fields except password)
+export const UserFullSchema = registerSchema.omit({ password: true }).extend({
+  isAdmin: z.boolean(),
+  emailVerified: z.boolean(),
+  password: registerSchema.shape.password.optional(),
 });
 
 // User update schema for validation
