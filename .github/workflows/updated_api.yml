@@ -45,5 +45,28 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `API updated! Access it here: ${serviceUrl}`
-            });
+              body: `## 🚀 Development API Deployment
+
+### ✨ New API Update Available!
+  Your changes have been successfully deployed to the development environment.
+
+#### 🔗 API Details
+- **URL**: ${serviceUrl}
+- **Environment**: Development
+- **Status**: Ready for Testing
+
+#### 📝 Available Endpoints
+- Auth: \`/api/auth\`
+- Items: \`/api/items\`
+- Users: \`/api/users\`
+- Tags: \`/api/tags\`
+- Slugs: \`/api/slug\`
+
+  > 🔍 **Testing Checklist**
+  > - Verify API endpoints are responding
+  > - Check authentication flows
+  > - Validate data responses
+  > - Test error handling
+
+  *This is an automated message from your friendly deployment bot* 🤖
+  });
