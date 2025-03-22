@@ -72,3 +72,10 @@ export const renderUserEditView = async (req: Request, res: Response) => {
     user: res.locals.user,
   });
 };
+
+export const renderUserAddView = (req: Request, res: Response) => {
+  res.render("user-add", {
+    title: "Add New User",
+    user: res.locals.user,
+  });
+};
