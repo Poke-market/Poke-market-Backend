@@ -65,5 +65,5 @@ jobs:
             - Tags: \`/api/tags\`
             - Slugs: \`/api/slug\`
               
-              This is an automated message from your friendly deployment bot 🤖`
+              This is an automated message from your deployment bot 🤖`
               });
