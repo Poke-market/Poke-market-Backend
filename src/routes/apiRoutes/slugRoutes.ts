@@ -1,5 +1,5 @@
 import express from "express";
-import { getItemBySlug } from "../controllers/SlugController";
+import { getItemBySlug } from "../../controllers/apiControllers/SlugController";
 
 const router = express.Router();
 

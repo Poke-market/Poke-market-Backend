@@ -5,18 +5,13 @@ import express from "express";
 import mongoose from "mongoose";
 import hbs from "./config/handlebars";
 
-import { notFound } from "./controllers/notFoundController";
+import { notFound } from "./controllers/apiControllers/notFoundController";
 import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
 import { errorSendMiddleware } from "./middleware/errorSendMiddleware";
 import arcjetMiddleware from "./middleware/arcjetMiddleware";
-import itemsRoutes from "./routes/itemsRoutes";
-import tagRoutes from "./routes/tagRoutes";
-import userRoutes from "./routes/userRoutes";
-import authRoutes from "./routes/authRoutes";
 import cookieParser from "cookie-parser";
+import apiRoutes from "./routes/apiRoutes";
 import viewRoutes from "./routes/viewRoutes";
-import slugRoutes from "./routes/slugRoutes";
-import { verificationEmail } from "./controllers/AuthController";
 
 // Variables
 const app = express();
@@ -35,12 +30,7 @@ app.set("views", "src/views");
 app.use(express.static("src/public"));
 
 // API Routes
-app.use("/api/items", itemsRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/tags", tagRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/slug", slugRoutes);
-app.get("/verify/:token", verificationEmail as express.RequestHandler);
+app.use("/api", apiRoutes);
 
 // Web Routes
 app.use("/", viewRoutes);

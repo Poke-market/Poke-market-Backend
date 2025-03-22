@@ -1,14 +1,14 @@
 import { Request } from "express";
-import { Response } from "../types/res.json";
+import { Response } from "../../types/res.json";
 import { Types } from "mongoose";
 import mongoose from "mongoose";
 
-import { ForbiddenError, NotFoundError, ValidationError } from "../errors";
-import { User } from "../models/userModel";
-import { Item } from "../models/itemModel";
+import { ForbiddenError, NotFoundError, ValidationError } from "../../errors";
+import { User } from "../../models/userModel";
+import { Item } from "../../models/itemModel";
 
-import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
-import * as userService from "../services/userService";
+import { makePageLinkBuilder } from "../../utils/pageLinkBuilder";
+import * as userService from "../../services/userService";
 const { UserCreateSchema, UserUpdateSchema, UserFullSchema } = userService;
 
 export const getAllUsers = async (req: Request, res: Response) => {

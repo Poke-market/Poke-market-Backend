@@ -1,8 +1,8 @@
 import { Request } from "express";
-import { Response } from "../types/res.json";
+import { Response } from "../../types/res.json";
 
-import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
-import * as itemService from "../services/itemService";
+import { makePageLinkBuilder } from "../../utils/pageLinkBuilder";
+import * as itemService from "../../services/itemService";
 const { CreateItemSchema, UpdateItemSchema, GetItemByNameSchema } = itemService;
 
 export const getItems = async (req: Request, res: Response) => {

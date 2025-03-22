@@ -2,10 +2,16 @@ import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { BASE_URL, IS_PRODUCTION, JWT_SECRET } from "../config/env";
-import { UnauthorizedError, ConflictError } from "../errors";
+import { UnauthorizedError, ConflictError, VerificationError } from "../errors";
 import { z } from "zod";
 import { sendVerificationEmail } from "../utils/sendVerificationMail";
 import { Response } from "../types/res.json";
+
+export const verifyEmailJwtSchema = z.object({
+  email: z
+    .string()
+    .email({ message: "Invalid Token: token does not contain email" }),
+});
 
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid Email" }),
@@ -39,6 +45,19 @@ export const registerSchema = z.object({
   telephone: z.string().min(1, { message: "Telephone is required" }),
 });
 
+export async function validateLogin(email: string, password: string) {
+  // One error msg to give as little info as possible.
+  const invalidCredentialsMsg = "Invalid email or password";
+
+  const user = await User.findOne({ email });
+  if (!user) throw new UnauthorizedError(invalidCredentialsMsg);
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) throw new UnauthorizedError(invalidCredentialsMsg);
+
+  return user;
+}
+
 export function loginUser(
   userDocument: InstanceType<typeof User>,
   res: Response,
@@ -69,19 +88,6 @@ export function loginUser(
   return user;
 }
 
-export async function validateLogin(email: string, password: string) {
-  // One error msg to give as little info as possible.
-  const invalidCredentialsMsg = "Invalid email or password";
-
-  const user = await User.findOne({ email });
-  if (!user) throw new UnauthorizedError(invalidCredentialsMsg);
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) throw new UnauthorizedError(invalidCredentialsMsg);
-
-  return user;
-}
-
 export async function registerUser(userData: z.infer<typeof registerSchema>) {
   const { email, password } = userData;
 
@@ -93,7 +99,7 @@ export async function registerUser(userData: z.infer<typeof registerSchema>) {
     expiresIn: "1h",
   });
 
-  const verificationLink = `${BASE_URL}/api/auth/verify?token=${verificationToken}`;
+  const verificationLink = `${BASE_URL}/auth/verify/${verificationToken}`;
 
   await sendVerificationEmail({
     name: userData.firstname,
@@ -118,4 +124,29 @@ export function logoutUser(res: Response) {
     secure: IS_PRODUCTION,
     sameSite: "lax",
   });
+}
+
+export async function verifyUser(token: string) {
+  if (!token || typeof token !== "string")
+    throw new VerificationError("invalid-token");
+
+  // Verify the token
+  const decoded = jwt.verify(token, JWT_SECRET);
+
+  const { success, data } = verifyEmailJwtSchema.safeParse(decoded);
+  if (!success) throw new VerificationError("invalid-token");
+
+  // Find the user by email
+  const user = await User.findOne({ email: data.email });
+
+  if (!user) throw new VerificationError("user-not-found");
+
+  if (user.isVerified) throw new VerificationError("already-verified");
+
+  // Update user verification status
+  user.isVerified = true;
+  user.verificationToken = null;
+  await user.save();
+
+  return user;
 }

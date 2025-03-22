@@ -1,7 +1,7 @@
 import { Request } from "express";
-import { Response } from "../types/res.json";
-import * as tagService from "../services/tagService";
-import { CreateTagSchema, UpdateTagSchema } from "../services/tagService";
+import { Response } from "../../types/res.json";
+import * as tagService from "../../services/tagService";
+import { CreateTagSchema, UpdateTagSchema } from "../../services/tagService";
 
 //get all tags
 export const getTags = async (req: Request, res: Response) => {

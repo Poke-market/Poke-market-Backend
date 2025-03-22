@@ -128,14 +128,6 @@ footer {
   padding: 0 1rem;
 }
 
-/* Content Cards/Containers */
-.users-container,
-.items-container,
-.user-edit-container,
-.register-container,
-.login-container {
-}
-
 /* Table Headers & Search Form Styles */
 .list-header,
 .search-form {

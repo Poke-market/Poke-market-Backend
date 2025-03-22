@@ -1,6 +1,6 @@
 import express from "express";
-import { authMiddleware } from "../middleware/authMiddleware";
-import { isAdmin } from "../middleware/isAdmin";
+import { authMiddleware } from "../../middleware/authMiddleware";
+import { isAdmin } from "../../middleware/isAdmin";
 
 import {
   addToWishlist,
@@ -11,7 +11,7 @@ import {
   removeFromWishlist,
   updateUser,
   replaceUser,
-} from "../controllers/userController";
+} from "../../controllers/apiControllers/userController";
 
 const router = express.Router();
 

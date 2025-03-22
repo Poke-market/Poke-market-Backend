@@ -3,8 +3,8 @@ import {
   register,
   login,
   logout,
-  verificationEmail,
-} from "../controllers/AuthController";
+  verify,
+} from "../../controllers/apiControllers/AuthController";
 
 const router = express.Router();
 
@@ -12,6 +12,6 @@ router
   .post("/register", register)
   .post("/login", login)
   .post("/logout", logout)
-  .get("/verify", verificationEmail as express.RequestHandler);
+  .get("/verify/:token", verify);
 
 export default router;

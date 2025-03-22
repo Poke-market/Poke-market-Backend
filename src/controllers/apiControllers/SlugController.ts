@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { Response } from "../types/res.json";
-import * as slugService from "../services/slugService";
+import { Response } from "../../types/res.json";
+import * as slugService from "../../services/slugService";
 
 export const getItemBySlug = async (req: Request, res: Response) => {
   const { slug } = req.params;
