@@ -199,16 +199,26 @@ select.form-input {
   transition: none;
 }
 
+/* Make sure invalid state overrides the specific textarea style */
+#description.invalid {
+  background-color: rgba(229, 62, 62, 0.05) !important;
+}
+
 /* Style for invalid form fields */
 .form-input.invalid {
   border-color: var(--red);
   box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
-  background-color: rgba(229, 62, 62, 0.05);
+  background-color: rgba(229, 62, 62, 0.05) !important;
 }
 
 .form-input.invalid:focus {
   border-color: var(--red);
   box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
+}
+
+/* Specific rule for textareas */
+textarea.form-input.invalid {
+  background-color: rgba(229, 62, 62, 0.05) !important;
 }
 
 .error-message {
