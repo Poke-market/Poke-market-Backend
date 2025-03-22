@@ -13,6 +13,10 @@ export const verifyEmailJwtSchema = z.object({
     .email({ message: "Invalid Token: token does not contain email" }),
 });
 
+export const verifyBaseUrlSchema = z.object({
+  verifyBaseUrl: z.string().url({ message: "Invalid Base URL" }).optional(),
+});
+
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid Email" }),
   password: z.string().min(1, { message: "Password is required" }),
@@ -88,7 +92,10 @@ export function loginUser(
   return user;
 }
 
-export async function registerUser(userData: z.infer<typeof registerSchema>) {
+export async function registerUser(
+  userData: z.infer<typeof registerSchema>,
+  baseUrl = `${BASE_URL}/auth/verify`,
+) {
   const { email, password } = userData;
 
   const existingUser = await User.findOne({ email });
@@ -99,7 +106,7 @@ export async function registerUser(userData: z.infer<typeof registerSchema>) {
     expiresIn: "1h",
   });
 
-  const verificationLink = `${BASE_URL}/auth/verify/${verificationToken}`;
+  const verificationLink = `${baseUrl}/${verificationToken}`;
 
   await sendVerificationEmail({
     name: userData.firstname,

@@ -1,11 +1,12 @@
 import { Request } from "express";
 import { Response } from "../../types/res.json";
 import * as authService from "../../services/authService";
-const { registerSchema, loginSchema } = authService;
+const { registerSchema, loginSchema, verifyBaseUrlSchema } = authService;
 
 export const register = async (req: Request, res: Response) => {
   const userData = registerSchema.parse(req.body);
-  const newUser = await authService.registerUser(userData);
+  const { verifyBaseUrl } = verifyBaseUrlSchema.parse(req.query);
+  const newUser = await authService.registerUser(userData, verifyBaseUrl);
   const loggedInUser = authService.loginUser(newUser, res);
 
   res.status(201).json({ status: "success", data: { user: loggedInUser } });
