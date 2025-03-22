@@ -3,14 +3,9 @@ import { getItems } from "../services/itemService";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 import { logoutUser } from "../services/authService";
 import { getUsers, getUserById } from "../services/userService";
-import mongoose from "mongoose";
-import {
-  Item,
-  categories,
-  discountTypes,
-  flattenItemTags,
-} from "../models/itemModel";
-import { Tag } from "../models/tagModel";
+import { categories, discountTypes } from "../models/itemModel";
+import { getTags } from "../services/tagService";
+import { getItemBySlug } from "../services/slugService";
 
 export const renderHomeView = (req: Request, res: Response) => {
   res.redirect("/items");
@@ -82,7 +77,7 @@ export const renderUserAddView = (req: Request, res: Response) => {
 
 export const renderItemAddView = async (req: Request, res: Response) => {
   // Get all tags for the tag selector
-  const tags = await Tag.find().select("name");
+  const tags = await getTags();
 
   res.render("item-add", {
     user: res.locals.user,
@@ -94,36 +89,20 @@ export const renderItemAddView = async (req: Request, res: Response) => {
 };
 
 export const renderItemEditView = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { slug } = req.params;
 
-  try {
-    // Check if id is valid
-    if (!mongoose.isValidObjectId(id)) {
-      throw new Error("Invalid item ID");
-    }
+  // Get the item using the service
+  const item = await getItemBySlug(slug);
 
-    // Get the item
-    const item = await Item.findById(id).populate("tags");
+  // Get all tags for the tag selector
+  const tags = await getTags();
 
-    if (!item) {
-      throw new Error("Item not found");
-    }
-
-    // Get all tags for the tag selector
-    const tags = await Tag.find().select("name");
-
-    // Convert to plain object and flatten tags
-    const itemDetails = flattenItemTags(item.toObject());
-
-    res.render("item-edit", {
-      user: res.locals.user,
-      title: "Edit Item",
-      itemDetails,
-      categories,
-      discountTypes,
-      tags: tags.map((tag: { name: string }) => tag.name),
-    });
-  } catch (error) {
-    res.redirect("/items");
-  }
+  res.render("item-edit", {
+    user: res.locals.user,
+    title: "Edit Item",
+    itemDetails: item,
+    categories,
+    discountTypes,
+    tags: tags.map((tag: { name: string }) => tag.name),
+  });
 };

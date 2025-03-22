@@ -19,7 +19,7 @@ const router = express.Router();
 router.get("/", authMiddleware, isAdmin, renderHomeView);
 router.get("/items", authMiddleware, isAdmin, renderItemsView);
 router.get("/items/add", authMiddleware, isAdmin, renderItemAddView);
-router.get("/items/:id", authMiddleware, isAdmin, renderItemEditView);
+router.get("/items/:slug", authMiddleware, isAdmin, renderItemEditView);
 
 router.get("/test", renderTestView);
 router.get("/register", renderRegisterView);
