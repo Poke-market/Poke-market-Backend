@@ -1,0 +1,247 @@
+/* Dashboard container */
+.dashboard-container {
+  max-width: 1400px;
+  margin: 2rem auto 4rem;
+  padding: 0 2rem;
+}
+
+/* Dashboard header */
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: var(--text-color-2);
+  margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+  font-size: 1.6rem;
+  color: var(--text-color-3);
+}
+
+/* Grid layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+/* Grid section */
+.grid-section {
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.grid-section:hover {
+  transform: translateY(-5px);
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-color-2);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--grey);
+}
+
+/* Tile group */
+.tile-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tile styling */
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background-color: var(--white);
+  border: 1px solid var(--grey);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+  color: var(--text-color-2);
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(15px);
+  overflow: hidden;
+}
+
+.tile.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tile:hover {
+  border-color: var(--basic-blue);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(58, 118, 207, 0.15);
+}
+
+.tile-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1.2rem;
+  border-radius: 12px;
+  background-color: rgba(58, 118, 207, 0.1);
+  color: var(--basic-blue);
+  transition: all 0.3s ease;
+}
+
+.tile:hover .tile-icon {
+  background-color: var(--basic-blue);
+  color: var(--white);
+  transform: scale(1.1);
+}
+
+.tile-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.tile h3 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  color: var(--text-color-2);
+}
+
+.tile p {
+  font-size: 1.3rem;
+  color: var(--text-color-3);
+  margin-bottom: 0.5rem;
+}
+
+/* Badges */
+.soon-badge,
+.external-link-badge,
+.dev-badge,
+.github-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.soon-badge {
+  background-color: rgba(229, 229, 229, 0.3);
+  color: #888;
+}
+
+.external-link-badge {
+  background-color: rgba(56, 142, 60, 0.1);
+  color: #388e3c;
+}
+
+.dev-badge {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.github-badge {
+  background-color: rgba(33, 33, 33, 0.1);
+  color: #333;
+}
+
+/* Disabled tile */
+.tile.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: var(--grey);
+}
+
+.tile.disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.tile.disabled .tile-icon {
+  background-color: rgba(150, 150, 150, 0.1);
+  color: #888;
+}
+
+.tile.disabled:hover .tile-icon {
+  background-color: rgba(150, 150, 150, 0.1);
+  color: #888;
+  transform: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0 1.5rem;
+    margin: 1.5rem auto 3rem;
+  }
+
+  .dashboard-header {
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2.4rem;
+  }
+
+  .grid-section {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .tile {
+    padding: 1.5rem 1rem;
+  }
+
+  .tile-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1rem;
+  }
+
+  .tile-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .tile-group {
+    grid-template-columns: 1fr;
+  }
+
+  .tile {
+    padding: 1.8rem 1.5rem;
+  }
+}
