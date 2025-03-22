@@ -1,4 +1,4 @@
-import { type FilterQuery, type SortOrder } from "mongoose";
+import { type FilterQuery, type SortOrder, PipelineStage } from "mongoose";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { NotFoundError, BadRequestError, ValidationError } from "../errors";
@@ -31,6 +31,10 @@ export const FilterParamsSchema = z.object({
   search: z.string().trim().optional(),
   cat: z.string().trim().optional(),
   tag: z.string().trim().optional(),
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+  minDiscountedPrice: z.coerce.number().optional(),
+  maxDiscountedPrice: z.coerce.number().optional(),
 });
 
 export const SortParamsSchema = z.object({
@@ -74,10 +78,20 @@ export type CreateItemParams = z.infer<typeof CreateItemSchema>;
 export type UpdateItemParams = z.infer<typeof UpdateItemSchema>;
 export type GetItemByNameParams = z.infer<typeof GetItemByNameSchema>;
 export async function buildItemsFilter(params: FilterParams) {
-  const { search, cat, tag } = FilterParamsSchema.parse(params);
+  const {
+    search,
+    cat,
+    tag,
+    minPrice,
+    maxPrice,
+    minDiscountedPrice,
+    maxDiscountedPrice,
+  } = FilterParamsSchema.parse(params);
   const catFilter: FilterQuery<typeof Item>[] = [];
   const tagFilter: FilterQuery<typeof Item>[] = [];
   const searchFilter: FilterQuery<typeof Item>[] = [];
+  const priceFilter: FilterQuery<typeof Item>[] = [];
+  const pipeline: PipelineStage[] = [];
 
   // Handle category filtering
   if (cat) {
@@ -119,13 +133,78 @@ export async function buildItemsFilter(params: FilterParams) {
     if (searchConditions.length > 0) searchFilter.push(...searchConditions);
   }
 
-  const combinedFilter = [...catFilter, ...tagFilter, ...searchFilter];
-  const filterWithoutCats = [...tagFilter, ...searchFilter];
+  // Handle regular price filtering
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    const priceCondition: Record<string, number> = {};
+    if (minPrice !== undefined) priceCondition.$gte = minPrice;
+    if (maxPrice !== undefined) priceCondition.$lte = maxPrice;
+
+    if (Object.keys(priceCondition).length > 0) {
+      priceFilter.push({ price: priceCondition });
+    }
+  }
+
+  // Handle discounted price filtering using MongoDB aggregation
+  if (minDiscountedPrice !== undefined || maxDiscountedPrice !== undefined) {
+    pipeline.push({
+      $addFields: {
+        discountedPrice: {
+          $cond: {
+            if: { $eq: ["$discount.type", "percentage"] },
+            then: {
+              $subtract: [
+                "$price",
+                {
+                  $multiply: ["$price", { $divide: ["$discount.amount", 100] }],
+                },
+              ],
+            },
+            else: {
+              $cond: {
+                if: {
+                  $and: [
+                    { $ne: [{ $type: "$discount" }, "missing"] },
+                    { $ne: [{ $type: "$discount.amount" }, "missing"] },
+                    { $ne: ["$discount.amount", 0] },
+                  ],
+                },
+                then: { $subtract: ["$price", "$discount.amount"] },
+                else: "$price",
+              },
+            },
+          },
+        },
+      },
+    } as PipelineStage);
+
+    const discountedPriceCondition: Record<string, number> = {};
+    if (minDiscountedPrice !== undefined)
+      discountedPriceCondition.$gte = minDiscountedPrice;
+    if (maxDiscountedPrice !== undefined)
+      discountedPriceCondition.$lte = maxDiscountedPrice;
+
+    if (Object.keys(discountedPriceCondition).length > 0) {
+      pipeline.push({
+        $match: {
+          discountedPrice: discountedPriceCondition,
+        },
+      } as PipelineStage);
+    }
+  }
+
+  const combinedFilter = [
+    ...catFilter,
+    ...tagFilter,
+    ...searchFilter,
+    ...priceFilter,
+  ];
+  const filterWithoutCats = [...tagFilter, ...searchFilter, ...priceFilter];
 
   return {
     filter: combinedFilter.length > 0 ? { $and: combinedFilter } : {},
     filterWithoutCats:
       filterWithoutCats.length > 0 ? { $and: filterWithoutCats } : {},
+    pipeline,
   };
 }
 
@@ -141,11 +220,18 @@ export function buildItemsSorter(params: RawQuery<SortParams>): {
     case "price":
       return {
         mongoSorter: { price: order },
-        memorySorter: buildNestedPropSorter(
-          // @ts-expect-error discountedPrice is a virtual property
-          (item) => item.discount.discountedPrice as number,
-          order,
-        ),
+        memorySorter: buildNestedPropSorter((item) => {
+          // For items with discount, calculate the discounted price
+          if (item.discount?.amount) {
+            if (item.discount.type === "percentage") {
+              return item.price - item.price * (item.discount.amount / 100);
+            } else {
+              return item.price - item.discount.amount;
+            }
+          }
+          // For items without discount, return the regular price
+          return item.price;
+        }, order),
       };
     default:
       return { mongoSorter: {} };
@@ -178,27 +264,127 @@ export async function getItems(
   params: RawQuery<PaginationParams & FilterParams & SortParams>,
   getPageLink: (page: number) => string,
 ) {
-  const { filter, filterWithoutCats } = await buildItemsFilter(params);
+  const { filter, filterWithoutCats, pipeline } =
+    await buildItemsFilter(params);
   const { mongoSorter, memorySorter } = buildItemsSorter(params);
   const { limit, page } = PaginationParamsSchema.parse(params);
-  const itemCount = await Item.countDocuments(filter);
+
+  let itemCount;
   const skip = (page - 1) * limit;
+  let items: unknown[] = [];
 
-  if (page > 1 && skip >= itemCount) throw new NotFoundError("Page not found");
+  if (pipeline && pipeline.length > 0) {
+    try {
+      // Convert string sort orders to numeric for MongoDB aggregation
+      const numericSorter: Record<string, 1 | -1> = {};
+      for (const [key, value] of Object.entries(mongoSorter)) {
+        numericSorter[key] =
+          value === "asc" || value === "ascending" || value === 1 ? 1 : -1;
+      }
 
-  const items =
-    itemCount > 0
-      ? await Item.find(filter)
-          .collation({ locale: "en", numericOrdering: true })
-          .limit(limit)
-          .skip(skip)
-          .sort(mongoSorter)
-          .populate("tags")
-      : [];
+      // Calculate total count with discounted price filtering
+      const countPipeline: PipelineStage[] = [
+        { $match: filter } as PipelineStage,
+        ...pipeline,
+        { $count: "total" } as PipelineStage,
+      ];
 
-  if (memorySorter) {
-    memorySorter(items);
+      interface CountResult {
+        total: number;
+      }
+      const countResult = await Item.aggregate(countPipeline);
+      itemCount =
+        countResult.length > 0
+          ? (countResult[0] as CountResult)?.total || 0
+          : 0;
+
+      // If page is out of bounds, throw an error
+      if (page > 1 && skip >= itemCount)
+        throw new NotFoundError("Page not found");
+
+      // Use aggregation pipeline for discounted price filtering
+      const aggregationPipeline: PipelineStage[] = [
+        { $match: filter } as PipelineStage,
+        ...pipeline,
+      ];
+
+      // Only add sort stage if we have a valid mongoSorter
+      if (Object.keys(numericSorter).length > 0) {
+        aggregationPipeline.push({ $sort: numericSorter } as PipelineStage);
+      }
+
+      aggregationPipeline.push(
+        { $skip: skip } as PipelineStage,
+        { $limit: limit } as PipelineStage,
+      );
+
+      // Execute the aggregation pipeline
+      const aggregationResult = await Item.aggregate(aggregationPipeline);
+
+      // Populate tags for each item in the aggregation result
+      if (aggregationResult.length > 0) {
+        // Cast item._id to ObjectId to ensure proper type safety
+        const itemIds = aggregationResult
+          .map((item) => {
+            const typedItem = item as { _id: mongoose.Types.ObjectId };
+            if (typedItem._id) {
+              return new mongoose.Types.ObjectId(typedItem._id.toString());
+            }
+            return undefined;
+          })
+          .filter((id): id is mongoose.Types.ObjectId => id !== undefined);
+
+        const itemsWithTags = await Item.find({
+          _id: { $in: itemIds },
+        }).populate("tags");
+
+        // Create a lookup map for tags
+        const tagMap = new Map();
+        itemsWithTags.forEach((item) => {
+          tagMap.set(item._id.toString(), item.tags);
+        });
+
+        // Add tags to each item in the aggregation result
+        items = aggregationResult.map((item) => {
+          const typedItem = item as { _id: mongoose.Types.ObjectId };
+          if (!typedItem._id) return item as Record<string, unknown>;
+
+          return {
+            ...item,
+            tags: tagMap.get(typedItem._id.toString()) || [],
+          } as Record<string, unknown>;
+        });
+      } else {
+        items = [];
+      }
+    } catch (error) {
+      console.error("Error in aggregation pipeline:", error);
+      throw new BadRequestError("Error processing discounted price filter");
+    }
+  } else {
+    // If not using discounted price filtering, use regular find
+    itemCount = await Item.countDocuments(filter);
+    if (page > 1 && skip >= itemCount)
+      throw new NotFoundError("Page not found");
+
+    items =
+      itemCount > 0
+        ? await Item.find(filter)
+            .collation({ locale: "en", numericOrdering: true })
+            .limit(limit)
+            .skip(skip)
+            .sort(mongoSorter)
+            .populate("tags")
+        : [];
+
+    // Only apply memory sorting for regular mongoose documents, not aggregation results
+    if (memorySorter && items.length > 0) {
+      memorySorter(items as InstanceType<typeof Item>[]);
+    }
   }
+
+  // Memory sorter should only be applied to items from find() operation, not aggregation
+  // The conditional was moved inside the else block above
 
   // Generate base pagination info
   const paginationInfo = generatePaginationInfo(
@@ -208,12 +394,33 @@ export async function getItems(
     getPageLink,
   );
 
+  // Define an interface for items with toObject method
+  interface WithToObject {
+    toObject: () => Record<string, unknown>;
+  }
+
+  // Type guard to check if an item has toObject method
+  function hasToObject(item: unknown): item is WithToObject {
+    return (
+      item !== null &&
+      typeof item === "object" &&
+      "toObject" in item &&
+      typeof (item as WithToObject).toObject === "function"
+    );
+  }
+
   return {
     info: {
       ...paginationInfo,
       categorieCount: await countCategories(filterWithoutCats),
     },
-    items: items.map((item) => flattenItemTags(item.toObject())),
+    items: items.map((item) => {
+      // Handle both Mongoose documents and aggregation results
+      if (hasToObject(item)) {
+        return flattenItemTags(item.toObject());
+      }
+      return flattenItemTags(item as Record<string, unknown>);
+    }),
   };
 }
 
