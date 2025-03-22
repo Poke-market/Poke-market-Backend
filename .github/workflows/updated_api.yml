@@ -72,6 +72,12 @@ jobs:
 - **Environment**: Development
 - **Status**: Ready for Testing
 
+#### 📝 Available Endpoints
+- Auth: \`/api/auth\`
+- Items: \`/api/items\`
+- Users: \`/api/users\`
+- Tags: \`/api/tags\`
+- Slugs: \`/api/slug\`
 
   > 🔍 **Testing Checklist**
   > - Verify API endpoints are responding
