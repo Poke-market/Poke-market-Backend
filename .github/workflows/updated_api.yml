@@ -1,9 +1,10 @@
-name: Comment PR on Deploy
+name: Comment PR with API URL
 
 on:
-  push:
+  pull_request:
     branches:
       - experiment/___-test-google-clooud
+    types: [opened, reopened]
 
 permissions:
   pull-requests: write
@@ -23,11 +24,6 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      - name: Wait for Deployment (Optional)
-        run: |
-          sleep 30  # Wait for Cloud Build to finish deploying
-        # This is optional; adjust if deployment takes longer
-
       - name: Get Cloud Run Service URL
         id: get-url
         run: |
@@ -45,43 +41,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const serviceUrl = "${{ steps.get-url.outputs.service_url }}";
-            const branch = "${{ github.ref_name }}";
-            const repo = context.repo.repo;
-            const owner = context.repo.owner;
-
-            const { data: pulls } = await github.rest.pulls.list({
-              owner: owner,
-              repo: repo,
-              head: `${owner}:${branch}`,
-              state: "open"
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `API updated! Access it here: ${serviceUrl}`
             });
-
-            if (pulls.length > 0) {
-              const prNumber = pulls[0].number;
-              await github.rest.issues.createComment({
-                owner: owner,
-                repo: repo,
-                issue_number: prNumber,
-                body: `## 🚀 Development API Deployment
-
-### ✨ New API Update Available!
-  Your changes have been successfully deployed to the development environment.
-
-#### 🔗 API Details
-- **URL**: ${serviceUrl}
-- **Environment**: Development
-- **Status**: Ready for Testing
-
-
-  > 🔍 **Testing Checklist**
-  > - Verify API endpoints are responding
-  > - Check authentication flows
-  > - Validate data responses
-  > - Test error handling
-
-  *This is an automated message from your friendly deployment bot* 🤖
-  *For issues, please contact the development team*`
-  });
-  } else {
-  console.log("No open PR found for this branch.");
-  }
