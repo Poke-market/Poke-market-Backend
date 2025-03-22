@@ -10,6 +10,7 @@ import {
   getUser,
   removeFromWishlist,
   updateUser,
+  replaceUser,
 } from "../controllers/userController";
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router
   .get("/:id", authMiddleware, isAdmin, getUser)
   .delete("/:id", authMiddleware, isAdmin, deleteUser)
   .patch("/:id", authMiddleware, isAdmin, updateUser)
+  .put("/:id", authMiddleware, isAdmin, replaceUser)
   .post("/:id/wishlist", authMiddleware, addToWishlist)
   .delete("/:id/wishlist", authMiddleware, removeFromWishlist);
 

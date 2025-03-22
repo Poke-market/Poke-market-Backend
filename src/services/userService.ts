@@ -5,6 +5,8 @@ import { NotFoundError, ValidationError } from "../errors";
 import { User } from "../models/userModel";
 import { RawQuery } from "../types/query";
 import { generatePaginationInfo } from "../utils/paginationHelper";
+import { registerSchema } from "./authService";
+import bcrypt from "bcrypt";
 
 // Define input schemas
 export const PaginationParamsSchema = z.object({
@@ -146,4 +148,62 @@ export async function deleteUser(id: string) {
   if (!user) throw new NotFoundError("User not found");
 
   return user;
+}
+
+// Full user schema for PUT requests (requires all fields)
+export const UserFullSchema = registerSchema.extend({
+  isAdmin: z.boolean().optional(),
+  emailVerified: z.boolean().optional(),
+});
+
+// User update schema for validation
+export const UserUpdateSchema = UserFullSchema.partial();
+
+export type UserFullData = z.infer<typeof UserFullSchema>;
+export type UserUpdateData = z.infer<typeof UserUpdateSchema>;
+
+export async function updateUser(id: string, userUpdateData: UserUpdateData) {
+  if (!mongoose.isValidObjectId(id)) {
+    throw new ValidationError(
+      "id",
+      "User ID is not valid by Mongoose standards",
+    );
+  }
+
+  // Find user first to check if exists
+  const existingUser = await User.findById(id);
+  if (!existingUser) {
+    throw new NotFoundError("User not found");
+  }
+
+  // If email is being changed, check if the new email already exists for another user
+  if (userUpdateData.email && userUpdateData.email !== existingUser.email) {
+    const emailExists = await User.findOne({
+      email: userUpdateData.email,
+      _id: { $ne: id }, // Exclude the current user
+    });
+
+    if (emailExists) {
+      throw new ValidationError(
+        "email",
+        "Email is already in use by another account",
+      );
+    }
+  }
+
+  // if password is being updated, hash it
+  if (userUpdateData.password) {
+    userUpdateData.password = await bcrypt.hash(userUpdateData.password, 10);
+  }
+
+  // Update user with validated data
+  const updatedUser = await User.findByIdAndUpdate(id, userUpdateData, {
+    new: true,
+  }).select("-password -verificationToken -resetToken");
+
+  if (!updatedUser) {
+    throw new NotFoundError("User not found");
+  }
+
+  return updatedUser;
 }

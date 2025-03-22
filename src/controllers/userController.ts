@@ -10,6 +10,9 @@ import {
   getUserById,
   getUsers,
   deleteUser as deleteUserService,
+  updateUser as updateUserService,
+  UserUpdateSchema,
+  UserFullSchema,
 } from "../services/userService";
 import { makePageLinkBuilder } from "../utils/pageLinkBuilder";
 
@@ -114,10 +117,17 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = await User.findByIdAndUpdate(
-    id,
-    req.body as Record<string, string>,
-    { new: true },
-  );
-  res.status(200).json({ status: "success", data: user });
+  const userUpdateData = UserUpdateSchema.parse(req.body);
+  const updatedUser = await updateUserService(id, userUpdateData);
+
+  res.status(200).json({ status: "success", data: updatedUser });
+};
+
+export const replaceUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // compared to updateUser, this will throw an error if any field is missing
+  const userFullData = UserFullSchema.parse(req.body);
+  const replacedUser = await updateUserService(id, userFullData);
+
+  res.status(200).json({ status: "success", data: replacedUser });
 };
