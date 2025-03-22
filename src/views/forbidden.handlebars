@@ -1,0 +1,45 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/forbidden.css" />
+{{/section}}
+
+<div class="forbidden-container">
+  <div class="forbidden-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M8 16l8-8"></path>
+      <path d="M16 16l-8-8"></path>
+    </svg>
+  </div>
+  
+  <h1>Access Denied</h1>
+  
+  <p class="status-code">Error 403</p>
+  
+  <p>You don't have permission to access this resource. This might be because:</p>
+  
+  <ul class="reasons-list">
+    <li>Your account doesn't have the necessary privileges</li>
+    <li>You need to log in with a different account</li>
+    <li>Access to this section requires admin rights</li>
+  </ul>
+  
+  <div class="action-buttons">
+    <a href="/" class="back-home">Back to Home</a>
+    <a href="/login" class="login-btn">Log In</a>
+  </div>
+
+  {{#if message}}
+    <div class="error-message">
+      <p>{{message}}</p>
+    </div>
+  {{/if}}
+</div>
+
+{{#section "scripts"}}
+  <script>
+    // Add subtle animation for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.forbidden-container').classList.add('show');
+    });
+  </script>
+{{/section}} 

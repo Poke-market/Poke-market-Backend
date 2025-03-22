@@ -1,6 +1,6 @@
 import { Request, NextFunction } from "express";
 import { Response } from "../types/res.json";
-import { UnauthorizedError } from "../errors";
+import { ForbiddenError, UnauthorizedError } from "../errors";
 
 export const errorSendMiddleware = (
   err: Error,
@@ -17,6 +17,15 @@ export const errorSendMiddleware = (
 
   if (err instanceof UnauthorizedError) {
     res.redirect("/login");
+    return;
+  }
+
+  if (err instanceof ForbiddenError) {
+    res.status(403).render("forbidden", {
+      user: req.user,
+      message: err.message,
+      statusCode: 403,
+    });
     return;
   }
 
