@@ -1,0 +1,29 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/strong-ward-453503-f1/poke-market:test", "."]
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/strong-ward-453503-f1/poke-market:test"]
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "poke-market-test"
+      - "--image"
+      - "gcr.io/strong-ward-453503-f1/poke-market:test"
+      - "--region"
+      - "us-central1"
+      - "--platform"
+      - "managed"
+      - "--allow-unauthenticated"
+      - "--timeout"
+      - "300s"
+      - "--min-instances"
+      - "0"
+      - "--max-instances"
+      - "80"
+      - "--port"
+      - "3000"
+      - "--clear-env-vars"
+      - "--set-secrets=ARCJET_KEY=ARCJET_KEY:latest,MONGO_URI=MONGO_URI:latest,JWT_SECRET=JWT_SECRET:latest,SENDGRID_API_KEY=SENDGRID_API_KEY:latest,SENDGRID_TEMPLATE_ID=SENDGRID_TEMPLATE_ID:latest,SENDGRID_TEMPLATE_ID_RESET=SENDGRID_TEMPLATE_ID_RESET:latest,FROM_EMAIL=FROM_EMAIL:latest,BASE_URL=BASE_URL:latest"
+options:
+  logging: "CLOUD_LOGGING_ONLY"
