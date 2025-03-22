@@ -20,8 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalCancel = document.getElementById("modal-cancel");
   const closeModal = document.querySelector(".close-modal");
 
+  // Password change elements
+  const changePasswordBtn = document.getElementById("change-password-btn");
+  const passwordChangeForm = document.getElementById("password-change-form");
+  const newPasswordInput = document.getElementById("new-password");
+  const confirmPasswordInput = document.getElementById("confirm-password");
+  const passwordFeedback = document.getElementById("password-feedback");
+  const updatePasswordBtn = document.getElementById("update-password-btn");
+  const cancelPasswordBtn = document.getElementById("cancel-password-btn");
+
   // Track form modified state
   let formModified = false;
+  let passwordFormModified = false;
 
   // Form field elements
   const formFields = [
@@ -39,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initFormListeners();
   initToggleSwitches();
   initModalListeners();
+  initPasswordChangeListeners();
 
   /**
    * Initialize form event listeners
@@ -64,6 +75,49 @@ document.addEventListener("DOMContentLoaded", function () {
     // Delete button handler
     if (deleteBtn) {
       deleteBtn.addEventListener("click", confirmDelete);
+    }
+  }
+
+  /**
+   * Initialize password change form listeners
+   */
+  function initPasswordChangeListeners() {
+    if (changePasswordBtn) {
+      // Show/hide password change form
+      changePasswordBtn.addEventListener("click", function () {
+        passwordChangeForm.style.display = "block";
+        changePasswordBtn.style.display = "none";
+        newPasswordInput.focus();
+      });
+
+      // Cancel password change
+      if (cancelPasswordBtn) {
+        cancelPasswordBtn.addEventListener("click", function () {
+          hidePasswordForm();
+        });
+      }
+
+      // Password input validation
+      if (newPasswordInput) {
+        newPasswordInput.addEventListener("input", function () {
+          passwordFormModified = true;
+          validatePassword();
+          clearFieldError("new-password");
+        });
+      }
+
+      // Confirm password validation
+      if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener("input", function () {
+          passwordFormModified = true;
+          checkPasswordsMatch();
+        });
+      }
+
+      // Update password button
+      if (updatePasswordBtn) {
+        updatePasswordBtn.addEventListener("click", confirmPasswordUpdate);
+      }
     }
   }
 
@@ -370,9 +424,8 @@ document.addEventListener("DOMContentLoaded", function () {
     notificationArea.innerHTML = message;
     notificationArea.className = `notification ${type} visible`;
 
-    if (type === "error") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    // Scroll to top for all notification types, not just errors
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   /**
@@ -410,4 +463,137 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Check for stored messages on page load
   checkStoredMessages();
+
+  /**
+   * Hide the password change form and reset fields
+   */
+  function hidePasswordForm() {
+    passwordChangeForm.style.display = "none";
+    changePasswordBtn.style.display = "block";
+    newPasswordInput.value = "";
+    confirmPasswordInput.value = "";
+    passwordFeedback.innerHTML = "";
+    clearFieldError("new-password");
+    clearFieldError("confirm-password");
+    passwordFormModified = false;
+  }
+
+  /**
+   * Validate password requirements
+   */
+  function validatePassword() {
+    const password = newPasswordInput.value;
+    let isValid = true;
+    let feedback = "";
+
+    if (password.length < 8 || password.length > 25) {
+      feedback += "• Password must be 8-25 characters<br>";
+      isValid = false;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      feedback += "• Must contain at least one uppercase letter<br>";
+      isValid = false;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      feedback += "• Must contain at least one lowercase letter<br>";
+      isValid = false;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      feedback += "• Must contain at least one digit<br>";
+      isValid = false;
+    }
+
+    if (!/[!@#$%^&*]/.test(password)) {
+      feedback +=
+        "• Must contain at least one special character (!@#$%^&*)<br>";
+      isValid = false;
+    }
+
+    passwordFeedback.innerHTML = feedback;
+    return isValid;
+  }
+
+  /**
+   * Check if passwords match
+   */
+  function checkPasswordsMatch() {
+    if (newPasswordInput.value !== confirmPasswordInput.value) {
+      showFieldError("confirm-password", "Passwords don't match");
+      return false;
+    } else {
+      clearFieldError("confirm-password");
+      return true;
+    }
+  }
+
+  /**
+   * Confirm password update with modal
+   */
+  function confirmPasswordUpdate() {
+    // Validate password first
+    clearFieldError("new-password");
+    clearFieldError("confirm-password");
+
+    const isPasswordValid = validatePassword();
+    const doPasswordsMatch = checkPasswordsMatch();
+
+    if (!isPasswordValid || !doPasswordsMatch) {
+      return;
+    }
+
+    // Show confirmation modal
+    modalTitle.textContent = "Update Password";
+    modalMessage.textContent =
+      "Are you sure you want to update this user's password?";
+
+    // Set confirm button handler
+    modalConfirm.onclick = function () {
+      hideModal();
+      handlePasswordUpdate();
+    };
+
+    showModal();
+  }
+
+  /**
+   * Handle password update
+   */
+  async function handlePasswordUpdate() {
+    try {
+      // Show loading state
+      updatePasswordBtn.disabled = true;
+      updatePasswordBtn.textContent = "Updating...";
+      showNotification("Updating password...", "loading");
+
+      // Send password update request
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: newPasswordInput.value,
+        }),
+      });
+
+      // Reset button state
+      updatePasswordBtn.disabled = false;
+      updatePasswordBtn.textContent = "Update Password";
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update password");
+      }
+
+      // Success
+      showNotification("Password updated successfully", "success");
+      hidePasswordForm();
+    } catch (error) {
+      console.error("Error updating password:", error);
+      showNotification("Error: " + error.message, "error");
+    }
+  }
 });

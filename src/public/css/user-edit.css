@@ -325,19 +325,58 @@
 }
 
 .delete-btn {
-  --btn-color: var(--red);
-  background-color: var(--btn-color);
-  padding: 0.8rem 1.5rem;
+  background-color: #c53030;
+  color: var(--white);
   border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
   font-weight: 500;
-  font-size: 1.4rem;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s;
 }
 
 .delete-btn:hover {
-  background-color: color-mix(in srgb, var(--red) 80%, black);
+  background-color: #9b2c2c;
+}
+
+/* Password Change Form Styles */
+.warning-btn {
+  background-color: #dd6b20;
+  color: var(--white);
+  border: none;
+  font-weight: 500;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.warning-btn:hover {
+  background-color: #c05621;
+}
+
+.password-change-form {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(255, 250, 240, 0.6);
+  border: 1px solid rgba(221, 107, 32, 0.3);
+  border-radius: 4px;
+}
+
+.password-feedback {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  color: #c05621;
+}
+
+.password-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 /* Modal Styles */
@@ -450,6 +489,14 @@
   }
 
   .form-actions button {
+    width: 100%;
+  }
+
+  .password-actions {
+    flex-direction: column;
+  }
+
+  .password-actions button {
     width: 100%;
   }
 }

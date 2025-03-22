@@ -19,7 +19,7 @@
     <div id="notification-area" class="notification"></div>
   </div>
   
-  <form id="user-edit-form" data-user-id="{{userDetails._id}}">
+  <form id="user-edit-form" data-user-id="{{userDetails._id}}" novalidate>
     <div class="edit-section user-details">
       <h2>User Information</h2>
       
@@ -120,6 +120,35 @@
 
   <div class="danger-zone">
     <h2>Danger Zone</h2>
+    
+    <div class="danger-action">
+      <div class="action-description">
+        <h3>Change Password</h3>
+        <p>Update the user's password. The user will need to use this new password for future logins.</p>
+      </div>
+      <button type="button" id="change-password-btn" class="warning-btn">Change Password</button>
+    </div>
+    
+    <div id="password-change-form" class="password-change-form" style="display: none;">
+      <div class="form-group">
+        <label for="new-password" class="form-label">New Password:</label>
+        <input type="password" id="new-password" name="new-password" class="form-input" />
+        <div id="password-feedback" class="password-feedback"></div>
+        <div id="new-password-error" class="error-message" aria-live="polite"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm-password" class="form-label">Confirm Password:</label>
+        <input type="password" id="confirm-password" name="confirm-password" class="form-input" />
+        <div id="confirm-password-error" class="error-message" aria-live="polite"></div>
+      </div>
+      
+      <div class="password-actions">
+        <button type="button" id="cancel-password-btn" class="cancel-btn">Cancel</button>
+        <button type="button" id="update-password-btn" class="warning-btn">Update Password</button>
+      </div>
+    </div>
+    
     <div class="danger-action">
       <div class="action-description">
         <h3>Delete User Account</h3>
