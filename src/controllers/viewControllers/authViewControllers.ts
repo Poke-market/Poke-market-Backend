@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { logoutUser, verifyUser } from "../../services/authService";
 import { VerificationError } from "../../errors";
 export const renderLoginView = (req: Request, res: Response) => {
+  // If user is already logged in, redirect to home page
+  if (req.cookies?.token) res.redirect("/");
   res.render("login", { title: "Login" });
 };
 
