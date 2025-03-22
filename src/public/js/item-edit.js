@@ -1,9 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
+  "use strict";
+
+  // Utility functions
+  function debounce(func, delay) {
+    let timeout;
+    return function () {
+      const context = this;
+      const args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+  }
+
   // Initialize UI elements
   const form = document.getElementById("item-edit-form");
   const itemId = form.dataset.itemId;
   const cancelBtn = document.getElementById("cancel-btn");
-  const deleteBtn = document.getElementById("delete-item-btn");
+  const discontinueItemBtn = document.getElementById("discontinue-item-btn");
+  const deletePermanentBtn = document.getElementById(
+    "delete-item-permanent-btn",
+  );
   const notificationArea = document.getElementById("notification-area");
   const saveBtn = document.getElementById("save-btn");
   const isNewToggle = document.getElementById("isNewItem");
@@ -32,6 +48,9 @@ document.addEventListener("DOMContentLoaded", function () {
   initImagePreview();
   initTagSelection();
 
+  // Initialize discount preview
+  updateDiscountPreview();
+
   // Check for stored messages on page load
   checkStoredMessages();
 
@@ -55,15 +74,41 @@ document.addEventListener("DOMContentLoaded", function () {
    * Initialize form event listeners
    */
   function initFormListeners() {
-    // Form submission handler
+    // Price field
+    document
+      .getElementById("price")
+      .addEventListener("input", debounce(updateDiscountPreview, 300));
+
+    // Discount amount field
+    document
+      .getElementById("discount-amount")
+      .addEventListener("input", debounce(updateDiscountPreview, 300));
+
+    // Discount type radio buttons
+    document
+      .querySelectorAll('input[name="discount-type"]')
+      .forEach((radio) => {
+        radio.addEventListener("change", updateDiscountPreview);
+      });
+
+    // Handle form submission
     form.addEventListener("submit", handleFormSubmit);
 
-    // Cancel button handler
-    cancelBtn.addEventListener("click", handleCancel);
+    // Cancel button
+    document
+      .getElementById("cancel-btn")
+      .addEventListener("click", handleCancel);
 
-    // Delete button handler
+    // Delete button (if exists)
+    const deleteBtn = document.getElementById("delete-item-permanent-btn");
     if (deleteBtn) {
-      deleteBtn.addEventListener("click", confirmDelete);
+      deleteBtn.addEventListener("click", confirmPermanentDelete);
+    }
+
+    // Discontinue button (if exists)
+    const discontinueBtn = document.getElementById("discontinue-item-btn");
+    if (discontinueBtn) {
+      discontinueBtn.addEventListener("click", confirmDiscontinue);
     }
 
     // Form field change tracking
@@ -174,11 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    // Discount type change
-    const discountTypeSelect = document.getElementById("discount-type");
-    if (discountTypeSelect) {
-      discountTypeSelect.addEventListener("change", updateDiscountPreview);
-    }
+    // Discount type change - already handled in initFormListeners
 
     // Initial discount preview
     updateDiscountPreview();
@@ -202,8 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const img = document.createElement("img");
         img.src = url;
         img.alt = "Item image preview";
-        img.style.maxWidth = "100%";
-        img.style.maxHeight = "200px";
+        img.className = "preview-image";
 
         // Clear previous preview
         previewContainer.innerHTML = "";
@@ -221,11 +261,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // Handle image load error
         img.onerror = function () {
           previewContainer.innerHTML =
-            "<div class='image-error'>Invalid image URL</div>";
+            "<div class='image-error'>Could not load image. Please check the URL.</div>";
           showFieldError("photoUrl", "Please enter a valid image URL");
         };
       } else {
-        previewContainer.innerHTML = "";
+        previewContainer.innerHTML =
+          "<div class='image-placeholder'>Image preview will appear here</div>";
       }
     }
 
@@ -243,7 +284,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const price = parseFloat(document.getElementById("price").value) || 0;
     const discountAmount =
       parseFloat(document.getElementById("discount-amount").value) || 0;
-    const discountType = document.getElementById("discount-type").value;
+    const discountType =
+      document.querySelector('input[name="discount-type"]:checked')?.value ||
+      "percentage";
     const previewElement = document.getElementById("discount-preview");
 
     if (!previewElement || !price) return;
@@ -257,20 +300,20 @@ document.addEventListener("DOMContentLoaded", function () {
         formattedDiscount = `${discountAmount}%`;
       } else {
         discountedPrice = price - discountAmount;
-        formattedDiscount = `$${discountAmount.toFixed(2)}`;
+        formattedDiscount = `¥${discountAmount.toFixed(2)}`;
       }
 
       // Don't allow negative prices
       discountedPrice = Math.max(0, discountedPrice);
 
       previewElement.innerHTML = `
-        <p>Original price: $${price.toFixed(2)}</p>
-        <p>Discount: ${formattedDiscount}</p>
-        <p>Final price: $${discountedPrice.toFixed(2)}</p>
+        <p><span>Original price:</span> <span>¥${price.toFixed(2)}</span></p>
+        <p><span>Discount:</span> <span>${formattedDiscount}</span></p>
+        <p><span>Final price:</span> <span>¥${discountedPrice.toFixed(2)}</span></p>
       `;
-      previewElement.style.display = "block";
+      previewElement.classList.add("visible");
     } else {
-      previewElement.style.display = "none";
+      previewElement.classList.remove("visible");
     }
   }
 
@@ -309,10 +352,18 @@ document.addEventListener("DOMContentLoaded", function () {
    * Initialize modal listeners
    */
   function initModalListeners() {
-    // Close modal buttons
-    [modalCancel, closeModal].forEach((el) => {
-      if (el) {
-        el.addEventListener("click", hideModal);
+    if (closeModal) {
+      closeModal.addEventListener("click", hideModal);
+    }
+
+    if (modalCancel) {
+      modalCancel.addEventListener("click", hideModal);
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        hideModal();
       }
     });
   }
@@ -413,30 +464,77 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Confirm item deletion
+   * Confirm before discontinuing the item
    */
-  function confirmDelete() {
-    const itemName = document.getElementById("name").value;
+  function confirmDiscontinue() {
+    modalTitle.textContent = "Discontinue Item";
+    modalMessage.textContent =
+      "This will mark the item as discontinued. It will no longer appear in the main catalog but will remain in the database for order history. Continue?";
 
-    modalTitle.textContent = "Delete Item";
-    modalMessage.textContent = `Are you sure you want to delete "${itemName}"? This action cannot be undone.`;
-
-    // Set confirm button handler
-    modalConfirm.onclick = function () {
-      hideModal();
-      deleteItem();
-    };
+    // Set up confirm button action
+    modalConfirm.onclick = discontinueItem;
 
     showModal();
   }
 
   /**
-   * Delete item
+   * Mark an item as discontinued
    */
-  async function deleteItem() {
+  async function discontinueItem() {
     try {
-      // Show loading notification
-      showNotification("Deleting item...", "loading");
+      setLoadingState(true);
+      showNotification("Marking item as discontinued...", "loading");
+
+      const response = await fetch(`/api/items/${itemId}/discontinue`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showNotification("Item marked as discontinued successfully", "success");
+        // Store success message in session storage and redirect
+        sessionStorage.setItem(
+          "itemMessage",
+          "Item marked as discontinued successfully",
+        );
+        window.location.href = "/items";
+      } else {
+        showNotification(data.message || "Failed to discontinue item", "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showNotification("An unexpected error occurred", "error");
+    } finally {
+      setLoadingState(false);
+      hideModal();
+    }
+  }
+
+  /**
+   * Confirm before permanently deleting the item
+   */
+  function confirmPermanentDelete() {
+    modalTitle.textContent = "Delete Item Permanently";
+    modalMessage.textContent =
+      "WARNING: This will permanently delete this item and all associated data. This action CANNOT be undone. Are you absolutely sure?";
+
+    // Set up confirm button action
+    modalConfirm.onclick = deletePermanently;
+
+    showModal();
+  }
+
+  /**
+   * Delete an item permanently
+   */
+  async function deletePermanently() {
+    try {
+      setLoadingState(true);
+      showNotification("Deleting item permanently...", "loading");
 
       const response = await fetch(`/api/items/${itemId}`, {
         method: "DELETE",
@@ -445,17 +543,22 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error deleting item");
-      }
+      const data = await response.json();
 
-      // Success - redirect to items list with success message
-      sessionStorage.setItem("itemMessage", "Item deleted successfully");
-      window.location.href = "/items";
+      if (response.ok) {
+        showNotification("Item deleted permanently", "success");
+        // Store success message in session storage and redirect
+        sessionStorage.setItem("itemMessage", "Item permanently deleted");
+        window.location.href = "/items";
+      } else {
+        showNotification(data.message || "Failed to delete item", "error");
+      }
     } catch (error) {
-      console.error("Error deleting item:", error);
-      showNotification("Error deleting item: " + error.message, "error");
+      console.error("Error:", error);
+      showNotification("An unexpected error occurred", "error");
+    } finally {
+      setLoadingState(false);
+      hideModal();
     }
   }
 
@@ -503,10 +606,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Discount amount validation
     const discountAmountInput = document.getElementById("discount-amount");
-    const discountTypeSelect = document.getElementById("discount-type");
     if (discountAmountInput && discountAmountInput.value.trim()) {
       const amount = parseFloat(discountAmountInput.value);
-      const type = discountTypeSelect.value;
+      const type =
+        document.querySelector('input[name="discount-type"]:checked')?.value ||
+        "percentage";
       const price = parseFloat(priceInput.value) || 0;
 
       if (isNaN(amount) || amount < 0) {
@@ -565,7 +669,9 @@ document.addEventListener("DOMContentLoaded", function () {
       discount: {
         amount:
           parseFloat(document.getElementById("discount-amount").value) || 0,
-        type: document.getElementById("discount-type").value,
+        type:
+          document.querySelector('input[name="discount-type"]:checked')
+            ?.value || "percentage",
       },
     };
   }
@@ -677,17 +783,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Show modal
+   * Show confirmation modal
    */
   function showModal() {
-    modal.classList.add("show");
+    if (modal) {
+      modal.classList.add("show");
+    }
   }
 
   /**
-   * Hide modal
+   * Hide confirmation modal
    */
   function hideModal() {
-    modal.classList.remove("show");
+    if (modal) {
+      modal.classList.remove("show");
+    }
   }
 
   /**

@@ -105,7 +105,7 @@
 }
 
 .edit-section {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #f4f9fe;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 8px;
@@ -113,15 +113,18 @@
   padding: 2rem;
   margin-bottom: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 4px solid var(--basic-blue);
 }
 
 .edit-section h2 {
   font-size: 1.8rem;
-  color: var(--text-color-2);
+  color: var(--basic-blue);
   margin-top: 0;
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--grey);
   padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 .form-row {
@@ -149,10 +152,24 @@
 }
 
 .form-input {
-  padding: 1rem;
+  padding: 0.8rem 1rem;
   border: 1px solid var(--grey);
   border-radius: 4px;
   font-size: 1.4rem;
+  box-sizing: border-box;
+  height: auto;
+}
+
+/* Make select inputs have consistent height with text inputs */
+select.form-input {
+  background-color: var(--white);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 3rem;
 }
 
 .form-input:focus {
@@ -165,6 +182,7 @@
 .form-input.invalid {
   border-color: var(--red);
   box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+  background-color: rgba(229, 62, 62, 0.05);
 }
 
 .form-input.invalid:focus {
@@ -533,27 +551,12 @@
   }
 }
 
-/* Add highlight effect for form fields with errors */
-@keyframes highlightField {
-  0% {
-    box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
-  }
-  30% {
-    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.5);
-  }
-  70% {
-    box-shadow: 0 0 0 5px rgba(229, 62, 62, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
-  }
-}
-
+/* Remove Highlight Field Effect with yellow background */
 .highlight-field {
-  animation: highlightField 1.5s ease-out;
-  border-color: var(--red) !important;
-  background-color: rgba(229, 62, 62, 0.05) !important;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+  background-color: rgba(229, 62, 62, 0.05);
 }
 
 /* Ensure smooth behavior on all browsers */
