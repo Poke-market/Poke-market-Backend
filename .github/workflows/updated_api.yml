@@ -7,8 +7,8 @@ on:
     types: [opened, reopened]
 
 permissions:
-  pull-requests: write # Allow writing to PRs
-  issues: write # Allow commenting on issues/PRs
+  pull-requests: write
+  issues: write
 
 jobs:
   comment-pr:
