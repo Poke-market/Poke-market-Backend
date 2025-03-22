@@ -14,10 +14,16 @@ export const MONGO_URI = env("MONGO_URI");
 export const JWT_SECRET = env("JWT_SECRET");
 export const ARCJET_KEY = env("ARCJET_KEY");
 export const SENDGRID_API_KEY = env("SENDGRID_API_KEY");
-export const SENDGRID_TEMPLATE_ID = env("SENDGRID_TEMPLATE_ID");
+export const SENDGRID_TEMPLATE_ID_VERIFY = env("SENDGRID_TEMPLATE_ID_VERIFY");
 export const SENDGRID_TEMPLATE_ID_RESET = env("SENDGRID_TEMPLATE_ID_RESET");
 export const FROM_EMAIL = env("FROM_EMAIL");
 export const BASE_URL = env("BASE_URL");
+
+// External Links
+export const FRONTEND_LIVE_URL = env("FRONTEND_LIVE_URL");
+export const FRONTEND_DEV_URL = env("FRONTEND_DEV_URL");
+export const BACKEND_REPO_URL = env("BACKEND_REPO_URL");
+export const FRONTEND_REPO_URL = env("FRONTEND_REPO_URL");
 
 const NODE_ENV = env("NODE_ENV", "development");
 export const IS_PRODUCTION = NODE_ENV === "production";

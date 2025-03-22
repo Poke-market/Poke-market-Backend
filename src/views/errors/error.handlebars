@@ -1,0 +1,35 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="/css/error.css" />
+{{/section}}
+
+<div class="error-container">
+  <div class="error-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  </div>
+  
+  <h1>Oops! Something went wrong</h1>
+  
+  {{#if statusCode}}
+    <p class="status-code">Error {{statusCode}}</p>
+  {{/if}}
+  
+  <p>{{message}}</p>
+  
+  {{#if details}}
+    <div class="error-details">
+      <pre><code class="language-json">{{details}}</code></pre>
+    </div>
+  {{/if}}
+  
+  <a href="/" class="back-home">Back to Home</a>
+</div>
+
+{{#section "scripts"}}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+{{/section}}

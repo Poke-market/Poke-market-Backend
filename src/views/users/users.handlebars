@@ -1,0 +1,131 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/users.css" />
+{{/section}}
+
+{{#section "scripts"}}
+  <script type="module" src="/js/users.js"></script>
+{{/section}}
+
+<div class="users-container">
+  <div class="users-header">
+    <h1>User Management</h1>
+    <div class="users-controls">
+      <div class="filter-sort">
+        <button class="filter-btn" id="toggle-filter-btn">Filter</button>
+        <select class="sort-select" id="sort-select">
+          <option value="default" {{selectedIf (not sortBy)}}>Default</option>
+          <option value="firstname-asc" {{selectedIf (and (eq sortBy 'firstname') (eq order 'asc'))}}>Name: A to Z</option>
+          <option value="firstname-desc" {{selectedIf (and (eq sortBy 'firstname') (eq order 'desc'))}}>Name: Z to A</option>
+          <option value="email-asc" {{selectedIf (and (eq sortBy 'email') (eq order 'asc'))}}>Email: A to Z</option>
+          <option value="email-desc" {{selectedIf (and (eq sortBy 'email') (eq order 'desc'))}}>Email: Z to A</option>
+          <option value="createdAt-desc" {{selectedIf (and (eq sortBy 'createdAt') (eq order 'desc'))}}>Newest First</option>
+          <option value="createdAt-asc" {{selectedIf (and (eq sortBy 'createdAt') (eq order 'asc'))}}>Oldest First</option>
+        </select>
+      </div>
+      <div class="view-options">
+        <button class="add-user-btn" id="add-user-btn">Add New User</button>
+        <span>Showing {{users.length}} of {{info.count}} users</span>
+      </div>
+    </div>
+  </div>
+
+  <form id="search-form" class="search-form {{#if search}}show{{/if}}" action="/users" method="GET">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        name="search" 
+        class="search-input" 
+        placeholder="Search by name or email..." 
+        value="{{search}}"
+      >
+      {{#if search}}
+        <a href="/users" class="clear-search">Clear</a>
+      {{/if}}
+      <button type="submit" class="search-btn">Search</button>
+    </div>
+    {{#if sortBy}}
+      <input type="hidden" name="sort" value="{{sortBy}}">
+    {{/if}}
+    {{#if order}}
+      <input type="hidden" name="order" value="{{order}}">
+    {{/if}}
+  </form>
+
+  <div class="users-list">
+    <div class="list-header">
+      <div class="col-image">Image</div>
+      <div class="col-info">User Info</div>
+      <div class="col-status">Status</div>
+      <div class="col-actions">Actions</div>
+    </div>
+
+    {{#each users}}
+    <div class="user-row">
+      <div class="cols-wrapper">
+        <div class="col-image">
+          <div class="user-image">
+            <img src="{{this.avatar}}" alt="{{this.firstname}} {{this.lastname}}" />
+          </div>
+        </div>
+
+        <div class="col-info">
+          <div class="user-header">
+            <h3 class="user-name">{{this.firstname}} {{this.lastname}}</h3>
+          </div>
+          <div class="user-email">{{this.email}}</div>
+          <div class="user-meta">
+            <div class="user-id">ID: {{this._id}}</div>
+            <div class="user-created">
+              <p>Created: {{formatDate this.createdAt}}</p>
+              {{#if this.lastLogin}}
+                  <div>Last Login: {{formatDate this.lastLogin}}</div>
+              {{else}}
+                  {{!-- <div>Never logged in</div> --}}
+              {{/if}}
+              </div>
+          </div>
+        </div>
+        
+        <div class="col-status">
+          <div class="status-badges">
+              {{#if this.isAdmin}}
+                <span class="badge admin">Admin</span>
+              {{/if}}
+              {{#if this.isVerified}}
+                <span class="badge verified">Verified</span>
+              {{else}}
+                <span class="badge unverified">Unverified</span>
+              {{/if}}
+            </div>
+        </div>
+      </div>
+      
+      <div class="col-actions">
+        <a href="/users/{{this._id}}" class="edit-btn">Edit</a>
+        <button class="delete-btn" data-id="{{this._id}}" data-name="{{this.firstname}} {{this.lastname}}">Delete</button>
+      </div>
+
+    </div>
+    {{/each}}
+  </div>
+
+  {{#if info.pages}}
+  <div class="pagination">
+    {{#if info.first}}
+      <a href="{{info.first}}" class="page-link">First</a>
+    {{/if}}
+    {{#if info.prev}}
+      <a href="{{info.prev}}" class="page-link">Previous</a>
+    {{/if}}
+    
+    <span class="current-page">Page {{info.page}} of {{info.pages}}</span>
+    
+    {{#if info.next}}
+      <a href="{{info.next}}" class="page-link">Next</a>
+    {{/if}}
+    {{#if info.last}}
+      <a href="{{info.last}}" class="page-link">Last</a>
+    {{/if}}
+  </div>
+  {{/if}}
+</div> 
