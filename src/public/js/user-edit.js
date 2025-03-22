@@ -103,6 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
           passwordFormModified = true;
           validatePassword();
           clearFieldError("new-password");
+
+          // Check confirm password match if it has a value
+          if (confirmPasswordInput && confirmPasswordInput.value) {
+            checkPasswordsMatch();
+          }
         });
       }
 
@@ -200,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
       city: document.getElementById("city").value,
       zipcode: document.getElementById("zipcode").value,
       isAdmin: document.getElementById("isAdmin").checked,
-      emailVerified: document.getElementById("isVerified").checked,
+      isVerified: document.getElementById("isVerified").checked,
     };
 
     try {
@@ -314,10 +319,43 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
+   * Handle submit errors
+   */
+  function handleSubmitErrors(data) {
+    let firstErrorField = null;
+
+    if (data.data && data.data.errors) {
+      // Field-specific errors
+      if (Array.isArray(data.data.errors)) {
+        data.data.errors.forEach((err) => {
+          if (Array.isArray(err)) {
+            // Format: [field, message]
+            const [field, message] = err;
+            showFieldError(field, message);
+            firstErrorField ??= field;
+          }
+        });
+      }
+
+      // Show general error message
+      showNotification("Please correct the errors in the form.", "error");
+
+      // Scroll to first error field if there is one
+      if (firstErrorField) {
+        scrollToErrorField(firstErrorField);
+      }
+    } else {
+      // General error
+      showNotification(data.message || "Error updating user.", "error");
+    }
+  }
+
+  /**
    * Validate the form
    */
   function validateForm() {
     let isValid = true;
+    let firstErrorField = null;
 
     // Required fields
     formFields.forEach((field) => {
@@ -325,6 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (input && !input.value.trim()) {
         showFieldError(field, "This field is required");
         isValid = false;
+        firstErrorField ??= field;
       }
     });
 
@@ -335,6 +374,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!emailRegex.test(emailInput.value)) {
         showFieldError("email", "Please enter a valid email address");
         isValid = false;
+        firstErrorField ??= "email";
       }
     }
 
@@ -345,34 +385,16 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!phoneRegex.test(phoneInput.value)) {
         showFieldError("telephone", "Please enter a valid phone number");
         isValid = false;
+        firstErrorField ??= "telephone";
       }
+    }
+
+    // If not valid, scroll to the first error field
+    if (!isValid && firstErrorField) {
+      scrollToErrorField(firstErrorField);
     }
 
     return isValid;
-  }
-
-  /**
-   * Handle submit errors
-   */
-  function handleSubmitErrors(data) {
-    if (data.data && data.data.errors) {
-      // Field-specific errors
-      if (Array.isArray(data.data.errors)) {
-        data.data.errors.forEach((err) => {
-          if (Array.isArray(err)) {
-            // Format: [field, message]
-            const [field, message] = err;
-            showFieldError(field, message);
-          }
-        });
-      }
-
-      // Show general error message
-      showNotification("Please correct the errors in the form.", "error");
-    } else {
-      // General error
-      showNotification(data.message || "Error updating user.", "error");
-    }
   }
 
   /**
@@ -393,8 +415,15 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   function showFieldError(field, message) {
     const errorElement = document.getElementById(`${field}-error`);
+    const inputField = document.getElementById(field);
+
     if (errorElement) {
       errorElement.textContent = message;
+    }
+
+    // Add invalid class to the input field
+    if (inputField) {
+      inputField.classList.add("invalid");
     }
   }
 
@@ -403,8 +432,15 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   function clearFieldError(field) {
     const errorElement = document.getElementById(`${field}-error`);
+    const inputField = document.getElementById(field);
+
     if (errorElement) {
       errorElement.textContent = "";
+    }
+
+    // Remove invalid class from the input field
+    if (inputField) {
+      inputField.classList.remove("invalid");
     }
   }
 
@@ -412,8 +448,15 @@ document.addEventListener("DOMContentLoaded", function () {
    * Clear all field errors
    */
   function clearAllErrors() {
+    // Clear all error messages
     document.querySelectorAll(".error-message").forEach((el) => {
       el.textContent = "";
+    });
+
+    // Remove invalid class from all inputs
+    document.querySelectorAll(".form-input").forEach((input) => {
+      input.classList.remove("invalid");
+      input.classList.remove("password-warning");
     });
   }
 
@@ -513,6 +556,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     passwordFeedback.innerHTML = feedback;
+
+    // Add or remove orange warning border
+    if (!isValid) {
+      newPasswordInput.classList.add("password-warning");
+      newPasswordInput.classList.remove("invalid"); // Remove red border if present
+    } else {
+      newPasswordInput.classList.remove("password-warning");
+    }
+
     return isValid;
   }
 
@@ -521,10 +573,30 @@ document.addEventListener("DOMContentLoaded", function () {
    */
   function checkPasswordsMatch() {
     if (newPasswordInput.value !== confirmPasswordInput.value) {
-      showFieldError("confirm-password", "Passwords don't match");
+      const errorElement = document.getElementById("confirm-password-error");
+      if (errorElement) {
+        errorElement.textContent = "Passwords don't match";
+
+        // Apply orange color to the message
+        errorElement.classList.add("warning-message");
+        errorElement.classList.remove("error-message");
+      }
+
+      // Use orange warning instead of red error
+      confirmPasswordInput.classList.add("password-warning");
+      confirmPasswordInput.classList.remove("invalid");
       return false;
     } else {
-      clearFieldError("confirm-password");
+      const errorElement = document.getElementById("confirm-password-error");
+      if (errorElement) {
+        errorElement.textContent = "";
+
+        // Reset message classes
+        errorElement.classList.remove("warning-message");
+        errorElement.classList.add("error-message");
+      }
+
+      confirmPasswordInput.classList.remove("password-warning");
       return true;
     }
   }
@@ -595,5 +667,43 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error updating password:", error);
       showNotification("Error: " + error.message, "error");
     }
+  }
+
+  /**
+   * Scroll to a field with error
+   * @param {string} fieldName The name of the field to scroll to
+   */
+  function scrollToErrorField(fieldName) {
+    if (!fieldName) return;
+
+    const field = document.getElementById(fieldName);
+    if (!field) return;
+
+    // Add a small delay to ensure DOM is ready
+    setTimeout(() => {
+      // Get the field's position relative to the viewport
+      const rect = field.getBoundingClientRect();
+
+      // Calculate position with offset - increased from 80 to 150 for more room
+      const headerOffset = 200;
+      const offsetPosition = window.pageYOffset + rect.top - headerOffset;
+
+      // Scroll to the element
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+
+      // Focus the field after scrolling completes
+      setTimeout(() => {
+        field.focus();
+
+        // Add a temporary highlight effect
+        field.classList.add("highlight-field");
+        setTimeout(() => {
+          field.classList.remove("highlight-field");
+        }, 1500);
+      }, 500);
+    }, 100);
   }
 });
