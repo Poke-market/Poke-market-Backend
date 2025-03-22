@@ -1,15 +1,15 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/strong-ward-453503-f1/poke-market:dev", "."]
+    args: ["build", "-t", "gcr.io/strong-ward-453503-f1/development:dev", "."]
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/strong-ward-453503-f1/poke-market:dev"]
+    args: ["push", "gcr.io/strong-ward-453503-f1/development:dev"]
   - name: "gcr.io/cloud-builders/gcloud"
     args:
       - "run"
       - "deploy"
-      - "poke-market"
+      - "development"
       - "--image"
-      - "gcr.io/strong-ward-453503-f1/poke-market:dev"
+      - "gcr.io/strong-ward-453503-f1/development:dev"
       - "--region"
       - "us-central1"
       - "--platform"
