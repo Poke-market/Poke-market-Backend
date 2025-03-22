@@ -182,12 +182,17 @@ select.form-input {
 .form-input.invalid {
   border-color: var(--red);
   box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
-  background-color: rgba(229, 62, 62, 0.05);
+  background-color: rgba(229, 62, 62, 0.05) !important;
 }
 
 .form-input.invalid:focus {
   border-color: var(--red);
   box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
+}
+
+/* Specific rule for textareas */
+textarea.form-input.invalid {
+  background-color: rgba(229, 62, 62, 0.05) !important;
 }
 
 /* Style for password field with validation warnings */
@@ -321,7 +326,7 @@ select.form-input {
 }
 
 .save-btn:hover {
-  background-color: color-mix(in srgb, var(--basic-blue) 80%, black);
+  background-color: rgba(58, 118, 207, 0.9);
 }
 
 .save-btn:disabled {
@@ -562,4 +567,332 @@ select.form-input {
 /* Ensure smooth behavior on all browsers */
 html {
   scroll-behavior: smooth;
+}
+
+/* Radio Button Styles */
+.radio-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.radio-option label {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
+  background-color: var(--white);
+  border: 1px solid var(--grey);
+  border-radius: 2rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  padding-left: 3.5rem;
+  user-select: none;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.radio-option label::before {
+  content: "";
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--grey);
+  border-radius: 50%;
+  position: absolute;
+  left: 1rem;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.radio-option input[type="radio"]:checked + label {
+  background-color: rgba(58, 118, 207, 0.1);
+  border-color: var(--basic-blue);
+  color: var(--basic-blue);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(58, 118, 207, 0.2);
+}
+
+.radio-option input[type="radio"]:checked + label::before {
+  border-color: var(--basic-blue);
+  background-color: var(--white);
+}
+
+.radio-option input[type="radio"]:checked + label::after {
+  content: "";
+  width: 0.8rem;
+  height: 0.8rem;
+  background-color: var(--basic-blue);
+  border-radius: 50%;
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.radio-option input[type="radio"]:focus + label {
+  box-shadow: 0 0 0 2px rgba(58, 118, 207, 0.2);
+}
+
+.radio-option:hover label {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Discount Preview */
+.discount-preview {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  display: none;
+  transition: all 0.3s ease;
+  height: 100%;
+  min-height: 15rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.discount-preview::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--basic-blue), #6ea8fe);
+  border-radius: 8px 0 0 8px;
+}
+
+.discount-preview.visible {
+  display: flex;
+  flex-direction: column;
+  animation: fade-in 0.4s ease;
+}
+
+.discount-preview p {
+  margin: 0.8rem 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.discount-preview p span:first-child {
+  color: var(--text-color-3);
+  font-weight: 500;
+}
+
+.discount-preview p:last-child {
+  font-weight: 700;
+  color: var(--basic-blue);
+  border-top: 1px dashed #cbd5e0;
+  padding-top: 1.2rem;
+  margin-top: 1.5rem;
+  font-size: 1.6rem;
+}
+
+/* Discount preview header */
+.discount-preview::after {
+  content: "Price Breakdown";
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #f0f7ff;
+  color: var(--basic-blue);
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 0 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Image Preview */
+.image-preview-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.image-preview {
+  width: 100%;
+  height: 300px;
+  border: 2px dashed #c4d3e6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f9fbfd;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.image-error {
+  color: var(--red);
+  font-size: 1.4rem;
+  font-weight: 500;
+  padding: 1rem;
+  background-color: rgba(255, 0, 0, 0.05);
+  border-radius: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+.image-placeholder {
+  color: var(--text-color-3);
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Additional styles for preview image */
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Tags Input */
+.tags-input-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.tags-input-wrapper input {
+  flex: 1;
+}
+
+.tags-input-wrapper button {
+  padding: 0 1.5rem;
+  background-color: var(--basic-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tags-input-wrapper button:hover {
+  background-color: rgba(58, 118, 207, 0.8);
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-height: 4rem;
+  margin-top: 1rem;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--light-blue);
+  border-radius: 2rem;
+  font-size: 1.3rem;
+}
+
+.tag-item .remove-tag-btn {
+  background: none;
+  border: none;
+  color: var(--text-color-2);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.tag-item .remove-tag-btn:hover {
+  color: var(--red);
+}
+
+/* Discount Inputs */
+.discount-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.discount-type-group .radio-options {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Helper Text Styles */
+.helper-text {
+  color: var(--text-color-3);
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+/* Available Tags Container */
+.available-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.available-tag {
+  padding: 0.5rem 1.2rem;
+  background-color: var(--grey);
+  color: var(--text-color-2);
+  border-radius: 2rem;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.available-tag:hover {
+  background-color: rgba(58, 118, 207, 0.2);
+}
+
+.available-tag.selected {
+  background-color: var(--basic-blue);
+  color: var(--white);
 }
