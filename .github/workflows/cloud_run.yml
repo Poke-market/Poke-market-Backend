@@ -1,0 +1,61 @@
+name: Updated API URL
+
+on:
+  pull_request:
+    branches:
+      - development
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  comment-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        run: |
+          echo "$GOOGLE_CREDENTIALS" > /tmp/gcp-credentials.json
+          gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
+          gcloud config set project strong-ward-453503-f1
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Get Cloud Run Service URL
+        id: get-url
+        run: |
+          SERVICE="development"
+          URL=$(gcloud run services describe "$SERVICE" --region us-central1 --format 'value(status.url)')
+          echo "service_url=$URL" >> $GITHUB_OUTPUT
+          rm /tmp/gcp-credentials.json
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Comment on PR
+        if: steps.get-url.outputs.service_url != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const serviceUrl = "${{ steps.get-url.outputs.service_url }}";
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🚀 Development API Updated
+
+              #### 🔗 API Details
+              - URL: ${serviceUrl}
+              - Environment: Development
+              - Status: Ready for Testing
+
+              #### 📝 Available Endpoints
+              - Auth: \`/api/auth\`
+              - Items: \`/api/items\`
+              - Users: \`/api/users\`
+              - Tags: \`/api/tags\`
+              - Slugs: \`/api/slug\` 
+              `});
