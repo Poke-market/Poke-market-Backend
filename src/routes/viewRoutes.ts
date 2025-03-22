@@ -4,7 +4,6 @@ import {
   renderLoginView,
   renderLogoutView,
   renderRegisterView,
-  renderTestView,
   renderHomeView,
   renderUsersView,
   renderUserEditView,
@@ -21,7 +20,6 @@ router.get("/items", authMiddleware, isAdmin, renderItemsView);
 router.get("/items/add", authMiddleware, isAdmin, renderItemAddView);
 router.get("/items/:slug", authMiddleware, isAdmin, renderItemEditView);
 
-router.get("/test", renderTestView);
 router.get("/register", renderRegisterView);
 router.get("/login", renderLoginView);
 router.get("/logout", authMiddleware, renderLogoutView);

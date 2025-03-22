@@ -51,10 +51,6 @@ export const renderLogoutView = (req: Request, res: Response) => {
   res.redirect("/login");
 };
 
-export const renderTestView = (req: Request, res: Response) => {
-  res.status(200).json({ message: "Test view" });
-};
-
 export const renderUsersView = async (req: Request, res: Response) => {
   const { users, info } = await getUsers(req.query, makePageLinkBuilder(req));
 
