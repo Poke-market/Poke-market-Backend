@@ -46,12 +46,12 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: `## 🚀 Development API Updated
-            
+
               #### 🔗 API Details
               - URL: ${serviceUrl}
               - Environment: Development
               - Status: Ready for Testing
-            
+
               #### 📝 Available Endpoints
               - Auth: \`/api/auth\`
               - Items: \`/api/items\`
@@ -59,4 +59,3 @@ jobs:
               - Tags: \`/api/tags\`
               - Slugs: \`/api/slug\` 
               `});
-
