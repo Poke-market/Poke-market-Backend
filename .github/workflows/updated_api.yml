@@ -3,8 +3,7 @@ name: Comment PR with API URL
 on:
   push:
     branches:
-      - development
-      - main
+      - experiment/___-test-google-clooud
 
 jobs:
   comment-pr:
