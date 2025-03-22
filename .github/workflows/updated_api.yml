@@ -27,7 +27,7 @@ jobs:
       - name: Get Cloud Run Service URL
         id: get-url
         run: |
-          SERVICE="development-dev"
+          SERVICE="development"
           URL=$(gcloud run services describe "$SERVICE" --region us-central1 --format 'value(status.url)')
           echo "service_url=$URL" >> $GITHUB_OUTPUT
           rm /tmp/gcp-credentials.json
