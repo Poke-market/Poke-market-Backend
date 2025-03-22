@@ -9,8 +9,8 @@ import { isAdmin } from "../../middleware/isAdmin";
 
 const router = express.Router();
 
-router.get("/items", authMiddleware, isAdmin, renderItemsView);
-router.get("/items/add", authMiddleware, isAdmin, renderItemAddView);
-router.get("/items/:slug", authMiddleware, isAdmin, renderItemEditView);
+router.get("/", authMiddleware, isAdmin, renderItemsView);
+router.get("/add", authMiddleware, isAdmin, renderItemAddView);
+router.get("/:slug", authMiddleware, isAdmin, renderItemEditView);
 
 export default router;
