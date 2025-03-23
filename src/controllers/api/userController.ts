@@ -3,7 +3,7 @@ import { Response } from "../../types/res.json";
 import { Types } from "mongoose";
 import mongoose from "mongoose";
 
-import { ForbiddenError, NotFoundError, ValidationError } from "../../errors";
+import { NotFoundError, ValidationError } from "../../errors";
 import { User } from "../../models/userModel";
 import { Item } from "../../models/itemModel";
 
@@ -205,10 +205,6 @@ export const addToWishlist = async (req: Request, res: Response) => {
   const { itemId } = req.body as { itemId: Types.ObjectId };
   const user = await User.findById(id).populate("wishList", "name _id");
   if (!user) throw new NotFoundError("user not found");
-  // TODO to be changed to logged-in user
-  // TODO to be changed to logged-in user
-  if (id !== user.id)
-    throw new ForbiddenError("Logged in user ID does not match user ID");
 
   const itemExists = await Item.countDocuments({ _id: itemId });
   if (!itemExists) throw new NotFoundError("Item not found");
@@ -283,10 +279,6 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
   if (!user) {
     throw new NotFoundError("User not found");
   }
-  if (id !== user.id) {
-    throw new ForbiddenError("Logged in user ID does not match user ID");
-  }
-  user.wishList.pull(itemId);
   const updatedUser = await User.findByIdAndUpdate(
     id,
     {
