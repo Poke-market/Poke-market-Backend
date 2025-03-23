@@ -1,4 +1,4 @@
-import { PORT } from "./env";
+import { PORT, IS_DEVELOPMENT, BASE_URL } from "./env";
 import swaggerJsdoc from "swagger-jsdoc";
 
 const options = {
@@ -10,10 +10,15 @@ const options = {
       description: "Documentation for the Poke Market API",
     },
     servers: [
-      {
-        url: `http://localhost:${PORT}/api`,
-        description: "Development server",
-      },
+      IS_DEVELOPMENT
+        ? {
+            url: `http://127.0.0.1:${PORT}/api`,
+            description: "Development server",
+          }
+        : {
+            url: `${BASE_URL}/api`,
+            description: "Production server",
+          },
     ],
     components: {
       securitySchemes: {
