@@ -149,7 +149,7 @@ export const getUser = async (req: Request, res: Response) => {
  *   get:
  *     summary: Get user's wishlist
  *     description: Retrieves the list of items in the user's wishlist
- *     tags: [Users]
+ *     tags: [Wishlist]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -194,7 +194,7 @@ export const getWishlist = async (req: Request, res: Response) => {
  *   post:
  *     summary: Add item to wishlist
  *     description: Adds an item to the user's wishlist
- *     tags: [Users]
+ *     tags: [Wishlist]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -273,7 +273,7 @@ export const addToWishlist = async (req: Request, res: Response) => {
  *   delete:
  *     summary: Remove item from wishlist
  *     description: Removes an item from the user's wishlist
- *     tags: [Users]
+ *     tags: [Wishlist]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -336,6 +336,43 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
   res.status(200).json({ status: "success", data: updatedUser });
 };
 
+/**
+ * @openapi
+ * /users/{id}/wishlist/clear:
+ *   delete:
+ *     summary: Clear wishlist
+ *     description: Removes all items from the user's wishlist
+ *     tags: [Wishlist]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user whose wishlist to clear
+ *     responses:
+ *       200:
+ *         description: Wishlist cleared successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 export const clearWishlist = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = await userService.clearWishlist(id);

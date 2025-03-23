@@ -23,6 +23,13 @@ import {
  *     description: User management
  */
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Wishlist
+ *     description: Wishlist management
+ */
+
 const router = express.Router();
 
 router
