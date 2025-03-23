@@ -143,6 +143,12 @@ export const getUser = async (req: Request, res: Response) => {
   res.status(200).json({ status: "success", data: user });
 };
 
+export const getWishlist = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const wishlist = await userService.getWishlist(id);
+  res.status(200).json({ status: "success", data: wishlist });
+};
+
 /**
  * @openapi
  * /users/{id}/wishlist:

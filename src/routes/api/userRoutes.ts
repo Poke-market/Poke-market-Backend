@@ -9,6 +9,7 @@ import {
   deleteUser,
   getAllUsers,
   getUser,
+  getWishlist,
   removeFromWishlist,
   updateUser,
   replaceUser,
@@ -30,6 +31,12 @@ router
   .delete("/:id", authMiddleware, is("admin"), deleteUser)
   .patch("/:id", authMiddleware, is(["admin", "resourceOwner"]), updateUser)
   .put("/:id", authMiddleware, is(["admin", "resourceOwner"]), replaceUser)
+  .get(
+    "/:id/wishlist",
+    authMiddleware,
+    is(["admin", "resourceOwner"]),
+    getWishlist,
+  )
   .post(
     "/:id/wishlist",
     authMiddleware,
