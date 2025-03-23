@@ -1,6 +1,29 @@
 import { type ErrorOptions } from "../ApiError";
 import { BadRequestError } from "./BadRequestError";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     VerificationErrorResponse:
+ *       allOf:
+ *         - $ref: '#/components/schemas/BadRequestErrorResponse'
+ *         - type: object
+ *           properties:
+ *             data:
+ *               example:
+ *                 endpoint: "/api/auth/verify"
+ *                 method: "POST"
+ *                 errors: ["Invalid or expired verification token"]
+ *
+ *   responses:
+ *     VerificationError:
+ *       description: Email verification error
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/VerificationErrorResponse'
+ */
 export class VerificationError extends BadRequestError {
   constructor(
     type: "expired" | "already-verified" | "invalid-token" | "user-not-found",

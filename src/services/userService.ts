@@ -7,7 +7,7 @@ import { RawQuery } from "../types/query";
 import { generatePaginationInfo } from "../utils/paginationHelper";
 import { registerSchema } from "./authService";
 import bcrypt from "bcrypt";
-
+import { zBooleanString } from "../utils/zodBooleanString";
 // Define input schemas
 export const PaginationParamsSchema = z.object({
   limit: z.coerce.number().min(1).default(10),
@@ -16,8 +16,8 @@ export const PaginationParamsSchema = z.object({
 
 export const FilterParamsSchema = z.object({
   search: z.string().trim().optional(),
-  isAdmin: z.boolean().optional(),
-  isVerified: z.boolean().optional(),
+  isAdmin: zBooleanString.optional(),
+  isVerified: zBooleanString.optional(),
 });
 
 export const SortParamsSchema = z.object({
