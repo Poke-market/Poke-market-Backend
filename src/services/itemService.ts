@@ -28,28 +28,38 @@ function createEffectivePriceStage(
   return {
     $addFields: {
       [outputField]: {
-        $cond: {
-          if: { $eq: ["$discount.type", "percentage"] },
-          then: {
-            $subtract: [
-              "$price",
-              { $multiply: ["$price", { $divide: ["$discount.amount", 100] }] },
-            ],
-          },
-          else: {
+        $round: [
+          {
             $cond: {
-              if: {
-                $and: [
-                  { $ne: [{ $type: "$discount" }, "missing"] },
-                  { $ne: [{ $type: "$discount.amount" }, "missing"] },
-                  { $ne: ["$discount.amount", 0] },
+              if: { $eq: ["$discount.type", "percentage"] },
+              then: {
+                $subtract: [
+                  "$price",
+                  {
+                    $multiply: [
+                      "$price",
+                      { $divide: ["$discount.amount", 100] },
+                    ],
+                  },
                 ],
               },
-              then: { $subtract: ["$price", "$discount.amount"] },
-              else: "$price",
+              else: {
+                $cond: {
+                  if: {
+                    $and: [
+                      { $ne: [{ $type: "$discount" }, "missing"] },
+                      { $ne: [{ $type: "$discount.amount" }, "missing"] },
+                      { $ne: ["$discount.amount", 0] },
+                    ],
+                  },
+                  then: { $subtract: ["$price", "$discount.amount"] },
+                  else: "$price",
+                },
+              },
             },
           },
-        },
+          2,
+        ],
       },
     },
   } as PipelineStage;
@@ -76,8 +86,8 @@ async function calculatePriceRange(
   if (priceRangeResult.length > 0) {
     const result = priceRangeResult[0] as { min: number; max: number };
     return {
-      min: Math.round(result.min),
-      max: Math.round(result.max),
+      min: Number(result.min.toFixed(2)),
+      max: Number(result.max.toFixed(2)),
     };
   }
 
