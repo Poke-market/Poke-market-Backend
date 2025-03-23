@@ -172,7 +172,7 @@ export const getItems = async (req: Request, res: Response) => {
  *           type: string
  *         description: Item ID
  *     responses:
- *       201:
+ *       200:
  *         description: Successfully retrieved item
  *         content:
  *           application/json:
@@ -182,7 +182,10 @@ export const getItems = async (req: Request, res: Response) => {
  *                 - type: object
  *                   properties:
  *                     data:
- *                       $ref: '#/components/schemas/Item'
+ *                       type: object
+ *                       properties:
+ *                         item:
+ *                           $ref: '#/components/schemas/Item'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *       500:
@@ -192,7 +195,7 @@ export const getItemById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await itemService.getItemById(id);
 
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
     data: result,
   });
@@ -313,7 +316,7 @@ export const addItem = async (req: Request, res: Response) => {
  *               discount:
  *                 $ref: '#/components/schemas/Discount'
  *     responses:
- *       201:
+ *       200:
  *         description: Item updated successfully
  *         content:
  *           application/json:
@@ -343,7 +346,7 @@ export const updateItem = async (req: Request, res: Response) => {
   const itemData = UpdateItemSchema.parse(req.body);
   const result = await itemService.updateItem(id, itemData);
 
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
     data: result,
   });
@@ -404,18 +407,13 @@ export const deleteItem = async (req: Request, res: Response) => {
  *     summary: Get an item by name
  *     description: Returns a single item by its name
  *     tags: [Items]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Item name to search for
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Item name to search for
  *     responses:
  *       200:
  *         description: Successfully retrieved item
@@ -427,7 +425,10 @@ export const deleteItem = async (req: Request, res: Response) => {
  *                 - type: object
  *                   properties:
  *                     data:
- *                       $ref: '#/components/schemas/Item'
+ *                       type: object
+ *                       properties:
+ *                         item:
+ *                           $ref: '#/components/schemas/Item'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *       422:
