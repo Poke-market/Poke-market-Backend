@@ -363,6 +363,7 @@
 
 /* Badges */
 .soon-badge,
+.docs-badge,
 .external-link-badge,
 .dev-badge,
 .github-badge {
@@ -397,6 +398,11 @@
 .github-badge {
   background-color: rgba(33, 33, 33, 0.15);
   color: rgba(33, 33, 33, 0.8);
+}
+
+.docs-badge {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: rgba(139, 92, 246, 0.9);
 }
 
 /* Disabled tile */
