@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
     editButtons.forEach((button) => {
       button.addEventListener("click", function () {
         const itemId = this.getAttribute("data-id");
-        window.location.href = `/items/${itemId}/edit`;
+        window.location.href = `/items/${itemId}`;
       });
     });
   }
