@@ -8,6 +8,7 @@ import {
   getTags,
   updateTag,
 } from "../../controllers/api/tagController";
+import { is } from "../../middleware/isMiddleware";
 
 /**
  * @openapi
@@ -20,9 +21,9 @@ const router = express.Router();
 
 router
   .get("/", getTags)
-  .post("/", addTag)
-  .delete("/:id", deleteTag)
-  .patch("/:id", updateTag)
+  .post("/", is("admin"), addTag)
+  .delete("/:id", is("admin"), deleteTag)
+  .patch("/:id", is("admin"), updateTag)
   .get("/:id", getTagById)
   .get("/name/:name", getTagByName);
 
