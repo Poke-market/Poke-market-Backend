@@ -9,7 +9,7 @@ import {
 } from "../../controllers/api/itemsController";
 
 import { authMiddleware } from "../../middleware/authMiddleware";
-import { isAdmin } from "../../middleware/isAdmin";
+import { is } from "../../middleware/isMiddleware";
 
 /**
  * @openapi
@@ -26,8 +26,8 @@ router.get("/name", getItemByName);
 router.get("/:id", getItemById);
 
 // Protected endpoints
-router.post("/", authMiddleware, isAdmin, addItem);
-router.patch("/:id", authMiddleware, isAdmin, updateItem);
-router.delete("/:id", authMiddleware, isAdmin, deleteItem);
+router.post("/", authMiddleware, is("admin"), addItem);
+router.patch("/:id", authMiddleware, is("admin"), updateItem);
+router.delete("/:id", authMiddleware, is("admin"), deleteItem);
 
 export default router;
