@@ -21,6 +21,69 @@ import validator from "validator";
 
 const { isURL } = validator;
 
+// Helper function to create a pipeline stage for calculating effective price (with discounts)
+function createEffectivePriceStage(
+  outputField = "effectivePrice",
+): PipelineStage {
+  return {
+    $addFields: {
+      [outputField]: {
+        $cond: {
+          if: { $eq: ["$discount.type", "percentage"] },
+          then: {
+            $subtract: [
+              "$price",
+              { $multiply: ["$price", { $divide: ["$discount.amount", 100] }] },
+            ],
+          },
+          else: {
+            $cond: {
+              if: {
+                $and: [
+                  { $ne: [{ $type: "$discount" }, "missing"] },
+                  { $ne: [{ $type: "$discount.amount" }, "missing"] },
+                  { $ne: ["$discount.amount", 0] },
+                ],
+              },
+              then: { $subtract: ["$price", "$discount.amount"] },
+              else: "$price",
+            },
+          },
+        },
+      },
+    },
+  } as PipelineStage;
+}
+
+// Helper function to calculate price range using aggregation
+async function calculatePriceRange(
+  filter: FilterQuery<typeof Item>,
+): Promise<PriceRange> {
+  const priceRangePipeline: PipelineStage[] = [
+    { $match: filter } as PipelineStage,
+    createEffectivePriceStage(),
+    {
+      $group: {
+        _id: null,
+        min: { $min: "$effectivePrice" },
+        max: { $max: "$effectivePrice" },
+      },
+    } as PipelineStage,
+  ];
+
+  const priceRangeResult = await Item.aggregate(priceRangePipeline);
+
+  if (priceRangeResult.length > 0) {
+    const result = priceRangeResult[0] as { min: number; max: number };
+    return {
+      min: Math.round(result.min),
+      max: Math.round(result.max),
+    };
+  }
+
+  return { min: 0, max: 0 };
+}
+
 // Define the input schemas
 export const PaginationParamsSchema = z.object({
   limit: z.coerce.number().min(1).default(16),
@@ -77,6 +140,12 @@ export type SortParams = z.infer<typeof SortParamsSchema>;
 export type CreateItemParams = z.infer<typeof CreateItemSchema>;
 export type UpdateItemParams = z.infer<typeof UpdateItemSchema>;
 export type GetItemByNameParams = z.infer<typeof GetItemByNameSchema>;
+
+export interface PriceRange {
+  min: number;
+  max: number;
+}
+
 export async function buildItemsFilter(params: FilterParams) {
   const {
     search,
@@ -146,36 +215,8 @@ export async function buildItemsFilter(params: FilterParams) {
 
   // Handle discounted price filtering using MongoDB aggregation
   if (minDiscountedPrice !== undefined || maxDiscountedPrice !== undefined) {
-    pipeline.push({
-      $addFields: {
-        discountedPrice: {
-          $cond: {
-            if: { $eq: ["$discount.type", "percentage"] },
-            then: {
-              $subtract: [
-                "$price",
-                {
-                  $multiply: ["$price", { $divide: ["$discount.amount", 100] }],
-                },
-              ],
-            },
-            else: {
-              $cond: {
-                if: {
-                  $and: [
-                    { $ne: [{ $type: "$discount" }, "missing"] },
-                    { $ne: [{ $type: "$discount.amount" }, "missing"] },
-                    { $ne: ["$discount.amount", 0] },
-                  ],
-                },
-                then: { $subtract: ["$price", "$discount.amount"] },
-                else: "$price",
-              },
-            },
-          },
-        },
-      },
-    } as PipelineStage);
+    // Use the helper function to calculate discounted price
+    pipeline.push(createEffectivePriceStage("discountedPrice"));
 
     const discountedPriceCondition: Record<string, number> = {};
     if (minDiscountedPrice !== undefined)
@@ -273,6 +314,9 @@ export async function getItems(
   const skip = (page - 1) * limit;
   let items: unknown[] = [];
 
+  // Calculate price range using the helper function
+  const priceRange = await calculatePriceRange(filter);
+
   if (pipeline && pipeline.length > 0) {
     try {
       // Convert string sort orders to numeric for MongoDB aggregation
@@ -317,6 +361,28 @@ export async function getItems(
         { $skip: skip } as PipelineStage,
         { $limit: limit } as PipelineStage,
       );
+
+      // Add stage to move discountedPrice into the discount object for consistency
+      aggregationPipeline.push({
+        $addFields: {
+          "discount.discountedPrice": "$discountedPrice",
+          "discount.hasDiscount": {
+            $and: [
+              { $ne: [{ $type: "$discount" }, "missing"] },
+              { $ne: [{ $type: "$discount.amount" }, "missing"] },
+              { $ne: ["$discount.amount", 0] },
+              { $ne: ["$discountedPrice", "$price"] },
+            ],
+          },
+        },
+      } as PipelineStage);
+
+      // Remove the top-level discountedPrice field
+      aggregationPipeline.push({
+        $project: {
+          discountedPrice: 0,
+        },
+      } as PipelineStage);
 
       // Execute the aggregation pipeline
       const aggregationResult = await Item.aggregate(aggregationPipeline);
@@ -383,9 +449,6 @@ export async function getItems(
     }
   }
 
-  // Memory sorter should only be applied to items from find() operation, not aggregation
-  // The conditional was moved inside the else block above
-
   // Generate base pagination info
   const paginationInfo = generatePaginationInfo(
     itemCount,
@@ -413,6 +476,7 @@ export async function getItems(
     info: {
       ...paginationInfo,
       categorieCount: await countCategories(filterWithoutCats),
+      priceRange,
     },
     items: items.map((item) => {
       // Handle both Mongoose documents and aggregation results
