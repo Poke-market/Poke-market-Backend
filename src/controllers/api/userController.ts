@@ -143,6 +143,45 @@ export const getUser = async (req: Request, res: Response) => {
   res.status(200).json({ status: "success", data: user });
 };
 
+/**
+ * @openapi
+ * /users/{id}/wishlist:
+ *   get:
+ *     summary: Get user's wishlist
+ *     description: Retrieves the list of items in the user's wishlist
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user whose wishlist to retrieve
+ *     responses:
+ *       200:
+ *         description: Wishlist retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Item'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 export const getWishlist = async (req: Request, res: Response) => {
   const { id } = req.params;
   const wishlist = await userService.getWishlist(id);
