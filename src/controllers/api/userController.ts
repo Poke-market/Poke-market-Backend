@@ -336,6 +336,12 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
   res.status(200).json({ status: "success", data: updatedUser });
 };
 
+export const clearWishlist = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = await userService.clearWishlist(id);
+  res.status(200).json({ status: "success", data: user });
+};
+
 /**
  * @openapi
  * /users:

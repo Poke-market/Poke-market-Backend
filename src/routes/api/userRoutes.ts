@@ -13,6 +13,7 @@ import {
   removeFromWishlist,
   updateUser,
   replaceUser,
+  clearWishlist,
 } from "../../controllers/api/userController";
 
 /**
@@ -48,6 +49,12 @@ router
     authMiddleware,
     is(["admin", "resourceOwner"]),
     removeFromWishlist,
+  )
+  .delete(
+    "/:id/wishlist/clear",
+    authMiddleware,
+    is(["admin", "resourceOwner"]),
+    clearWishlist,
   );
 
 export default router;
