@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Redirect on success
-      window.location.href = "/items";
+      window.location.href = "/";
     } catch (error) {
       console.error("Login error:", error);
 
