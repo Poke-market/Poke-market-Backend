@@ -4,6 +4,8 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import hbs from "./config/handlebars";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 
 import { notFound } from "./controllers/api/notFoundController";
 import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
@@ -31,6 +33,12 @@ app.set("view engine", "handlebars");
 app.set("views", getViewPaths("src/views"));
 app.use(express.static("src/public"));
 
+// API Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (req, res) => {
+  res.json(swaggerSpec);
+});
+
 // API Routes
 app.use("/api", apiRoutes);
 
@@ -55,4 +63,7 @@ try {
 // Server Listening
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}! 🚀`);
+  console.log(
+    `API Documentation available at http://localhost:${PORT}/api-docs`,
+  );
 });

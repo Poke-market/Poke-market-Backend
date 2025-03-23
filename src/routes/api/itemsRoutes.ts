@@ -11,6 +11,13 @@ import {
 import { authMiddleware } from "../../middleware/authMiddleware";
 import { isAdmin } from "../../middleware/isAdmin";
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Items
+ *     description: Item management
+ */
+
 const router = express.Router();
 
 // Public endpoints

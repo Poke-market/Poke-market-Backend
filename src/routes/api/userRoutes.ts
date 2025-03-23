@@ -13,6 +13,13 @@ import {
   replaceUser,
 } from "../../controllers/api/userController";
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Users
+ *     description: User management
+ */
+
 const router = express.Router();
 
 router

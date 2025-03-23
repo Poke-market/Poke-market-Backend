@@ -6,6 +6,13 @@ import {
   verify,
 } from "../../controllers/api/AuthController";
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Auth
+ *     description: Authentication operations
+ */
+
 const router = express.Router();
 
 router
