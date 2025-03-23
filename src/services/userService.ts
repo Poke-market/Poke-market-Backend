@@ -237,3 +237,39 @@ export async function updateUser(id: string, userUpdateData: UserUpdateData) {
 
   return updatedUser;
 }
+
+export async function getWishlist(userId: string) {
+  if (!mongoose.isValidObjectId(userId)) {
+    throw new ValidationError(
+      "userId",
+      "User id is not valid id by Mongoose standards",
+    );
+  }
+
+  const user = await User.findById(userId)
+    .select("-password -verificationToken -resetToken")
+    .populate("wishList");
+
+  if (!user) throw new NotFoundError("User not found");
+
+  return user.wishList;
+}
+
+export async function clearWishlist(userId: string) {
+  if (!mongoose.isValidObjectId(userId)) {
+    throw new ValidationError(
+      "userId",
+      "User id is not valid id by Mongoose standards",
+    );
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $set: { wishList: [] } },
+    { new: true },
+  );
+
+  if (!user) throw new NotFoundError("User not found");
+
+  return user;
+}

@@ -9,9 +9,11 @@ import {
   deleteUser,
   getAllUsers,
   getUser,
+  getWishlist,
   removeFromWishlist,
   updateUser,
   replaceUser,
+  clearWishlist,
 } from "../../controllers/api/userController";
 
 /**
@@ -19,6 +21,13 @@ import {
  * tags:
  *   - name: Users
  *     description: User management
+ */
+
+/**
+ * @openapi
+ * tags:
+ *   - name: Wishlist
+ *     description: Wishlist management
  */
 
 const router = express.Router();
@@ -30,6 +39,12 @@ router
   .delete("/:id", authMiddleware, is("admin"), deleteUser)
   .patch("/:id", authMiddleware, is(["admin", "resourceOwner"]), updateUser)
   .put("/:id", authMiddleware, is(["admin", "resourceOwner"]), replaceUser)
+  .get(
+    "/:id/wishlist",
+    authMiddleware,
+    is(["admin", "resourceOwner"]),
+    getWishlist,
+  )
   .post(
     "/:id/wishlist",
     authMiddleware,
@@ -41,6 +56,12 @@ router
     authMiddleware,
     is(["admin", "resourceOwner"]),
     removeFromWishlist,
+  )
+  .delete(
+    "/:id/wishlist/clear",
+    authMiddleware,
+    is(["admin", "resourceOwner"]),
+    clearWishlist,
   );
 
 export default router;
