@@ -232,6 +232,11 @@ export const getItemById = async (req: Request, res: Response) => {
  *                 type: string
  *               photoUrl:
  *                 type: string
+ *               extraPhotoUrls:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Additional photo URLs for the item
  *               category:
  *                 $ref: '#/components/schemas/Category'
  *               tags:
@@ -307,6 +312,11 @@ export const addItem = async (req: Request, res: Response) => {
  *                 type: string
  *               photoUrl:
  *                 type: string
+ *               extraPhotoUrls:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Additional photo URLs for the item
  *               category:
  *                 $ref: '#/components/schemas/Category'
  *               tags:

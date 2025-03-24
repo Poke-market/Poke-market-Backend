@@ -116,6 +116,12 @@ discountSchema.virtual("hasDiscount").get(function () {
  *         photoUrl:
  *           type: string
  *           description: URL to the item's image
+ *         extraPhotoUrls:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Additional photo URLs for the item
+ *           default: []
  *         category:
  *           $ref: '#/components/schemas/Category'
  *         tags:
@@ -172,6 +178,10 @@ const itemSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true,
+    },
+    extraPhotoUrls: {
+      type: [String],
+      default: [],
     },
   },
   {

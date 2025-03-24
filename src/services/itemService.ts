@@ -129,6 +129,7 @@ export const CreateItemSchema = z.object({
   price: z.number(),
   tags: z.string().array(),
   isNewItem: z.boolean().optional(),
+  extraPhotoUrls: z.string().array().optional(),
   discount: z
     .object({
       amount: z.number().optional(),
