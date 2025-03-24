@@ -6,6 +6,7 @@ import { UnauthorizedError, ConflictError, VerificationError } from "../errors";
 import { z } from "zod";
 import { sendVerificationEmail } from "../utils/sendVerificationMail";
 import { Response } from "../types/res.json";
+import { Request } from "express";
 
 export const verifyEmailJwtSchema = z.object({
   email: z
@@ -157,3 +158,43 @@ export async function verifyUser(token: string) {
 
   return user;
 }
+
+// Define a custom interface for our JWT payload
+const JwtPayloadSchema = z.object({
+  _id: z.string({ message: "No User ID found" }),
+  email: z
+    .string({ message: "No Email found" })
+    .email({ message: "Invalid Email" }),
+  isAdmin: z.boolean({ message: "admin has to be a boolean" }).default(false),
+});
+
+export const verifyToken = async (
+  req: Request,
+): Promise<[true, InstanceType<typeof User>] | [false, string]> => {
+  const token: string | undefined = req.headers.authorization?.startsWith(
+    "Bearer",
+  )
+    ? req.headers.authorization.split(" ")[1]
+    : (req.cookies?.token as string | undefined);
+
+  if (!token) {
+    return [false, "No token provided"];
+  }
+
+  const decoded = jwt.verify(token, JWT_SECRET);
+  const parsedJwt = JwtPayloadSchema.safeParse(decoded);
+
+  if (!parsedJwt.success) {
+    const issue = parsedJwt.error.issues[0];
+    return [false, `Invalid token: ${issue.message}`];
+  }
+
+  const user = parsedJwt.data;
+
+  const userDetails = await User.findById(user._id).select("-password");
+  if (!userDetails) {
+    return [false, "Invalid token: User no longer exists"];
+  }
+
+  return [true, userDetails];
+};
