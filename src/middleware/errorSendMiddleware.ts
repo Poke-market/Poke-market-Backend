@@ -1,7 +1,7 @@
 import { Request, NextFunction } from "express";
 import { Response } from "../types/res.json";
 import { ForbiddenError, UnauthorizedError } from "../errors";
-
+import * as authService from "../services/authService";
 export const errorSendMiddleware = (
   err: Error,
   req: Request,
@@ -16,6 +16,7 @@ export const errorSendMiddleware = (
   }
 
   if (err instanceof UnauthorizedError) {
+    authService.logoutUser(res);
     res.redirect("/auth/login");
     return;
   }

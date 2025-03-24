@@ -1,9 +1,16 @@
 import { Request, Response } from "express";
 import { logoutUser, verifyUser } from "../../services/authService";
 import { VerificationError } from "../../errors";
-export const renderLoginView = (req: Request, res: Response) => {
+import * as authService from "../../services/authService";
+export const renderLoginView = async (req: Request, res: Response) => {
   // If user is already logged in, redirect to home page
-  if (req.cookies?.token) res.redirect("/");
+  const [isAuthenticated] = await authService.verifyToken(req);
+
+  if (isAuthenticated) {
+    res.redirect("/");
+    return;
+  }
+
   res.render("login", { title: "Login" });
 };
 
@@ -34,6 +41,5 @@ export const renderVerifyView = async (req: Request, res: Response) => {
         success: false,
       });
     }
-    throw error;
   }
 };
