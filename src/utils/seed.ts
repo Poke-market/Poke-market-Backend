@@ -5,6 +5,7 @@ import { MONGO_URI } from "../config/env";
 import { Item } from "../models/itemModel";
 import { Tag } from "../models/tagModel";
 import { pokéitems } from "./data";
+import { slugifyLowercase } from "./slugify";
 
 const seedItems = async () => {
   try {
@@ -23,7 +24,8 @@ const seedItems = async () => {
             return tagDoc._id;
           }) ?? [],
         );
-        return { ...item, tags: tagIds };
+
+        return { ...item, tags: tagIds, slug: slugifyLowercase(item.name) };
       }),
     );
 

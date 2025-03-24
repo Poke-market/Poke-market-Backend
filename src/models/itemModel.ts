@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 import { slugifyLowercase } from "../utils/slugify";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: string
+ *       enum: [medicine, berries, food, pokéballs, evolution, vitamins, tm/hm, mega stones]
+ */
 export const categories = [
   "medicine",
   "berries",
@@ -15,6 +23,27 @@ export const categories = [
 export type Category = (typeof categories)[number];
 export const discountTypes = ["percentage", "absolute"] as const;
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Discount:
+ *       type: object
+ *       properties:
+ *         amount:
+ *           type: number
+ *           description: The discount amount
+ *         type:
+ *           type: string
+ *           enum: [percentage, absolute]
+ *           description: The type of discount
+ *         discountedPrice:
+ *           type: number
+ *           description: The calculated price after discount
+ *         hasDiscount:
+ *           type: boolean
+ *           description: Indicates if the item has an active discount
+ */
 const discountSchema = new mongoose.Schema(
   {
     amount: {
@@ -59,6 +88,58 @@ discountSchema.virtual("hasDiscount").get(function () {
   return price !== discountedPrice;
 });
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Item:
+ *       type: object
+ *       required:
+ *         - name
+ *         - price
+ *         - description
+ *         - photoUrl
+ *         - category
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The item ID
+ *         name:
+ *           type: string
+ *           description: The name of the item
+ *         price:
+ *           type: number
+ *           description: The base price of the item
+ *         description:
+ *           type: string
+ *           description: Description of the item
+ *         photoUrl:
+ *           type: string
+ *           description: URL to the item's image
+ *         category:
+ *           $ref: '#/components/schemas/Category'
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Tag'
+ *           description: Tags associated with the item
+ *         discount:
+ *           $ref: '#/components/schemas/Discount'
+ *         isNewItem:
+ *           type: boolean
+ *           description: Indicates if this is a newly added item
+ *         slug:
+ *           type: string
+ *           description: URL-friendly version of the item name
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the item was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: When the item was last updated
+ */
 const itemSchema = new mongoose.Schema(
   {
     category: {
@@ -113,7 +194,9 @@ itemSchema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
-export const flattenItemTags = (item: object) => ({
+export const flattenItemTags = <T extends object>(
+  item: T,
+): Omit<T, "tags"> & { tags: string[] } => ({
   ...item,
   tags: (item as { tags: { name: string }[] }).tags.map((tag) => tag.name),
 });

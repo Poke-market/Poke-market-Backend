@@ -10,6 +10,25 @@ export interface ErrorOptionsWithLogMessage extends ErrorOptionsBase {
 
 export type ErrorOptions = ErrorOptionsBase | ErrorOptionsWithLogMessage;
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ApiError:
+ *       type: object
+ *       description: Base class for all API errors
+ *       required:
+ *         - status
+ *         - message
+ *       properties:
+ *         status:
+ *           type: string
+ *           enum: [error, fail]
+ *           description: The error status (error or fail)
+ *         message:
+ *           type: string
+ *           description: Error message
+ */
 export abstract class ApiError extends Error {
   get logging() {
     return this._options?.logging ?? this._logging;

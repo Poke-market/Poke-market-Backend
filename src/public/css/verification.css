@@ -1,0 +1,653 @@
+/* Center verification container on screen */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+  min-height: 80vh;
+}
+
+.verification-container {
+  max-width: 55rem;
+  width: 92%;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  text-align: center;
+}
+
+.verification-container h1 {
+  font-size: 2rem;
+  color: var(--text-color-2);
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+/* Success container styling */
+.success-container {
+  background-color: var(--white);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.success-container h2 {
+  font-size: 2rem;
+  color: var(--basic-blue);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.success-message {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--text-color-2);
+  margin-bottom: 2rem;
+}
+
+.login-button {
+  display: inline-block;
+  background-color: var(--basic-blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+}
+
+.login-button:hover {
+  background-color: var(--light-blue);
+}
+
+.home-button {
+  display: inline-block;
+  background-color: var(--basic-blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  margin-top: 2rem;
+}
+
+.home-button:hover {
+  background-color: var(--light-blue);
+}
+
+/* Notification styling */
+.notification-container {
+  margin-bottom: 2rem;
+}
+
+.notification {
+  padding: 1.5rem;
+  border-radius: 8px;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.notification h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.notification p {
+  margin-bottom: 0.5rem;
+}
+
+.notification.error {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+/* Pokemon success styling */
+.pokemon-success {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+}
+
+.pokeball {
+  width: 8rem;
+  height: 8rem;
+  background: linear-gradient(
+    to bottom,
+    #ee1515 0%,
+    #ee1515 50%,
+    white 50%,
+    white 100%
+  );
+  border-radius: 50%;
+  border: 0.5rem solid #222224;
+  position: relative;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  animation: shake 1.5s ease-in-out 0.5s;
+  transform-origin: center;
+}
+
+.pokeball::before {
+  content: "";
+  position: absolute;
+  background-color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 0.5rem solid #222224;
+  z-index: 2;
+}
+
+.pokeball::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 0.5rem;
+  background-color: #222224;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Stars animation */
+.pokemon-success::before,
+.pokemon-success::after,
+.pokemon-success .star-1,
+.pokemon-success .star-2,
+.pokemon-success .star-3,
+.pokemon-success .star-4,
+.pokemon-success .star-5,
+.pokemon-success .star-6,
+.pokemon-success .star-7,
+.pokemon-success .star-8,
+.pokemon-success .star-9,
+.pokemon-success .star-10,
+.pokemon-success .star-11,
+.pokemon-success .star-12,
+.pokemon-success .star-13,
+.pokemon-success .star-14 {
+  content: "★";
+  position: absolute;
+  color: #ffde00; /* Pokemon yellow */
+  opacity: 0;
+  z-index: 3;
+  filter: drop-shadow(0 0 5px rgba(255, 222, 0, 0.7));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Different sized stars */
+.pokemon-success::before {
+  font-size: 2.4rem;
+}
+
+.pokemon-success::after {
+  font-size: 1.9rem;
+}
+
+.pokemon-success .star-1 {
+  font-size: 3rem;
+}
+
+.pokemon-success .star-2 {
+  font-size: 2.4rem;
+}
+
+.pokemon-success .star-3 {
+  font-size: 2.7rem;
+}
+
+.pokemon-success .star-4 {
+  font-size: 2.1rem;
+}
+
+.pokemon-success .star-5 {
+  font-size: 2.8rem;
+}
+
+.pokemon-success .star-6 {
+  font-size: 2.2rem;
+}
+
+.pokemon-success .star-7 {
+  font-size: 2.3rem;
+}
+
+.pokemon-success .star-8 {
+  font-size: 2.6rem;
+}
+
+.pokemon-success .star-9 {
+  font-size: 2rem;
+}
+
+.pokemon-success .star-10 {
+  font-size: 2.9rem;
+}
+
+.pokemon-success .star-11 {
+  font-size: 1.8rem;
+}
+
+.pokemon-success .star-12 {
+  font-size: 2.5rem;
+}
+
+.pokemon-success .star-13 {
+  font-size: 1.9rem;
+}
+
+.pokemon-success .star-14 {
+  font-size: 2.7rem;
+}
+
+/* Star animations with burst timing */
+.pokemon-success::before {
+  animation: star-up 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success::after {
+  animation: star-up-slight-right 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-1 {
+  animation: star-right 0.65s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-2 {
+  animation: star-left 0.65s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-3 {
+  animation: star-up-right 0.75s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-4 {
+  animation: star-up-left 0.75s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-5 {
+  animation: star-up-far-right 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-6 {
+  animation: star-up-far-left 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-7 {
+  animation: star-right-up 0.65s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-8 {
+  animation: star-left-up 0.65s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-9 {
+  animation: star-up-right-more 0.75s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-10 {
+  animation: star-up-left-more 0.75s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-11 {
+  animation: star-up-slight-left 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-12 {
+  animation: star-up-slight-right 0.7s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-13 {
+  animation: star-right-more 0.65s ease-out 1.9s forwards;
+}
+
+.pokemon-success .star-14 {
+  animation: star-left-more 0.65s ease-out 1.9s forwards;
+}
+
+/* Animation for pokeball and stars - with horizontal movement */
+@keyframes shake {
+  0% {
+    transform: rotate(0) translateX(0);
+  }
+  15% {
+    transform: rotate(-5deg) translateX(-0.5rem);
+  }
+  30% {
+    transform: rotate(5deg) translateX(0.5rem);
+  }
+  45% {
+    transform: rotate(-3deg) translateX(-0.3rem);
+  }
+  60% {
+    transform: rotate(3deg) translateX(0.3rem);
+  }
+  75% {
+    transform: rotate(-1deg) translateX(-0.1rem);
+  }
+  90% {
+    transform: rotate(1deg) translateX(0.1rem);
+  }
+  100% {
+    transform: rotate(0) translateX(0);
+  }
+}
+
+/* Simple directional animations - starting from pokeball border */
+@keyframes star-up {
+  0% {
+    transform: translate(-50%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-50%, -220%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -275%) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -300%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-slight-right {
+  0% {
+    transform: translate(-25%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-15%, -190%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-5%, -235%) scale(1);
+  }
+  100% {
+    transform: translate(0%, -250%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-right {
+  0% {
+    transform: translate(50%, -50%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(110%, -50%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(180%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(200%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-left {
+  0% {
+    transform: translate(-150%, -50%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-210%, -50%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-280%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-300%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-right {
+  0% {
+    transform: translate(25%, -125%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(75%, -155%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(135%, -185%) scale(1);
+  }
+  100% {
+    transform: translate(150%, -200%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-left {
+  0% {
+    transform: translate(-125%, -125%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-175%, -155%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-235%, -185%) scale(1);
+  }
+  100% {
+    transform: translate(-250%, -200%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-far-right {
+  0% {
+    transform: translate(25%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(55%, -205%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(90%, -265%) scale(1);
+  }
+  100% {
+    transform: translate(100%, -280%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-far-left {
+  0% {
+    transform: translate(-125%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-155%, -205%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-190%, -265%) scale(1);
+  }
+  100% {
+    transform: translate(-200%, -280%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-right-up {
+  0% {
+    transform: translate(75%, -25%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(115%, -65%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(165%, -115%) scale(1);
+  }
+  100% {
+    transform: translate(175%, -125%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-left-up {
+  0% {
+    transform: translate(-175%, -25%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-215%, -65%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-265%, -115%) scale(1);
+  }
+  100% {
+    transform: translate(-275%, -125%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-right-more {
+  0% {
+    transform: translate(0%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(50%, -190%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(115%, -235%) scale(1);
+  }
+  100% {
+    transform: translate(125%, -250%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-left-more {
+  0% {
+    transform: translate(-100%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-150%, -190%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-215%, -235%) scale(1);
+  }
+  100% {
+    transform: translate(-225%, -250%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-up-slight-left {
+  0% {
+    transform: translate(-75%, -150%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-85%, -190%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-95%, -235%) scale(1);
+  }
+  100% {
+    transform: translate(-100%, -250%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-right-more {
+  0% {
+    transform: translate(100%, -50%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(160%, -50%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(230%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(250%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes star-left-more {
+  0% {
+    transform: translate(-200%, -50%) scale(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: translate(-260%, -50%) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-330%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-350%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  main {
+    padding: 1rem 0;
+  }
+
+  .verification-container {
+    max-width: 100%;
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 6px;
+  }
+
+  .pokeball {
+    width: 6rem;
+    height: 6rem;
+  }
+}

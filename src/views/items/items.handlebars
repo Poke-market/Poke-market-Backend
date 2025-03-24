@@ -1,0 +1,144 @@
+{{#section "styles"}}
+  <link rel="stylesheet" href="/css/items.css" />
+{{/section}}
+
+{{#section "scripts"}}
+  <script type="module" src="/js/items.js"></script>
+{{/section}}
+
+<div class="items-container">
+  <div class="items-header">
+    <h1>Item Management</h1>
+    <div class="items-controls">
+      <div class="filter-sort">
+        <button class="filter-btn" id="toggle-filter-btn">Filter</button>
+        <select class="sort-select" id="sort-select">
+          <option value="default" {{selectedIf (not sort)}}>Default</option>
+          <option value="price-asc" {{selectedIf (and (eq sort "price") (eq order "asc"))}}>Price: Low to High</option>
+          <option value="price-desc" {{selectedIf (and (eq sort "price") (eq order "desc"))}}>Price: High to Low</option>
+          <option value="name-asc" {{selectedIf (and (eq sort "name") (eq order "asc"))}}>Name: A to Z</option>
+          <option value="name-desc" {{selectedIf (and (eq sort "name") (eq order "desc"))}}>Name: Z to A</option>
+        </select>
+      </div>
+      <div class="view-options">
+        <button class="add-item-btn" id="add-item-btn">Add New Item</button>
+        <span>Showing {{items.length}} of {{info.count}} items</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification area for status/error messages -->
+  <div class="notification-container">
+    <div class="notification"></div>
+  </div>
+
+  <form id="search-form" class="search-form {{#if search}}show{{/if}}" action="/items" method="GET">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        name="search" 
+        class="search-input" 
+        placeholder="Search by name, description, category, or tags..." 
+        value="{{search}}"
+      >
+      {{#if search}}
+        <a href="/items" class="clear-search">Clear</a>
+      {{/if}}
+      <button type="submit" class="search-btn">Search</button>
+    </div>
+    {{#if sortBy}}
+      <input type="hidden" name="sort" value="{{sortBy}}">
+    {{/if}}
+    {{#if order}}
+      <input type="hidden" name="order" value="{{order}}">
+    {{/if}}
+  </form>
+
+  <div class="items-list">
+    <div class="list-header">
+      <div class="col-image">Image</div>
+      <div class="col-info">Item Info</div>
+      <div class="col-price">Price</div>
+      <div class="col-actions">Actions</div>
+    </div>
+
+    {{#each items}}
+      <div class="item-row">
+        <div class="col-image">
+          <div class="item-image">
+            <img src="{{this.photoUrl}}" alt="{{this.name}}" />
+          </div>
+        </div>
+        <div class="col-info">
+          <div class="item-header">
+            <h3 class="item-name">{{this.name}}</h3>
+            <div class="item-status">
+              {{#if this.isNewItem}}
+                <span class="badge new">New</span>
+              {{/if}}
+              {{#if this.discount.hasDiscount}}
+                <span class="badge discount">-{{this.discount.amount}}{{#if (eq this.discount.type "percentage")}}%{{/if}}</span>
+              {{/if}}
+            </div>
+          </div>
+          <p class="item-description">{{this.description}}</p>
+          <div class="item-meta">
+            <div class="item-category">{{this.category}}</div>
+            <div class="item-tags">
+              {{#each this.tags}}
+                <span class="tag">{{this}}</span>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+        <div class="col-price">
+          {{#if this.discount.hasDiscount}}
+            <span class="original-price">{{price this.price}}</span>
+            <span class="discounted-price">{{price this.discount.discountedPrice}}</span>
+          {{else}}
+            <span class="price">{{price this.price}}</span>
+          {{/if}}
+        </div>
+        <div class="col-actions">
+          <button class="edit-btn" data-id="{{this.slug}}">Edit</button>
+          <button class="delete-btn" data-id="{{this._id}}">Delete</button>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if (gt info.pages 1)}}
+    <div class="pagination">
+      {{#if info.first}}
+        <a href="{{info.first}}" class="page-link">First</a>
+      {{/if}}
+      {{#if info.prev}}
+        <a href="{{info.prev}}" class="page-link">Previous</a>
+      {{/if}}
+      <span class="current-page">Page {{info.page}} of {{info.pages}}</span>
+      {{#if info.next}}
+        <a href="{{info.next}}" class="page-link">Next</a>
+      {{/if}}
+      {{#if info.last}}
+        <a href="{{info.last}}" class="page-link">Last</a>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+
+<!-- Confirmation modal for item deletion -->
+<div id="confirmation-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title">Delete Item</h2>
+      <button type="button" class="close-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="modal-message">Are you sure you want to delete this item? This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="modal-cancel" class="cancel-btn">Cancel</button>
+      <button type="button" id="modal-confirm" class="delete-btn">Delete</button>
+    </div>
+  </div>
+</div>
