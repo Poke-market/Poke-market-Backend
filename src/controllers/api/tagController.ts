@@ -39,6 +39,9 @@ export const getTags = async (req: Request, res: Response) => {
  *     summary: Create a new tag
  *     description: Creates a new tag with the specified name
  *     tags: [Tags]
+ *     security:
+ *       - cookieAuth: []
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -83,6 +86,9 @@ export const addTag = async (req: Request, res: Response) => {
  *     summary: Delete a tag
  *     description: Deletes a tag by its ID
  *     tags: [Tags]
+ *     security:
+ *       - cookieAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -122,6 +128,9 @@ export const deleteTag = async (req: Request, res: Response) => {
  *     summary: Update a tag
  *     description: Updates a tag's name by its ID
  *     tags: [Tags]
+ *     security:
+ *       - cookieAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
