@@ -27,6 +27,11 @@ const options = {
           scheme: "bearer",
           bearerFormat: "JWT",
         },
+        cookieAuth: {
+          type: "apiKey",
+          in: "cookie",
+          name: "token",
+        },
       },
     },
   },

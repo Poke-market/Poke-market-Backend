@@ -209,6 +209,7 @@ export const getItemById = async (req: Request, res: Response) => {
  *     description: Creates a new item in the database
  *     tags: [Items]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
@@ -282,6 +283,7 @@ export const addItem = async (req: Request, res: Response) => {
  *     description: Updates an existing item by its ID
  *     tags: [Items]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -360,6 +362,7 @@ export const updateItem = async (req: Request, res: Response) => {
  *     description: Deletes an item by its ID
  *     tags: [Items]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path

@@ -19,6 +19,7 @@ const { UserCreateSchema, UserUpdateSchema, UserFullSchema } = userService;
  *     description: Retrieves a paginated list of users (admin only)
  *     tags: [Users]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
@@ -108,6 +109,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
  *     description: Retrieves a user by their ID (admin only)
  *     tags: [Users]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -151,6 +153,7 @@ export const getUser = async (req: Request, res: Response) => {
  *     description: Retrieves the list of items in the user's wishlist
  *     tags: [Wishlist]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -196,6 +199,7 @@ export const getWishlist = async (req: Request, res: Response) => {
  *     description: Adds an item to the user's wishlist
  *     tags: [Wishlist]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -275,6 +279,7 @@ export const addToWishlist = async (req: Request, res: Response) => {
  *     description: Removes an item from the user's wishlist
  *     tags: [Wishlist]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -344,6 +349,7 @@ export const removeFromWishlist = async (req: Request, res: Response) => {
  *     description: Removes all items from the user's wishlist
  *     tags: [Wishlist]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -473,6 +479,7 @@ export const addUser = async (req: Request, res: Response) => {
  *     description: Deletes a user by their ID (admin only)
  *     tags: [Users]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -516,6 +523,7 @@ export const deleteUser = async (req: Request, res: Response) => {
  *     description: Partially updates a user's information (admin only)
  *     tags: [Users]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
@@ -598,6 +606,7 @@ export const updateUser = async (req: Request, res: Response) => {
  *     description: Completely replaces a user's information (admin only)
  *     tags: [Users]
  *     security:
+ *       - cookieAuth: []
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
