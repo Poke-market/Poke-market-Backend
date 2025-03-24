@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import hbs from "./config/handlebars";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import { corsOptions } from "./config/cors";
 
 import { notFound } from "./controllers/api/notFoundController";
 import { errorProcessMiddleware } from "./middleware/errorProcessMiddleware";
@@ -20,7 +21,7 @@ import { getViewPaths } from "./config/handlebars";
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
