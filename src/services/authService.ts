@@ -1,7 +1,7 @@
 import { User } from "../models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { BASE_URL, IS_PRODUCTION, JWT_SECRET } from "../config/env";
+import { BASE_URL, IS_DEVELOPMENT, JWT_SECRET } from "../config/env";
 import { UnauthorizedError, ConflictError, VerificationError } from "../errors";
 import { z } from "zod";
 import { sendVerificationEmail } from "../utils/sendVerificationMail";
@@ -85,7 +85,7 @@ export function loginUser(
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: IS_PRODUCTION, // Set to false for HTTP development testing
+    secure: IS_DEVELOPMENT ? false : true, // Set to false for HTTP development testing
     sameSite: "lax", // Set to none to allow cross-site requests
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   });
@@ -129,7 +129,7 @@ export function logoutUser(res: Response) {
   res.cookie("token", "", {
     maxAge: 1,
     httpOnly: true,
-    secure: IS_PRODUCTION,
+    secure: IS_DEVELOPMENT ? false : true,
     sameSite: "lax",
   });
 }
