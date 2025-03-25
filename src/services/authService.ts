@@ -86,7 +86,7 @@ export function loginUser(
   res.cookie("token", token, {
     httpOnly: true,
     secure: IS_DEVELOPMENT ? false : true, // Set to false for HTTP development testing
-    sameSite: "lax", // Set to none to allow cross-site requests
+    sameSite: "none", // Set to none to allow cross-site requests
     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   });
 
@@ -130,7 +130,7 @@ export function logoutUser(res: Response) {
     maxAge: 1,
     httpOnly: true,
     secure: IS_DEVELOPMENT ? false : true,
-    sameSite: "lax",
+    sameSite: "none",
   });
 }
 
