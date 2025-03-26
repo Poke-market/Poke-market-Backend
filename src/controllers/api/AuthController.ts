@@ -1,7 +1,8 @@
 import { Request } from "express";
 import { Response } from "../../types/res.json";
 import * as authService from "../../services/authService";
-const { registerSchema, loginSchema, verifyBaseUrlSchema } = authService;
+// import { formToJSON } from "../../types/formToJson";
+const { registerSchema, loginSchema } = authService;
 
 /**
  * @openapi
@@ -187,12 +188,18 @@ export const logout = (req: Request, res: Response) => {
  *         $ref: '#/components/responses/ServerError'
  */
 export const register = async (req: Request, res: Response) => {
-  const userData = registerSchema.parse(req.body);
-  const { verifyBaseUrl } = verifyBaseUrlSchema.parse(req.query);
-  const newUser = await authService.registerUser(userData, verifyBaseUrl);
+  const avatar = req.file?.path;
+  console.log("controlleravatar", avatar);
+  const userData = registerSchema.parse({
+    ...req.body,
+    avatar: avatar,
+  });
+
+  const newUser = await authService.registerUser(userData);
   const loggedInUser = authService.loginUser(newUser, res);
 
   res.status(201).json({ status: "success", data: { user: loggedInUser } });
+  // console.log(req.body);
 };
 
 /**
