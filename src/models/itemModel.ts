@@ -173,6 +173,10 @@ const itemSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    extraPhotoUrls: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

@@ -57,7 +57,8 @@ export const errorProcessMiddleware = (
   }
 
   // Handle Unknown Errors
-  console.error(JSON.stringify(err, null, 2));
+  console.error("errorObject:", JSON.stringify(err, null, 2));
+  console.log("error:", err);
   const message = "Something went wrong";
   res.status(500).locals.processedError = {
     data: { ...data, errors: [message] },

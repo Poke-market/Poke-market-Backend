@@ -5,6 +5,7 @@ import {
   logout,
   verify,
 } from "../../controllers/api/AuthController";
+import upload from "../../middleware/uploadMiddleware";
 
 /**
  * @openapi
@@ -16,7 +17,7 @@ import {
 const router = express.Router();
 
 router
-  .post("/register", register)
+  .post("/register", upload.single("avatar"), register)
   .post("/login", login)
   .post("/logout", logout)
   .get("/verify/:token", verify);

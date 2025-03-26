@@ -7,6 +7,7 @@ import { z } from "zod";
 import { sendVerificationEmail } from "../utils/sendVerificationMail";
 import { Response } from "../types/res.json";
 import { Request } from "express";
+import isURL from "validator/lib/isURL";
 
 export const verifyEmailJwtSchema = z.object({
   email: z
@@ -48,6 +49,7 @@ export const registerSchema = z.object({
   housenumber: z.string().min(1, { message: "House number is required" }),
   zipcode: z.string().min(1, { message: "Zip code is required" }),
   telephone: z.string().min(1, { message: "Telephone is required" }),
+  avatar: z.string().min(1, { message: "Avatar is required" }).refine(isURL),
 });
 
 export async function validateLogin(email: string, password: string) {
@@ -97,6 +99,7 @@ export async function registerUser(
   userData: z.infer<typeof registerSchema>,
   baseUrl = `${BASE_URL}/auth/verify`,
 ) {
+  console.log("serviceavatar", userData);
   const { email, password } = userData;
 
   const existingUser = await User.findOne({ email });
